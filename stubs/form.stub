@@ -1,0 +1,37 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Forms;
+
+use App\FormBuilder\AbstractForm;
+use App\FormBuilder\FormConfig;
+use App\FormBuilder\Fields\Submit;
+use App\FormBuilder\Fields\Text;
+
+class {{ class }} extends AbstractForm
+{
+    public function configure(FormConfig $form)
+    {
+        $form
+            ->action(route('...'))
+            ->method('POST')
+            ->class('space-y-4')
+            ->fill([
+                //
+            ]);
+    }
+
+    public function fields(): array
+    {
+        return [
+            Text::make('...')
+                ->label(trans('...'))
+                ->rules(['required', 'string', 'max:255'])
+                ->attributes(['autocomplete' => 'off']),
+
+            Submit::make()
+                ->label(trans('Submit')),
+        ];
+    }
+}
