@@ -4,22 +4,19 @@ namespace TranquilTools\FormBuilder;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use TranquilTools\FormBuilder\Commands\FormBuilderCommand;
+use TranquilTools\FormBuilder\Commands\FormMakeCommand;
+use TranquilTools\FormBuilder\Commands\FormRequestMakeCommand;
 
 class FormBuilderServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
-        /*
-         * This class is a Package Service Provider
-         *
-         * More info: https://github.com/spatie/laravel-package-tools
-         */
         $package
             ->name('laravel-vue-form-builder')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_vue_form_builder_table')
-            ->hasCommand(FormBuilderCommand::class);
+            ->hasTranslations()
+            ->hasCommands([
+                FormMakeCommand::class,
+                FormRequestMakeCommand::class,
+            ]);
     }
 }
