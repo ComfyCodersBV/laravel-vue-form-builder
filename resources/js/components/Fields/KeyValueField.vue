@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
 import type { Field } from '../../types/form-builder'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
 import { computed, ref, watch } from 'vue'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { Trash2, Plus, ArrowUp, ArrowDown } from 'lucide-vue-next'
 
 interface KeyValueProps extends Field {

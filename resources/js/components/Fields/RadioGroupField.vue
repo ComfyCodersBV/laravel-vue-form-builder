@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
 import type { Field } from '../../types/form-builder'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
+import { Label } from '../ui/label'
 import { computed, ref, watch } from 'vue'
 
 interface Option { value: string | number; label: string; help?: string; disabled?: boolean }

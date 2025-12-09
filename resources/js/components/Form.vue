@@ -3,7 +3,7 @@ import { Form } from '@inertiajs/vue3'
 import { reactive } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import { FormSchema } from '../types/form-builder'
-import { toBoolean } from '@/lib/utils'
+import { toBoolean } from '../lib/utils'
 
 const { schema } = defineProps<{ schema: FormSchema }>()
 

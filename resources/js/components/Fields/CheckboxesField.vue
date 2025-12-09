@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
+import { Checkbox } from '../ui/checkbox'
+import { Label } from '../ui/label'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
 

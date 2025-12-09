@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { Field } from '../types/form-builder'
-import { toBoolean } from '@/lib/utils'
+import { toBoolean } from '../lib/utils'
 
 import Button from './Fields/Button.vue'
 import CheckboxField from './Fields/CheckboxField.vue'
@@ -142,7 +142,7 @@ function componentFor(field: Field) {
                 v-else
                 class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700"
             >
-                Unknow field type: <code class="font-mono">{{ field.type }}</code>
+                Unknown field type: <code class="font-mono">{{ field.type }}</code>
             </div>
         </template>
     </div>

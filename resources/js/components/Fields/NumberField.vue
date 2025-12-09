@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
-import { Input } from '@/components/ui/input';
+import { Input } from '../ui/input';
 import { computed } from 'vue';
 import type { Field } from '../../types/form-builder'
-import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '../../lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { Info } from 'lucide-vue-next';
 
 interface NumberFieldProps extends Field {

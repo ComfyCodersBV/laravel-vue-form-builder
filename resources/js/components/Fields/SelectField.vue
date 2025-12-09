@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
 import type { Field } from '../../types/form-builder';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { MultiSelect } from '../ui/multi-select';
 import { computed, ref, watch } from 'vue';
 
 interface Option { value: string | number; label: string }

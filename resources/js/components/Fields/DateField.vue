@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
 import type { Field } from '../../types/form-builder'
-import { DatePicker } from '@/components/ui/date-picker'
+import { DatePicker } from '../ui/date-picker'
 import { ref, watch, computed } from 'vue'
 
 interface DateFieldProps extends Field {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
-import { Switch } from '@/components/ui/switch'
+import { Switch } from '../ui/switch'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
-import { toBoolean } from '@/lib/utils'
+import { toBoolean } from '../../lib/utils'
 
 type Props = Omit<Field, 'modelValue'> & {
   modelValue?: boolean
