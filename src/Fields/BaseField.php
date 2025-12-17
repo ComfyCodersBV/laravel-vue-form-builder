@@ -133,17 +133,7 @@ abstract class BaseField implements JsonSerializable
             'type' => $this->type,
         ];
 
-        foreach ($this->attributes as $key => $value) {
-            $schema[$key] = $value;
-
-            unset($this->attributes[$key]);
-        }
-
-        if (! empty($this->attributes)) {
-            $schema['attributes'] = $this->attributes;
-        }
-
-        return $schema;
+        return array_merge($schema, $this->attributes);
     }
 
     public function jsonSerialize(): array
