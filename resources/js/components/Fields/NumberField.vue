@@ -13,6 +13,7 @@ interface NumberFieldProps extends Field {
     prepend?: string
     append?: string
     tooltip?: string
+    step?: number | string
 }
 
 const props = withDefaults(defineProps<NumberFieldProps>(), {
@@ -29,6 +30,7 @@ const props = withDefaults(defineProps<NumberFieldProps>(), {
     prepend: undefined,
     append: undefined,
     tooltip: undefined,
+    step: 1,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [string | number] }>()
@@ -65,6 +67,7 @@ function leftRoundClass() {
         :id="name"
         :max="max"
         :min="min"
+        :step="step"
         :name="name"
         :disabled="disabled"
         :readonly="readonly"

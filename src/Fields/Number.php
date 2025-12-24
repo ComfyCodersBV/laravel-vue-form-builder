@@ -28,7 +28,7 @@ class Number extends BaseField
         return $this;
     }
 
-    public function step(int|float $step = 1): static
+    public function step(int|float|string $step = 1): static
     {
         $this->attributes['step'] = $step;
 
