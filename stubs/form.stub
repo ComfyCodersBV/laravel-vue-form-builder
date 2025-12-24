@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Forms;
 
-use App\FormBuilder\AbstractForm;
-use App\FormBuilder\FormConfig;
-use App\FormBuilder\Fields\Submit;
-use App\FormBuilder\Fields\Text;
+use TranquilTools\FormBuilder\AbstractForm;
+use TranquilTools\FormBuilder\FormConfig;
+use TranquilTools\FormBuilder\Fields\Submit;
+use TranquilTools\FormBuilder\Fields\Text;
 
 class {{ class }} extends AbstractForm
 {
