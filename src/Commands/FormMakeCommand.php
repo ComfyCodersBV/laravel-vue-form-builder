@@ -8,12 +8,15 @@ use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
+use TranquilTools\FormBuilder\Commands\Traits\HasStubs;
 
 use function Laravel\Prompts\select;
 
 #[AsCommand(name: 'make:form')]
 class FormMakeCommand extends GeneratorCommand
 {
+    use HasStubs;
+
     protected $name = 'make:form';
 
     protected $type = 'Form';
@@ -52,13 +55,6 @@ class FormMakeCommand extends GeneratorCommand
     protected function getStub(): string
     {
         return $this->resolveStubPath('/stubs/form.stub');
-    }
-
-    protected function resolveStubPath($stub): string
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__ . $stub;
     }
 
     protected function buildClass($name): array|string

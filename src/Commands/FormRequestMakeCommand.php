@@ -8,10 +8,13 @@ use Illuminate\Foundation\Console\RequestMakeCommand;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
+use TranquilTools\FormBuilder\Commands\Traits\HasStubs;
 
 #[AsCommand(name: 'make:form-request')]
 class FormRequestMakeCommand extends RequestMakeCommand
 {
+    use HasStubs;
+
     protected $name = 'make:form-request';
 
     protected $type = 'Form Request';
