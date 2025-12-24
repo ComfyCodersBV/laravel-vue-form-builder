@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use JsonSerializable;
 use TranquilTools\FormBuilder\Fields\BaseField;
-use TranquilTools\FormBuilder\Fields\Radios;
+use TranquilTools\FormBuilder\Fields\Radio;
 
 class FormConfig implements JsonSerializable
 {
@@ -131,7 +131,7 @@ class FormConfig implements JsonSerializable
     public function jsonSerialize(): array
     {
         $schemas = array_map(fn($field) => $field->toSchema(), $this->getFields());
-        $schemas = Radios::normalize($schemas);
+        $schemas = Radio::normalize($schemas);
 
         return [
             'id' => $this->getId(),

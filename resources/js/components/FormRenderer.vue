@@ -114,7 +114,7 @@ const fieldComponents: Record<string, any> = {
     keyvalue: KeyValueField,
     number: NumberField,
     password: TextField,
-    radios: RadioGroupField,
+    radio: RadioGroupField,
     select: SelectField,
     submit: SubmitButton,
     text: TextField,
