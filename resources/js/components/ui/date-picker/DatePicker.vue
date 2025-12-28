@@ -210,7 +210,7 @@ const hours = computed({
   set: (h: number) => {
     if (!selected.value) selected.value = new Date(viewYear.value, viewMonth.value, 1)
     selected.value.setHours(h)
-    emit('update:modelValue', formatDate(selected.value, props.enableTime))
+    emit('update:modelValue', formatISO(selected.value, props.enableTime))
   }
 })
 const minutes = computed({
@@ -218,7 +218,7 @@ const minutes = computed({
   set: (m: number) => {
     if (!selected.value) selected.value = new Date(viewYear.value, viewMonth.value, 1)
     selected.value.setMinutes(m)
-    emit('update:modelValue', formatDate(selected.value, props.enableTime))
+      emit('update:modelValue', formatISO(selected.value, props.enableTime))
   }
 })
 </script>
@@ -324,7 +324,11 @@ const minutes = computed({
             max="23"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedStart ? selectedStart.getHours() : 0"
-            @input="() => { if (!selectedStart) selectedStart = new Date(viewYear, viewMonth, 1) as any; (selectedStart as Date).setHours(Number(($event.target as HTMLInputElement).value)); emit('update:modelValue', { start: formatDate(selectedStart, true), end: formatDate(selectedEnd, true) }) }"
+            @input="() => {
+                if (!selectedStart) selectedStart = new Date(viewYear, viewMonth, 1) as any;
+                (selectedStart as Date).setHours(Number(($event.target as HTMLInputElement).value));
+                emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
+            }"
           />
           :
           <input
@@ -333,7 +337,11 @@ const minutes = computed({
             max="59"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedStart ? selectedStart.getMinutes() : 0"
-            @input="() => { if (!selectedStart) selectedStart = new Date(viewYear, viewMonth, 1) as any; (selectedStart as Date).setMinutes(Number(($event.target as HTMLInputElement).value)); emit('update:modelValue', { start: formatDate(selectedStart, true), end: formatDate(selectedEnd, true) }) }"
+            @input="() => {
+                if (!selectedStart) selectedStart = new Date(viewYear, viewMonth, 1) as any;
+                (selectedStart as Date).setMinutes(Number(($event.target as HTMLInputElement).value));
+                emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
+            }"
           />
         </div>
         <div class="flex items-center gap-2">
@@ -344,7 +352,11 @@ const minutes = computed({
             max="23"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedEnd ? selectedEnd.getHours() : 0"
-            @input="() => { if (!selectedEnd) selectedEnd = new Date(viewYear, viewMonth, 1) as any; (selectedEnd as Date).setHours(Number(($event.target as HTMLInputElement).value)); emit('update:modelValue', { start: formatDate(selectedStart, true), end: formatDate(selectedEnd, true) }) }"
+            @input="() => {
+                if (!selectedEnd) selectedEnd = new Date(viewYear, viewMonth, 1) as any;
+                (selectedEnd as Date).setHours(Number(($event.target as HTMLInputElement).value));
+                emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
+            }"
           />
           :
           <input
@@ -353,7 +365,11 @@ const minutes = computed({
             max="59"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedEnd ? selectedEnd.getMinutes() : 0"
-            @input="() => { if (!selectedEnd) selectedEnd = new Date(viewYear, viewMonth, 1) as any; (selectedEnd as Date).setMinutes(Number(($event.target as HTMLInputElement).value)); emit('update:modelValue', { start: formatDate(selectedStart, true), end: formatDate(selectedEnd, true) }) }"
+            @input="() => {
+                if (!selectedEnd) selectedEnd = new Date(viewYear, viewMonth, 1) as any;
+                (selectedEnd as Date).setMinutes(Number(($event.target as HTMLInputElement).value));
+                emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
+            }"
           />
         </div>
       </div>
