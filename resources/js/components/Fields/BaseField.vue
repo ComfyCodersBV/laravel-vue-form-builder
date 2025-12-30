@@ -12,7 +12,7 @@ withDefaults(defineProps<Field>(), {
 
 <template>
     <div :class="className">
-        <label v-if="label" :for="name" class="block text-sm font-medium text-neutral-800">{{ label }}</label>
+        <label v-if="label" :for="name" class="block text-sm font-medium text-neutral-800 dark:text-neutral-200">{{ label }}</label>
         <div>
             <slot />
         </div>
