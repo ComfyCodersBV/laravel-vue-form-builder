@@ -77,6 +77,16 @@ const optionsList = computed<Option[]>(() => {
     );
 });
 
+const selectedOptionLabel = computed(() => {
+    if (!internalKey.value) return '';
+
+    const found = optionsList.value.find(
+        option => String(option.value) === String(internalKey.value)
+    );
+
+    return found ? found.label : String(internalKey.value);
+});
+
 const internalKey = ref<string>('');
 const selectedLocal = ref<Array<string | number>>([]);
 
@@ -115,8 +125,13 @@ function onUpdateInternal(value: unknown) {
                 :disabled="props.disabled || props.readonly"
                 @update:model-value="onUpdateInternal"
             >
-                <SelectTrigger :id="props.name">
-                    <SelectValue :placeholder="props.placeholder ?? ''" />
+                <SelectTrigger :id="props.name" class="w-full justify-between">
+                    <span class="truncate">
+                        <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
+                        <span v-else class="text-muted-foreground">
+                            {{ props.placeholder ?? 'Choose an option' }}
+                        </span>
+                      </span>
                 </SelectTrigger>
                 <SelectContent class="min-w-[var(--reka-select-trigger-width)]">
                     <SelectItem
@@ -124,7 +139,7 @@ function onUpdateInternal(value: unknown) {
                         :key="String(option.value)"
                         :value="String(option.value)"
                     >
-                        {{ option.label }}
+                        <div v-html="option.label" class="flex justify-between items-center w-full"></div>
                     </SelectItem>
                 </SelectContent>
                 <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
