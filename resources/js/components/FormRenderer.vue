@@ -7,6 +7,7 @@ import Button from './Fields/Button.vue'
 import CheckboxField from './Fields/CheckboxField.vue'
 import CheckboxesField from './Fields/CheckboxesField.vue'
 import DateField from './Fields/DateField.vue'
+import DeleteButtonField from './Fields/DeleteButtonField.vue'
 import HiddenField from './Fields/HiddenField.vue'
 import NumberField from './Fields/NumberField.vue'
 import RadioGroupField from './Fields/RadioGroupField.vue'
@@ -108,6 +109,7 @@ const fieldComponents: Record<string, any> = {
     checkboxes: CheckboxesField,
     color: TextField,
     date: DateField,
+    'delete-button': DeleteButtonField,
     email: TextField,
     file: FileField,
     hidden: HiddenField,
