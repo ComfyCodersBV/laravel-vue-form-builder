@@ -74,7 +74,7 @@ function leftRoundClass() {
         :placeholder="placeholder"
         v-model="model"
         type="number"
-        :class="cn('flex-1', leftRoundClass(), rightRoundClass())"
+        :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass())"
       />
 
       <span

@@ -80,7 +80,7 @@ function getName() {
                 :accept="accept"
                 :multiple="multiple"
                 v-model="model"
-                :class="cn('flex-1', leftRoundClass(), rightRoundClass())"
+                :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass())"
             />
 
             <span
