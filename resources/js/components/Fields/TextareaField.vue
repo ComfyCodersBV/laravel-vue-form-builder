@@ -34,6 +34,7 @@ const model = computed<string>({
             :readonly="readonly"
             :placeholder="placeholder"
             v-model="model"
+            class="flex-1 dark:text-neutral-100"
             rows="4"
         />
     </BaseField>
