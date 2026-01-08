@@ -2,9 +2,10 @@
 import BaseField from './BaseField.vue';
 import { computed } from 'vue';
 import type { Field } from '../../types/form-builder';
+import { Textarea } from '../ui/textarea';
 
 interface Props extends Field {
-  name: string
+    name: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,21 +20,20 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 
 const model = computed<string>({
-  get: () => (props.modelValue as any) ?? '',
-  set: (v) => emit('update:modelValue', v),
+    get: () => (props.modelValue as any) ?? '',
+    set: (v) => emit('update:modelValue', v),
 })
 </script>
 
 <template>
     <BaseField :label="label" :name="name" :error="error" :help="help">
-        <textarea
+        <Textarea
             :id="name"
             :name="name"
             :disabled="disabled"
             :readonly="readonly"
             :placeholder="placeholder"
             v-model="model"
-            class="block w-full rounded border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none dark:text-neutral-100"
             rows="4"
         />
     </BaseField>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
 import type { Field } from '../../types/form-builder';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
 import { computed, ref, watch } from 'vue';
 
