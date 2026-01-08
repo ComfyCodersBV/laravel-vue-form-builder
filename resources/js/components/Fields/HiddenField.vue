@@ -9,9 +9,11 @@ withDefaults(defineProps<Field>(), {
 </script>
 
 <template>
-    <input type="hidden" :name="name" :id="name" :value="(modelValue as any) ?? ''" />
-    <p v-if="error" class="text-sm text-red-600">
-        <span v-if="Array.isArray(error)">{{ error[0] }}</span>
-        <span v-else>{{ error }}</span>
-    </p>
+    <div>
+        <input type="hidden" :name="name" :id="name" :value="(modelValue as any) ?? ''" />
+        <p v-if="error" class="text-sm text-red-600">
+            <span v-if="Array.isArray(error)">{{ error[0] }}</span>
+            <span v-else>{{ error }}</span>
+        </p>
+    </div>
 </template>
