@@ -33,7 +33,7 @@ const model = computed<string>({
             :readonly="readonly"
             :placeholder="placeholder"
             v-model="model"
-            class="block w-full rounded border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none"
+            class="block w-full rounded border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none dark:text-neutral-100"
             rows="4"
         />
     </BaseField>
