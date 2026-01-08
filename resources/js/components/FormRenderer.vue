@@ -109,7 +109,7 @@ const fieldComponents: Record<string, any> = {
     checkboxes: CheckboxesField,
     color: TextField,
     date: DateField,
-    'delete-button': DeleteButtonField,
+    delete: DeleteButtonField,
     email: TextField,
     file: FileField,
     hidden: HiddenField,

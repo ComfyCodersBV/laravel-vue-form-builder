@@ -15,6 +15,7 @@ import {
 
 interface Props {
     label?: string;
+    cancelLabel?: string;
     confirmTitle?: string;
     confirmMessage?: string;
     deleteUrl?: string;
@@ -23,6 +24,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     label: 'Delete',
+    cancelLabel: 'Cancel',
     confirmTitle: 'Are you sure?',
     confirmMessage: 'This action cannot be undone. This will permanently delete this record.',
     deleteUrl: undefined,
@@ -63,7 +65,7 @@ function handleDelete() {
             <DialogFooter class="gap-2">
                 <DialogClose as-child>
                     <Button variant="outline" type="button">
-                        Cancel
+                        {{ cancelLabel }}
                     </Button>
                 </DialogClose>
                 <Button

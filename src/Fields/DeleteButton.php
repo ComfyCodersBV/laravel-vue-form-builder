@@ -6,13 +6,22 @@ namespace TranquilTools\FormBuilder\Fields;
 
 class DeleteButton extends BaseField
 {
-    protected string $type = 'delete-button';
+    protected string $type = 'delete';
+
+    protected ?string $cancelLabel = null;
 
     protected ?string $confirmTitle = null;
 
     protected ?string $confirmMessage = null;
 
     protected ?string $deleteUrl = null;
+
+    public function cancelLabel(string $title): static
+    {
+        $this->cancelLabel = $title;
+
+        return $this;
+    }
 
     public function confirmTitle(string $title): static
     {
@@ -40,6 +49,7 @@ class DeleteButton extends BaseField
         $schema = parent::toSchema();
 
         return array_merge($schema, [
+            'cancelLabel' => $this->cancelLabel,
             'confirmTitle' => $this->confirmTitle,
             'confirmMessage' => $this->confirmMessage,
             'deleteUrl' => $this->deleteUrl,
