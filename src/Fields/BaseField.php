@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TranquilTools\FormBuilder\Fields;
 
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Traits\Macroable;
 use JsonSerializable;
 
@@ -48,9 +49,9 @@ abstract class BaseField implements JsonSerializable
         return $this;
     }
 
-    public function help(string $text): static
+    public function help(string|HtmlString $text): static
     {
-        $this->attributes['help'] = $text;
+        $this->attributes['help'] = $text instanceof HtmlString ? $text->toHtml() : e($text);
 
         return $this;
     }

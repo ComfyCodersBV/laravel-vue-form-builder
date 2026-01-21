@@ -16,7 +16,7 @@ withDefaults(defineProps<Field>(), {
         <div>
             <slot />
         </div>
-        <p v-if="help" class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{{ help }}</p>
+        <div v-if="help" class="mt-1 text-xs text-neutral-500 dark:text-neutral-400" v-html="help"></div>
         <p v-if="error" class="text-sm text-red-600">
             <span v-if="Array.isArray(error)">{{ error[0] }}</span>
             <span v-else>{{ error }}</span>
