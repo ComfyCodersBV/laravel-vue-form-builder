@@ -28,7 +28,7 @@ const model = computed({
 })
 
 onMounted(async () => {
-    if (! editor.value) {
+    if (!editor.value) {
         return
     }
 
