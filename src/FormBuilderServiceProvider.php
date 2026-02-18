@@ -13,6 +13,7 @@ class FormBuilderServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('laravel-vue-form-builder')
+            ->hasConfigFile()
             ->hasTranslations()
             ->hasCommands([
                 FormMakeCommand::class,
