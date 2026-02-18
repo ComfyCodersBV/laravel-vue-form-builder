@@ -10,7 +10,6 @@ class Wysiwyg extends BaseField
 
     public function __construct()
     {
-
         $this->editor(config('vue-form-builder.wysiwyg.default-editor'));
 
         $this->loadOptionsFromConfig($this->attributes['editor'], config('vue-form-builder.wysiwyg.editors'));
