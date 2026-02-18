@@ -24,7 +24,7 @@ return [
         | Editor configs
         |--------------------------------------------------------------------------
         |
-        |
+        | Editor-specific configurations
         |
         */
         'editors' => [
