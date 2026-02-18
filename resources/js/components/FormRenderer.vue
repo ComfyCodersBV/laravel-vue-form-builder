@@ -18,6 +18,7 @@ import TextareaField from './Fields/TextareaField.vue'
 import ToggleField from './Fields/ToggleField.vue'
 import FileField from './Fields/FileField.vue';
 import KeyValueField from './Fields/KeyValueField.vue'
+import Wysiwyg from "./Fields/Wysiwyg.vue";
 
 const { fields, values, errors } = defineProps<{
     fields: Field[]
@@ -122,6 +123,7 @@ const fieldComponents: Record<string, any> = {
     text: TextField,
     textarea: TextareaField,
     toggle: ToggleField,
+    wysiwyg: Wysiwyg,
 }
 
 function componentFor(field: Field) {
