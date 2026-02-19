@@ -1,57 +1,59 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { QuillyEditor } from 'vue-quilly'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
-import { Field } from "../../../types/form-builder";
+import type { Field } from '../../../types/form-builder'
 
-window.Quill = Quill
+const editor = ref()
+const quill = ref<Quill>()
 
-const editor = ref<InstanceType<typeof QuillyEditor>>()
-
-let quill: Quill | undefined
+const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
 
 const props = withDefaults(defineProps<{ modelValue: string } & Field>(), {
     modelValue: '',
-    placeholder: '',
-    readonly: false,
-    disabled: false,
 })
 
 const options = ref(props.options)
 
-const emit = defineEmits<{ 'update:modelValue': [string] }>()
-
-const model = computed({
-    get: () => props.modelValue,
-    set: (v) => emit('update:modelValue', v),
-})
-
-onMounted(async () => {
+onMounted(() => {
     if (!editor.value) {
         return
     }
 
-    window.Quill.imports.parchment.Attributor.Style = window.Quill.imports.parchment.StyleAttributor
+    quill.value = editor.value.initialize(Quill)
+    quill.value.root.innerHTML = props.modelValue || ''
 
-    await import('quill-image-resize-module')
-
-    quill = editor.value.initialize(window.Quill)
-
-    quill.root.innerHTML = model.value
-
-    quill.on('text-change', () => {
-        model.value = quill!.root.innerHTML
+    quill.value.on('text-change', () => {
+        emit('update:modelValue', quill.value?.root.innerHTML || '')
     })
 })
+
+watch(
+    () => props.modelValue,
+    (val) => {
+        if (quill.value && quill.value.root.innerHTML !== (val || '')) {
+            quill.value.root.innerHTML = val || ''
+        }
+    }
+)
 </script>
 
 <template>
     <div class="quill-wrapper">
         <QuillyEditor
             ref="editor"
-            v-model="model"
             :options="options"
         />
     </div>
 </template>
+
+<style>
+.quill-wrapper .ql-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.quill-wrapper .ql-container {
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+</style>

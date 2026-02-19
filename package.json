@@ -1,5 +1,13 @@
 {
-  "dependencies": {
-    "reka-ui": "^2.7.0"
-  }
+    "dependencies": {
+        "reka-ui": "^2.7.0"
+    },
+    "peerDependencies": {
+        "vue-quilly": "^1",
+        "quill": "^2"
+    },
+    "peerDependenciesMeta": {
+        "vue-quilly": { "optional": true },
+        "quill": { "optional": true }
+    }
 }
