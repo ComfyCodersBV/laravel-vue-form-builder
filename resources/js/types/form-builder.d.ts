@@ -1,24 +1,37 @@
+export type FieldValue =
+    | string
+    | number
+    | boolean
+    | Array<string | number>
+    | { start?: string | null; end?: string | null }
+    | null
+
 export interface Field {
-    attrs?: Record<string, unknown>
-    className?: string
-    disabled?: boolean
-    error?: string | string[]
+    name?: string
+    type?: string
     label?: string
     help?: string
-    modelValue?: string | number | boolean | Array<string | number> | { start?: string | null; end?: string | null }
-    name?: string
     placeholder?: string
-    readonly ?: boolean
-    type?: string
-    default?: unknown
+    readonly?: boolean
+    disabled?: boolean
+    className?: string
+    modelValue?: FieldValue
+    default?: FieldValue
+    error?: string | string[]
     options?: Record<string, string> | Array<{ value: string | number; label: string }> | Array<string | number>
+    attrs?: Record<string, unknown>
+    append?: string
+    prepend?: string
+    tooltip?: string
 }
+
+export type TForm = Record<string, FieldValue>
 
 export interface FormSchema {
     id?: string
-    method: string
+    method: 'get' | 'post' | 'put' | 'patch' | 'delete'
     action: string
-    defaults: Record<string, unknown>
+    defaults: TForm
     fields: Field[]
     format?: string
     locale?: string

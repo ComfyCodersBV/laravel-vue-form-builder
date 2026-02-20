@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
-import { computed } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import type { Field } from '../../types/form-builder';
-import QuillEditor from "./Wysiwyg/QuillEditor.vue";
-import { Textarea } from "../ui/textarea";
+import {Textarea} from "../ui/textarea";
+
+const QuillEditor = defineAsyncComponent({
+    loader: async () => {
+        try {
+            const mod = await import('./Wysiwyg/QuillEditor.vue')
+            return mod.default
+        } catch (e) {
+            const fallback = await import('./Wysiwyg/TextareaEditor.vue')
+            return fallback.default
+        }
+    },
+    suspensible: false,
+})
 
 interface Props extends Field {
     name: string
@@ -37,19 +49,16 @@ const model = computed<string>({
         <QuillEditor
             v-if="props.editor === 'quill'"
             v-bind="props"
-            v-model="model"
+            v-model:modelValue="model"
         />
 
         <template v-else>
             <Textarea
-                :id="props.name"
-                :name="props.name"
-                :disabled="props.disabled"
-                :readonly="props.readonly"
-                :placeholder="props.placeholder"
                 v-model="model"
-                class="flex-1 dark:text-neutral-100"
-                rows="4"
+                :placeholder="placeholder"
+                :disabled="disabled"
+                :readonly="readonly"
+                :class="className"
             />
             <div class="mx-auto my-1 w-fit rounded border border-red-200 bg-red-50 p-1 text-sm text-red-700">
                 Unknown wysiwyg editor: <code class="font-mono">{{ props.editor }}</code>

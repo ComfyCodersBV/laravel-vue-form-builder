@@ -1,41 +1,31 @@
 <script setup lang="ts">
-import BaseField from './BaseField.vue';
-import { computed } from 'vue';
-import type { Field } from '../../types/form-builder';
-import { Textarea } from '../ui/textarea';
+import { computed } from 'vue'
+import BaseField from './BaseField.vue'
+import { Textarea } from '../ui/textarea'
+import type { Field } from '../../types/form-builder'
 
 interface Props extends Field {
     name: string
+    modelValue?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-    label: undefined,
-    placeholder: '',
-    modelValue: '',
-    error: undefined,
-    disabled: false,
-    readonly: false,
-})
-
+const props = defineProps<Props>()
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 
-const model = computed<string>({
-    get: () => (props.modelValue as any) ?? '',
-    set: (v) => emit('update:modelValue', v),
+const model = computed({
+    get: () => props.modelValue ?? '',
+    set: v => emit('update:modelValue', v),
 })
 </script>
 
 <template>
     <BaseField :label="label" :name="name" :error="error" :help="help">
         <Textarea
-            :id="name"
-            :name="name"
+            v-model="model"
+            :placeholder="placeholder"
             :disabled="disabled"
             :readonly="readonly"
-            :placeholder="placeholder"
-            v-model="model"
-            class="flex-1 dark:text-neutral-100"
-            rows="4"
+            :class="className"
         />
     </BaseField>
 </template>

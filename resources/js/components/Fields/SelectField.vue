@@ -90,24 +90,27 @@ const selectedOptionLabel = computed(() => {
 const internalKey = ref<string>('');
 const selectedLocal = ref<Array<string | number>>([]);
 
-watch(() => props.modelValue, (v) => {
-    if (! Array.isArray(v)) {
-        selectedLocal.value = [];
-        internalKey.value = v == null ? '' : String(v);
+watch(
+    () => props.modelValue,
+    (v) => {
+        const newVal = Array.isArray(v)
+            ? v.map(item => typeof item === 'object' ? getProp(item, optionValue.value) : item)
+            : []
 
-        return;
-    }
-
-    selectedLocal.value = v.map(item => {
-        if (typeof item === 'object' && item !== null) {
-            return getProp(item, optionValue.value);
+        if (JSON.stringify(newVal) !== JSON.stringify(selectedLocal.value)) {
+            selectedLocal.value = newVal
         }
 
-        return item;
-    });
-}, { immediate: true });
+        internalKey.value = !Array.isArray(v) && v != null ? String(v) : ''
+    },
+    { immediate: true }
+)
 
-watch(selectedLocal, v => emit('update:modelValue', v as any));
+watch(selectedLocal, (v, old) => {
+    if (JSON.stringify(v) !== JSON.stringify(old)) {
+        emit('update:modelValue', v as any)
+    }
+})
 
 function onUpdateInternal(value: unknown) {
     const key = value == null ? '' : String(value);

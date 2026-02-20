@@ -8,6 +8,12 @@ You can install the package via composer:
 composer require tranquil-tools/laravel-vue-form-builder
 ```
 
+Install the Quill wysiwyg editor dependencies:
+```cli
+npm install vue-quilly quill@2.0.3 quill-image-resize-module
+npm run build
+```
+
 You can publish the config file with:
 
 ```bash
@@ -34,18 +40,6 @@ export default defineConfig({
         },
     },
 });
-```
-
-## Wysiwyg editor
-In order to use the Quill wysiwyg editor you need to install Quill using NPM:
-```cli
-npm install vue-quilly quill@2.0.3 quill-image-resize-module
-npm run build
-```
-After this you can use the Wysiwyg-field in your form fields configuration:
-```php
-            \TranquilTools\FormBuilder\Fields\Wysiwyg::make('content')
-                ->label(__('Content')),
 ```
 
 ## Basic usage
@@ -90,6 +84,7 @@ use TranquilTools\FormBuilder\Fields\Number;
 use TranquilTools\FormBuilder\Fields\Select;
 use TranquilTools\FormBuilder\Fields\Submit;
 use TranquilTools\FormBuilder\Fields\Text;
+use TranquilTools\FormBuilder\Fields\Wysiwyg;
 use TranquilTools\FormBuilder\FormConfig;
 
 class ExampleForm extends AbstractForm
@@ -127,6 +122,9 @@ class ExampleForm extends AbstractForm
                     'string',
                     'max:255',
                 ]),
+                
+            Wysiwyg::make('content')
+                ->label(__('Content')),
 
             Select::make('template_id')
                 ->label(__('Template'))

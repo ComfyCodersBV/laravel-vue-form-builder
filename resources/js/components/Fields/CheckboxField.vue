@@ -1,47 +1,58 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
-import type { Field } from '../../types/form-builder'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import { computed } from 'vue'
-import { toBoolean } from '../../lib/utils'
 
-type Props = Omit<Field, 'modelValue'> & {
-  modelValue?: boolean
-  value?: string | number | boolean
-  falseValue?: string | number | boolean
-}
+const props = defineProps<{
+    modelValue?: any
+    value?: string | number | boolean
+    falseValue?: string | number | boolean
+    name: string
+    label?: string
+    error?: string
+    help?: string
+    disabled?: boolean
+    readonly?: boolean
+}>()
 
-const props = withDefaults(defineProps<Props>(), {
-  disabled: false,
-  readonly: false,
-})
+const emit = defineEmits<{ 'update:modelValue': [any] }>()
 
-const emit = defineEmits<{ 'update:modelValue': [boolean] }>()
+const isChecked = computed({
+    get: () => {
+        const value = props.modelValue
+        if (value === undefined || value === null) {
+            return false
+        }
 
-const model = computed<boolean>({
-  get: () => {
-    const mv = props.modelValue as any
-    const has = !(mv === undefined || mv === null || (typeof mv === 'string' && mv.length === 0))
-    if (has) return !!mv
-    return toBoolean((props as any).default)
-  },
-  set: (value) => emit('update:modelValue', !!value),
+        if (typeof value === 'boolean') {
+            return value
+        }
+
+        return String(value) === String(props.value ?? '1')
+    },
+    set: (checked: boolean) => {
+        if (checked) {
+            emit('update:modelValue', props.value ?? '1')
+        } else {
+            emit('update:modelValue', props.falseValue ?? '0')
+        }
+    }
 })
 </script>
 
 <template>
-  <BaseField :label="label" :name="name" :error="error" :help="help">
-    <div class="flex items-center gap-2">
-      <input type="hidden" :name="name" :value="String(falseValue)" />
-      <Checkbox
-        :id="`${name}-cb`"
-        :name="name"
-        :value="String(value)"
-        :disabled="disabled"
-        :default-value="model"
-      />
-      <Label v-if="label" :for="`${name}-cb`">{{ label }}</Label>
-    </div>
-  </BaseField>
+    <BaseField :label="label" :name="name" :error="error" :help="help">
+        <div class="flex items-center gap-2">
+            <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
+            <Checkbox
+                :id="`${name}-cb`"
+                :name="name"
+                :value="String(value ?? '1')"
+                v-model="isChecked"
+                :disabled="disabled"
+            />
+            <Label v-if="label" :for="`${name}-cb`">{{ label }}</Label>
+        </div>
+    </BaseField>
 </template>
