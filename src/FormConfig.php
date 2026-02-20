@@ -133,10 +133,15 @@ class FormConfig implements JsonSerializable
         $schemas = array_map(fn($field) => $field->toSchema(), $this->getFields());
         $schemas = Radio::normalize($schemas);
 
+        $defaults = $this->getData();
+        if ($defaults === []) {
+            $defaults = (object) [];
+        }
+
         return [
             'id' => $this->getId(),
             'action' => $this->getAction(),
-            'defaults' => $this->getData(),
+            'defaults' => $defaults,
             'fields' => $schemas,
             'formClass' => $this->getClass(),
             'method' => $this->getMethod(),

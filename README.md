@@ -10,7 +10,7 @@ composer require tranquil-tools/laravel-vue-form-builder
 
 Install the Quill wysiwyg editor dependencies:
 ```cli
-npm install vue-quilly quill@2.0.3 quill-image-resize-module
+npm install vue-quilly quill quill-image-resize-module
 npm run build
 ```
 
