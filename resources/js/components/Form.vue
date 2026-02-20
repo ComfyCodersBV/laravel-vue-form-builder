@@ -31,8 +31,6 @@ const submitForm = () => {
 </script>
 
 <template>
-    <pre class="text-xs bg-gray-100 p-2 rounded">{{ form }}</pre>
-
     <form
         :id="schema.id"
         :class="schema.formClass || ''"

@@ -5,6 +5,10 @@ import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import type { Field } from '../../../types/form-builder'
 
+if (typeof window !== 'undefined') {
+    (window as any).Quill = Quill
+}
+
 const editor = ref()
 const quill = ref<Quill>()
 
@@ -16,12 +20,23 @@ const props = withDefaults(defineProps<{ modelValue: string } & Field>(), {
 
 const options = ref(props.options)
 
-onMounted(() => {
+onMounted(async () => {
+    if ((window as any).Quill?.imports?.parchment) {
+        (window as any).Quill.imports.parchment.Attributor.Style = (window as any).Quill.imports.parchment.StyleAttributor
+    }
+
+    try {
+        await import('quill-image-resize-module')
+        console.log('quill-image-resize-module loaded successfully')
+    } catch (e) {
+        console.warn('quill-image-resize-module could not be loaded:', e)
+    }
+
     if (!editor.value) {
         return
     }
 
-    quill.value = editor.value.initialize(Quill)
+    quill.value = editor.value.initialize((window as any).Quill)
     quill.value.root.innerHTML = props.modelValue || ''
 
     quill.value.on('text-change', () => {

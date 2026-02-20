@@ -26,7 +26,7 @@ class Toggle extends BaseField
     public function on(bool $on = true): static
     {
         if ($on) {
-            $this->default(true);
+            $this->default('1');
         }
 
         return $this;
