@@ -10,9 +10,22 @@ const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
 const raw = (schema as any).defaults ?? {}
 const formData: Record<string, any> = Array.isArray(raw) ? {} : { ...raw }
 
-schema.fields.forEach(field => {
-    if (field.name && !(field.name in formData)) {
-        formData[field.name] = ''
+schema.fields.forEach((field: any) => {
+    if (!field?.name) {
+        return
+    }
+
+    const hasExplicit = Object.prototype.hasOwnProperty.call(formData, field.name)
+    const fieldHasDefault = typeof field.default !== 'undefined' && field.default !== null && field.default !== ''
+
+    if (!hasExplicit) {
+        if (fieldHasDefault) {
+            formData[field.name] = field.default
+        } else if (field.multiple === true) {
+            formData[field.name] = []
+        } else {
+            formData[field.name] = ''
+        }
     }
 })
 

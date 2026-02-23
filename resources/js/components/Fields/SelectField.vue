@@ -106,6 +106,23 @@ watch(
     { immediate: true }
 )
 
+watch(optionsList, (opts) => {
+    const allowed = new Set(opts.map(o => String(o.value)))
+
+    if (props.multiple) {
+        const filtered = selectedLocal.value.filter(v => allowed.has(String(v)))
+        if (JSON.stringify(filtered) !== JSON.stringify(selectedLocal.value)) {
+            selectedLocal.value = filtered
+            emit('update:modelValue', filtered as any)
+        }
+    } else {
+        if (internalKey.value && !allowed.has(String(internalKey.value))) {
+            internalKey.value = ''
+            emit('update:modelValue', '' as any)
+        }
+    }
+})
+
 watch(selectedLocal, (v, old) => {
     if (JSON.stringify(v) !== JSON.stringify(old)) {
         emit('update:modelValue', v as any)
