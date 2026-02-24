@@ -17,7 +17,8 @@
     import ToggleField from './Fields/ToggleField.vue'
     import FileField from './Fields/FileField.vue';
     import KeyValueField from './Fields/KeyValueField.vue'
-    import Wysiwyg from "./Fields/Wysiwyg.vue";
+    import Wysiwyg from './Fields/Wysiwyg.vue';
+    import RecaptchaField from './Fields/RecaptchaField.vue'
 
     const { fields, form: propForm } = defineProps<{ fields: Field[], form?: any }>()
 
@@ -37,6 +38,7 @@
         number: NumberField,
         password: TextField,
         radio: RadioGroupField,
+        recaptcha: RecaptchaField,
         select: SelectField,
         submit: SubmitButton,
         text: TextField,

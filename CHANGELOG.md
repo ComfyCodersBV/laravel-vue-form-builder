@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.4 - 2026-02-24
+* Implement Recaptcha-field
+
 ## 1.0.3 - 2026-02-23
 * Fix for setting a ->default(...) value in (multi)selects
 

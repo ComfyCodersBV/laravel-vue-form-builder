@@ -52,4 +52,42 @@ return [
             ],
         ],
     ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | (Optional) reCAPTCHA Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure reCAPTCHA v3 settings
+    |
+    */
+
+    'recaptcha' => [
+        /*
+         * The reCAPTCHA site key (public key)
+         */
+        'site_key' => env('RECAPTCHA_SITE_KEY', ''),
+
+        /*
+         * The reCAPTCHA secret key (private key)
+         */
+        'secret_key' => env('RECAPTCHA_SECRET_KEY', ''),
+
+        /*
+         * Default action name for reCAPTCHA verification
+         */
+        'default_action' => 'submit',
+
+        /*
+         * Default minimum score threshold (0.0 to 1.0)
+         * 1.0 is very likely a good interaction, 0.0 is very likely a bot
+         */
+        'default_score' => 0.5,
+
+        /*
+         * Enable or disable reCAPTCHA verification
+         */
+        'enabled' => env('RECAPTCHA_ENABLED', true),
+    ],
 ];

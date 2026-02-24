@@ -7,6 +7,8 @@ namespace TranquilTools\FormBuilder\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static \Illuminate\Support\HtmlString recaptchaJs()
+ *
  * @see \TranquilTools\FormBuilder\FormBuilder
  */
 class FormBuilder extends Facade
