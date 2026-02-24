@@ -21,7 +21,7 @@ class RecaptchaRule implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (config('vue-form-builder.recaptcha.enabled') === false) {
+        if (! config('vue-form-builder.recaptcha.enabled', true)) {
             return;
         }
 

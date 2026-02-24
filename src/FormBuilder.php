@@ -10,7 +10,10 @@ class FormBuilder
 {
     public function recaptchaJs(): HtmlString
     {
-        if (! config('vue-form-builder.recaptcha.enabled') || empty(config('vue-form-builder.recaptcha.site_key'))) {
+        if (
+            ! config('vue-form-builder.recaptcha.enabled', true)
+            || empty(config('vue-form-builder.recaptcha.site_key'))
+        ) {
             return new HtmlString('');
         }
 
