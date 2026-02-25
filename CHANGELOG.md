@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.5 - 2026-02-25
+* Improve Quill wysiwyg's loading of initial HTML & reactiveness
+
 ## 1.0.4 - 2026-02-24
 * Implement Recaptcha-field
 
