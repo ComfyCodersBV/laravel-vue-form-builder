@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.8 - 2026-02-25
+* Quill fix: remove &nbsp; replacement from text-change to prevent infinite loop
+
 ## 1.0.7 - 2026-02-25
 * Quill fix: replace &nbsp; entities with regular spaces in all HTML output
 

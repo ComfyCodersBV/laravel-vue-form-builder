@@ -68,11 +68,9 @@ onMounted(async () => {
 
     quill.value.on('text-change', (delta, oldDelta, source) => {
         if (source === 'user' && !isUpdating.value && !isSourceMode.value) {
-            let html = typeof quill.value.getSemanticHTML === 'function'
+            const html = typeof quill.value.getSemanticHTML === 'function'
                 ? quill.value.getSemanticHTML()
                 : quill.value.root.innerHTML
-
-            html = html.replace(/&nbsp;/g, ' ')
             emit('update:modelValue', html)
         }
     })
