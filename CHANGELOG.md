@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.7 - 2026-02-25
+* Quill fix: replace &nbsp; entities with regular spaces in all HTML output
+
 ## 1.0.6 - 2026-02-25
 * Force Quill to preserve HTML structure and prevent extra line breaks
 * Implement configurable HTML source editor toggle button for the Quill wysiwyg

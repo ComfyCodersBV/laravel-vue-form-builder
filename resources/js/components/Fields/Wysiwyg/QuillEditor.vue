@@ -68,9 +68,11 @@ onMounted(async () => {
 
     quill.value.on('text-change', (delta, oldDelta, source) => {
         if (source === 'user' && !isUpdating.value && !isSourceMode.value) {
-            const html = typeof quill.value.getSemanticHTML === 'function'
+            let html = typeof quill.value.getSemanticHTML === 'function'
                 ? quill.value.getSemanticHTML()
                 : quill.value.root.innerHTML
+
+            html = html.replace(/&nbsp;/g, ' ')
             emit('update:modelValue', html)
         }
     })
@@ -141,7 +143,7 @@ function toggleSourceMode() {
     } else {
         const textarea = container.querySelector('.ql-source-editor') as HTMLTextAreaElement
         if (textarea) {
-            const html = textarea.value
+            let html = textarea.value
             const savedScrollTop = parseInt(textarea.dataset.scrollTop || '0')
 
             quill.value.setText('', 'silent')
@@ -156,9 +158,11 @@ function toggleSourceMode() {
                 }
             }, 0)
 
-            const outputHtml = typeof quill.value.getSemanticHTML === 'function'
+            let outputHtml = typeof quill.value.getSemanticHTML === 'function'
                 ? quill.value.getSemanticHTML()
                 : quill.value.root.innerHTML
+
+            outputHtml = outputHtml.replace(/&nbsp;/g, ' ')
             emit('update:modelValue', outputHtml)
         }
     }
