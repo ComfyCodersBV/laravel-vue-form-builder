@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.6 - 2026-02-25
+* Force Quill to preserve HTML structure and prevent extra line breaks
+* Implement configurable HTML source editor toggle button for the Quill wysiwyg
+
 ## 1.0.5 - 2026-02-25
 * Improve Quill wysiwyg's loading of initial HTML & reactiveness
 
