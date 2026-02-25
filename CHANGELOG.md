@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.9 - 2026-02-25
+* Quill fix: prevent duplicating the content after toggling the source code editor
+
 ## 1.0.8 - 2026-02-25
 * Quill fix: remove &nbsp; replacement from text-change to prevent infinite loop
 

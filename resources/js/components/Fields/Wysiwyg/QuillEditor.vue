@@ -156,11 +156,9 @@ function toggleSourceMode() {
                 }
             }, 0)
 
-            let outputHtml = typeof quill.value.getSemanticHTML === 'function'
+            const outputHtml = typeof quill.value.getSemanticHTML === 'function'
                 ? quill.value.getSemanticHTML()
                 : quill.value.root.innerHTML
-
-            outputHtml = outputHtml.replace(/&nbsp;/g, ' ')
             emit('update:modelValue', outputHtml)
         }
     }
