@@ -12,6 +12,7 @@ if (typeof window !== 'undefined') {
 const editor = shallowRef<InstanceType<typeof QuillyEditor>>()
 const quill = shallowRef<Quill | null>(null)
 const isUpdating = shallowRef(false)
+const isSourceMode = shallowRef(false)
 
 const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
 
@@ -66,14 +67,102 @@ onMounted(async () => {
     quill.value.setSelection(0, 0, 'silent')
 
     quill.value.on('text-change', (delta, oldDelta, source) => {
-        if (source === 'user' && !isUpdating.value) {
+        if (source === 'user' && !isUpdating.value && !isSourceMode.value) {
             const html = typeof quill.value.getSemanticHTML === 'function'
                 ? quill.value.getSemanticHTML()
                 : quill.value.root.innerHTML
             emit('update:modelValue', html)
         }
     })
+
+    if (props.options?.showSourceButton !== false) {
+        addSourceButton()
+    }
 })
+
+function addSourceButton() {
+    if (!quill.value) {
+        return
+    }
+
+    const toolbar = quill.value.getModule('toolbar')
+    if (!toolbar || !toolbar.container) {
+        return
+    }
+
+    const btn = document.createElement('button')
+    btn.innerHTML = '<svg viewBox="0 0 18 18"><polyline class="ql-stroke" points="5 7 3 9 5 11"></polyline><polyline class="ql-stroke" points="13 7 15 9 13 11"></polyline><line class="ql-stroke" x1="10" x2="8" y1="5" y2="13"></line></svg>'
+    btn.title = 'Edit HTML Source'
+    btn.className = 'ql-source-btn'
+    btn.onclick = (e) => {
+        e.preventDefault()
+        toggleSourceMode()
+    }
+
+    toolbar.container.appendChild(btn)
+}
+
+function toggleSourceMode() {
+    if (!quill.value) return
+
+    isSourceMode.value = !isSourceMode.value
+
+    const container = quill.value.root.parentElement
+    if (!container) return
+
+    if (isSourceMode.value) {
+        const scrollTop = quill.value.root.scrollTop
+
+        let html = typeof quill.value.getSemanticHTML === 'function'
+            ? quill.value.getSemanticHTML()
+            : quill.value.root.innerHTML
+
+        html = html.replace(/&nbsp;/g, ' ')
+
+        const editorHeight = quill.value.root.offsetHeight
+
+        const textarea = document.createElement('textarea')
+        textarea.value = html
+        textarea.className = 'ql-source-editor'
+        textarea.style.cssText = `width: 100%; height: ${editorHeight}px; font-family: monospace; font-size: 13px; border: none; padding: 12px; box-sizing: border-box; resize: none; overflow-y: auto;`
+
+        textarea.dataset.scrollTop = String(scrollTop)
+
+        textarea.addEventListener('input', () => {
+            emit('update:modelValue', textarea.value)
+        })
+
+        quill.value.root.style.display = 'none'
+        container.appendChild(textarea)
+
+        setTimeout(() => {
+            textarea.scrollTop = scrollTop
+        }, 0)
+    } else {
+        const textarea = container.querySelector('.ql-source-editor') as HTMLTextAreaElement
+        if (textarea) {
+            const html = textarea.value
+            const savedScrollTop = parseInt(textarea.dataset.scrollTop || '0')
+
+            quill.value.setText('', 'silent')
+            quill.value.clipboard.dangerouslyPasteHTML(0, html, 'silent')
+
+            textarea.remove()
+            quill.value.root.style.display = ''
+
+            setTimeout(() => {
+                if (quill.value) {
+                    quill.value.root.scrollTop = savedScrollTop
+                }
+            }, 0)
+
+            const outputHtml = typeof quill.value.getSemanticHTML === 'function'
+                ? quill.value.getSemanticHTML()
+                : quill.value.root.innerHTML
+            emit('update:modelValue', outputHtml)
+        }
+    }
+}
 
 watch(
     () => props.modelValue,
@@ -120,6 +209,14 @@ watch(
 <style>
 .quill-wrapper .ql-toolbar {
     border-radius: 0.5rem 0.5rem 0 0;
+    position: relative;
+}
+
+.quill-wrapper .ql-toolbar .ql-source-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .quill-wrapper .ql-container {

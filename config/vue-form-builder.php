@@ -32,17 +32,7 @@ return [
             'quill' => [
                 'options' => [
                     'theme' => 'snow',
-                    'formats' => [
-                        'bold', 'italic', 'underline', 'strike',
-                        'blockquote', 'code-block',
-                        'header',
-                        'list', 'indent',
-                        'link', 'image', 'video',
-                        'color', 'background',
-                        'font', 'size',
-                        'align', 'direction',
-                        'script',
-                    ],
+                    'showSourceButton' => true,
                     'modules' => [
                         'toolbar' => [
                             [['font' => []], ['size' => []]],
