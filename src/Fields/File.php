@@ -14,6 +14,8 @@ class File extends BaseField
 
     public function accept(array|string ...$mimetypes): static
     {
+        $mimetypes = array_merge(...array_map(fn ($m) => (array) $m, $mimetypes));
+
         $this->attributes['accept'] = $mimetypes;
 
         $this->rules[] = 'mimetypes:' . implode(',', $mimetypes);

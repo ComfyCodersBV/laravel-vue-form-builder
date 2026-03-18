@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.10 - 2026-03-18
+* Fix for File::accept() to support both array and variadic string arguments
+
 ## 1.0.9 - 2026-02-25
 * Quill fix: prevent duplicating the content after toggling the source code editor
 
