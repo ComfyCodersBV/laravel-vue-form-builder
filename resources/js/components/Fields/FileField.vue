@@ -32,12 +32,16 @@ const props = withDefaults(defineProps<FileFieldProps>(), {
     accept: undefined,
 })
 
-const emit = defineEmits<{ 'update:modelValue': [string | number] }>()
+const emit = defineEmits<{ 'update:modelValue': [File | File[] | string] }>()
 
-const model = computed<string | number>({
-    get: () => (props.modelValue as any) ?? '',
-    set: (v) => emit('update:modelValue', v as any),
-})
+function handleChange(event: Event) {
+    const input = event.target as HTMLInputElement
+    if (!input.files || input.files.length === 0) {
+        emit('update:modelValue', '')
+        return
+    }
+    emit('update:modelValue', props.multiple ? Array.from(input.files) : input.files[0])
+}
 
 const hasPrepend = computed(() => !!props.prepend)
 const hasAppend = computed(() => !!props.append)
@@ -79,7 +83,7 @@ function getName() {
                 :type="type"
                 :accept="accept"
                 :multiple="multiple"
-                v-model="model"
+                @change="handleChange"
                 :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass())"
             />
 

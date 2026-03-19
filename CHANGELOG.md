@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.11 - 2026-03-19
+* Fix FileField to emit File objects instead of string values
+
 ## 1.0.10 - 2026-03-18
 * Fix for File::accept() to support both array and variadic string arguments
 
