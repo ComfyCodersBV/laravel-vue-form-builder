@@ -10,6 +10,8 @@ interface DateFieldProps extends Field {
   minDate?: string
   maxDate?: string
   weekStartsOn?: number // 0=Sun, 1=Mon
+  disabled?: boolean | string
+  readonly?: boolean | string
 }
 
 const props = withDefaults(defineProps<DateFieldProps>(), {
@@ -18,6 +20,8 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   minDate: undefined,
   maxDate: undefined,
   weekStartsOn: 0,
+  disabled: false,
+  readonly: false,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -44,6 +48,8 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
       :week-starts-on="props.weekStartsOn"
       :format="(props as any).format || 'locale'"
       :locale="(props as any).locale"
+      :disabled="!!props.disabled"
+      :readonly="!!props.readonly"
     />
 
     <template v-if="props.name && !props.range">

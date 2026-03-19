@@ -14,6 +14,8 @@ interface Props {
   maxDate?: string
   weekStartsOn?: number // 0=Sun, 1=Mon
   locale?: string
+  disabled?: boolean
+  readonly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,6 +28,8 @@ const props = withDefaults(defineProps<Props>(), {
   maxDate: undefined,
   weekStartsOn: 0,
   locale: undefined,
+  disabled: false,
+  readonly: false,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -65,6 +69,13 @@ function formatDisplay(d: Date | null, fmt: string, withTime: boolean, locale?: 
 }
 function parseDate(s: string | null, withTime: boolean): Date | null {
   if (!s) return null
+
+  // Handle ISO 8601 format (e.g. "2026-03-19T13:56:08.000000Z") by parsing natively
+  if (s.includes('T')) {
+    const dt = new Date(s)
+    return Number.isNaN(dt.getTime()) ? null : dt
+  }
+
   const [datePart, timePart] = s.split(' ')
   const [y, m, d] = datePart.split('-').map(Number)
   if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return null
@@ -226,7 +237,7 @@ const minutes = computed({
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button variant="outline" type="button" class="w-full justify-start text-left font-normal">
+      <Button variant="outline" type="button" class="w-full justify-start text-left font-normal" :disabled="props.disabled || props.readonly">
         <CalendarIcon class="mr-2 h-4 w-4" />
         <template v-if="!props.range">
           <span v-if="selected">{{ formatDisplay(selected, props.format, props.enableTime, props.locale) }}</span>

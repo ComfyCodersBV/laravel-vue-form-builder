@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.12 - 2026-03-19
+* Fix DateField/DatePicker to support disabled and readonly props
+* Fix DatePicker to correctly parse ISO 8601 date strings (e.g. from Laravel's Carbon serialization)
+
 ## 1.0.11 - 2026-03-19
 * Fix FileField to emit File objects instead of string values
 
