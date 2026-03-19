@@ -17,6 +17,7 @@ interface SelectProps extends Field {
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
+    className: undefined,
     disabled: false,
     error: undefined,
     label: undefined,
@@ -138,7 +139,7 @@ function onUpdateInternal(value: unknown) {
 </script>
 
 <template>
-    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help">
+    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className">
         <template v-if="!props.multiple">
             <Select
                 v-model="internalKey"

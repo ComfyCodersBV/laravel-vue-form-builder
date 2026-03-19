@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.13 - 2026-03-19
+* Fix FormRenderer to render as a fragment (no wrapper div) so per-field className (e.g. col-span-N) participates in the parent form's grid layout
+* Fix SubmitButton stretching full-width in grid layouts
+* Fix SelectField and DateField to pass className through to BaseField wrapper
+
 ## 1.0.12 - 2026-03-19
 * Fix DateField/DatePicker to support disabled and readonly props
 * Fix DatePicker to correctly parse ISO 8601 date strings (e.g. from Laravel's Carbon serialization)

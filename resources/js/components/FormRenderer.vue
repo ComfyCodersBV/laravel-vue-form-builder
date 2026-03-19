@@ -53,18 +53,16 @@
     </script>
 
     <template>
-        <div class="space-y-4">
-            <template v-for="(field, i) in fields" :key="field.name ?? i">
-                <component
-                    v-if="componentFor(field)"
-                    :is="componentFor(field)"
-                    v-bind="field"
-                    v-model="form[field.name]"
-                    :error="form.errors[field.name]"
-                />
-                <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                    Unknown field type: <code class="font-mono">{{ field.type }}</code>
-                </div>
-            </template>
-        </div>
+        <template v-for="(field, i) in fields" :key="field.name ?? i">
+            <component
+                v-if="componentFor(field)"
+                :is="componentFor(field)"
+                v-bind="field"
+                v-model="form[field.name]"
+                :error="form.errors[field.name]"
+            />
+            <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                Unknown field type: <code class="font-mono">{{ field.type }}</code>
+            </div>
+        </template>
     </template>

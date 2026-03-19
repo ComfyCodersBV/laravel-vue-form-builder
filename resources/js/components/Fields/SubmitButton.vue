@@ -11,7 +11,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <Button type="submit" class="inline-flex items-center rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800">
+    <Button type="submit" class="inline-flex w-fit items-center rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800">
         {{ label }}
     </Button>
 </template>
