@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.14 - 2026-04-07
+* Update Reka UI dependecy to resolve Defu 6.1.4 vulnerability
+
 ## 1.0.13 - 2026-03-19
 * Fix FormRenderer to render as a fragment (no wrapper div) so per-field className (e.g. col-span-N) participates in the parent form's grid layout
 * Fix SubmitButton stretching full-width in grid layouts
