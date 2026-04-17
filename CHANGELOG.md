@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.15 - 2026-04-17
+* Add Laravel 13 support
+
 ## 1.0.14 - 2026-04-07
 * Update Reka UI dependecy to resolve Defu 6.1.4 vulnerability
 

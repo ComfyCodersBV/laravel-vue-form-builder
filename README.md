@@ -14,7 +14,7 @@ npm install vue-quilly quill quill-image-resize-module
 npm run build
 ```
 
-You can publish the config file with:
+Optional: you may publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="vue-form-builder-config"
