@@ -23,6 +23,13 @@ class Checkbox extends BaseField
         }
     }
 
+    public function checkboxLabel(string $label): static
+    {
+        $this->attributes['checkboxLabel'] = $label;
+
+        return $this;
+    }
+
     public function checked(bool $checked = true): static
     {
         if ($checked) {

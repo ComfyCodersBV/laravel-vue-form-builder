@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.16 - 2026-05-04
+* Add an optional `->checkboxLabel(...)` to CheckboxField for customizing the label text of the checkbox itself, separate from the field label
+
 ## 1.0.15 - 2026-04-17
 * Add Laravel 13 support
 

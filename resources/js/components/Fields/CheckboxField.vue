@@ -10,6 +10,7 @@ const props = defineProps<{
     falseValue?: string | number | boolean
     name: string
     label?: string
+    checkboxLabel?: string
     error?: string
     help?: string
     disabled?: boolean
@@ -52,7 +53,7 @@ const isChecked = computed({
                 v-model="isChecked"
                 :disabled="disabled"
             />
-            <Label v-if="label" :for="`${name}-cb`">{{ label }}</Label>
+            <Label v-if="checkboxLabel || label" :for="`${name}-cb`">{{ checkboxLabel ?? label }}</Label>
         </div>
     </BaseField>
 </template>
