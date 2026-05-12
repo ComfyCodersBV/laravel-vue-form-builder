@@ -15,6 +15,7 @@ abstract class BaseField implements JsonSerializable
     protected string $type;
     private ?string $name = null;
     protected ?string $label = null;
+    protected ?string $condition = null;
     protected array $rules = [];
     protected array $attributes = [];
     protected mixed $default = null;
@@ -45,6 +46,13 @@ abstract class BaseField implements JsonSerializable
         if ($disabled) {
             $this->attributes['disabled'] = 'disabled';
         }
+
+        return $this;
+    }
+
+    public function if(string $condition): static
+    {
+        $this->condition = $condition;
 
         return $this;
     }
@@ -127,6 +135,7 @@ abstract class BaseField implements JsonSerializable
     public function toSchema(): array
     {
         $schema = [
+            'condition' => $this->condition,
             'default' => $this->default,
             'label' => $this->label,
             'name' => $this->getName(),

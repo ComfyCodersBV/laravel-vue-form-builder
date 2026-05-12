@@ -50,19 +50,41 @@
     function componentFor(field: Field) {
         return field.type ? fieldComponents[field.type] : undefined
     }
+
+    function isVisible(field: Field): boolean {
+        if (! field.condition) {
+            return true
+        }
+
+        try {
+            const data: Record<string, any> = typeof (form as any).data === 'function'
+                ? (form as any).data()
+                : { ...form }
+
+            const keys = Object.keys(data)
+            const values = keys.map((k) => data[k])
+            const fn = new Function('form', ...keys, `return !!(${field.condition})`)
+
+            return fn(data, ...values)
+        } catch {
+            return true
+        }
+    }
     </script>
 
     <template>
         <template v-for="(field, i) in fields" :key="field.name ?? i">
-            <component
-                v-if="componentFor(field)"
-                :is="componentFor(field)"
-                v-bind="field"
-                v-model="form[field.name]"
-                :error="form.errors[field.name]"
-            />
-            <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                Unknown field type: <code class="font-mono">{{ field.type }}</code>
-            </div>
+            <template v-if="isVisible(field)">
+                <component
+                    v-if="componentFor(field)"
+                    :is="componentFor(field)"
+                    v-bind="field"
+                    v-model="form[field.name]"
+                    :error="form.errors[field.name]"
+                />
+                <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    Unknown field type: <code class="font-mono">{{ field.type }}</code>
+                </div>
+            </template>
         </template>
     </template>

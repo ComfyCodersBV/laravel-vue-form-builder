@@ -10,6 +10,7 @@ export interface Field {
     name?: string
     type?: string
     label?: string
+    condition?: string
     help?: string
     placeholder?: string
     readonly?: boolean

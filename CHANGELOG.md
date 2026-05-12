@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.17 - 2026-05-12
+* Add `->if('condition')` support on all fields for conditional visibility; supports both `form.fieldName` and bare `fieldName` reference syntax
+
 ## 1.0.16 - 2026-05-04
 * Add an optional `->checkboxLabel(...)` to CheckboxField for customizing the label text of the checkbox itself, separate from the field label
 
