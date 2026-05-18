@@ -1,6 +1,24 @@
-#  A VueJS/Inertia FormBuilder package for Laravel 
+# A VueJS/Inertia FormBuilder package for Laravel 
 
-## Installation
+Define Laravel-VueJS forms configurations in PHP.
+
+## Documentation
+
+Full documentation is available at **[docs.comfycoders.nl](https://docs.comfycoders.nl)**.
+
+Topics covered:
+- [Installation](https://docs.comfycoders.nl/laravel-vue-form-builder/main/installation)
+- [Creating a Form](https://docs.comfycoders.nl/laravel-vue-form-builder/main/creating-forms)
+- [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/main/fields/common-options)
+- [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/main/vue-usage)
+- [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/main/validation)
+- [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/main/configuration)
+
+---
+
+## Quick start
+
+### Installation
 
 You can install the package via composer:
 
