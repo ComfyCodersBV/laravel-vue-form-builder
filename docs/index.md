@@ -81,6 +81,6 @@ defineProps<{ form: FormSchema }>();
 
 ## Next steps
 
-- [Installation](installation) — set up the package
-- [Creating a Form](creating-forms) — define your first form class
-- [Field Types](fields/common-options) — browse all available fields
+- [Installation](installation.md) — set up the package
+- [Creating a Form](creating-forms.md) — define your first form class
+- [Field Types](fields/common-options.md) — browse all available fields
