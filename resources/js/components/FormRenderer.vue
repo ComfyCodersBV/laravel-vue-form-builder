@@ -20,10 +20,11 @@
     import Wysiwyg from './Fields/Wysiwyg.vue';
     import RecaptchaField from './Fields/RecaptchaField.vue'
 
-    const { fields, form: propForm, onFieldChange } = defineProps<{
+    const { fields, form: propForm, onFieldChange, fieldOverrides } = defineProps<{
         fields: Field[]
         form?: any
         onFieldChange?: (field: string, value: any) => void
+        fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
     }>()
 
     const form = propForm ?? useFormContext()
@@ -82,7 +83,7 @@
                 <component
                     v-if="componentFor(field)"
                     :is="componentFor(field)"
-                    v-bind="field"
+                    v-bind="{ ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }"
                     v-model="form[field.name]"
                     :error="form.errors[field.name]"
                     @update:modelValue="onFieldChange?.(field.name, $event)"

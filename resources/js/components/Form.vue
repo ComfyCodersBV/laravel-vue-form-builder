@@ -3,9 +3,10 @@ import { useForm } from '@inertiajs/vue3'
 import FormRenderer from './FormRenderer.vue'
 import { FormSchema } from '../types/form-builder'
 
-const { schema, onFieldChange } = defineProps<{
+const { schema, onFieldChange, fieldOverrides } = defineProps<{
     schema: FormSchema
     onFieldChange?: (field: string, value: any, form: any) => void
+    fieldOverrides?: Record<string, Partial<Record<string, any>>>
 }>()
 
 const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
@@ -60,6 +61,7 @@ const submitForm = () => {
             :fields="schema.fields"
             :form="form"
             :on-field-change="onFieldChange ? (field, value) => onFieldChange(field, value, form) : undefined"
+            :field-overrides="fieldOverrides"
         />
     </form>
 </template>
