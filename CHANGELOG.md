@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.19 - 2026-05-18
+* Add `onFieldChange` prop to `Form` and `FormRenderer` — callback `(field, value, form) => void` fires on any field change, enabling cross-field reactivity from the parent page
+
 ## 1.0.18 - 2026-05-18
 * Add `->readonlyValueKeys(array)` to `KeyValue` field — marks specific keys' value inputs as readonly while keeping other rows editable
 

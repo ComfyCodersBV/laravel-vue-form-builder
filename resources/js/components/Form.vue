@@ -3,7 +3,10 @@ import { useForm } from '@inertiajs/vue3'
 import FormRenderer from './FormRenderer.vue'
 import { FormSchema } from '../types/form-builder'
 
-const { schema } = defineProps<{ schema: FormSchema }>()
+const { schema, onFieldChange } = defineProps<{
+    schema: FormSchema
+    onFieldChange?: (field: string, value: any, form: any) => void
+}>()
 
 const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
 
@@ -53,6 +56,10 @@ const submitForm = () => {
         :class="schema.formClass || ''"
         @submit.prevent="submitForm"
     >
-        <FormRenderer :fields="schema.fields" :form="form" />
+        <FormRenderer
+            :fields="schema.fields"
+            :form="form"
+            :on-field-change="onFieldChange ? (field, value) => onFieldChange(field, value, form) : undefined"
+        />
     </form>
 </template>

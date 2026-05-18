@@ -20,7 +20,11 @@
     import Wysiwyg from './Fields/Wysiwyg.vue';
     import RecaptchaField from './Fields/RecaptchaField.vue'
 
-    const { fields, form: propForm } = defineProps<{ fields: Field[], form?: any }>()
+    const { fields, form: propForm, onFieldChange } = defineProps<{
+        fields: Field[]
+        form?: any
+        onFieldChange?: (field: string, value: any) => void
+    }>()
 
     const form = propForm ?? useFormContext()
 
@@ -81,6 +85,7 @@
                     v-bind="field"
                     v-model="form[field.name]"
                     :error="form.errors[field.name]"
+                    @update:modelValue="onFieldChange?.(field.name, $event)"
                 />
                 <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                     Unknown field type: <code class="font-mono">{{ field.type }}</code>
