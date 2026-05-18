@@ -84,4 +84,11 @@ class KeyValue extends BaseField
 
         return $this;
     }
+
+    public function readonlyValueKeys(array $keys): static
+    {
+        $this->attributes['readonlyValueKeys'] = $keys;
+
+        return $this;
+    }
 }

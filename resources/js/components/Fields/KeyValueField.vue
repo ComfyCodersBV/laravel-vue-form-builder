@@ -18,6 +18,7 @@ interface KeyValueProps extends Field {
     addable?: boolean
     deletable?: boolean
     reorderable?: boolean
+    readonlyValueKeys?: string[]
 }
 
 const props = withDefaults(defineProps<KeyValueProps>(), {
@@ -37,6 +38,7 @@ const props = withDefaults(defineProps<KeyValueProps>(), {
     addable: true,
     deletable: true,
     reorderable: false,
+    readonlyValueKeys: () => [],
 })
 
 const emit = defineEmits<{ 'update:modelValue': [Array<{ key: string; value: string }>] }>()
@@ -155,8 +157,9 @@ function keyInputClass(k: string) {
                            :disabled="!editableKeys" :class="keyInputClass(row.key)"/>
                 </div>
                 <div class="col-span-5">
-                    <Input :placeholder="valuePlaceholder" v-model="row.value" :readonly="!editableValues"
-                           :disabled="!editableValues"/>
+                    <Input :placeholder="valuePlaceholder" v-model="row.value"
+                           :readonly="!editableValues || readonlyValueKeys.includes(row.key)"
+                           :disabled="!editableValues || readonlyValueKeys.includes(row.key)"/>
                 </div>
                 <div class="col-span-2 flex items-center gap-1 justify-end">
                     <Button v-if="reorderable" type="button" size="icon" variant="outline" @click="moveUp(i)">
