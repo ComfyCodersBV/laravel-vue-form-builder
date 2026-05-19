@@ -4,15 +4,15 @@ Define Laravel-VueJS forms configurations in PHP.
 
 ## Documentation
 
-Full documentation is available at **[docs.comfycoders.nl](https://docs.comfycoders.nl)**.
+Full documentation is available at **[docs.comfycoders.nl](https://docs.comfycoders.nl/laravel-vue-form-builder)**.
 
 Topics covered:
-- [Installation](https://docs.comfycoders.nl/laravel-vue-form-builder/main/installation)
-- [Creating a Form](https://docs.comfycoders.nl/laravel-vue-form-builder/main/creating-forms)
-- [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/main/fields/common-options)
-- [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/main/vue-usage)
-- [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/main/validation)
-- [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/main/configuration)
+- [Installation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/installation)
+- [Creating a Form](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/creating-forms)
+- [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options)
+- [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage)
+- [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/validation)
+- [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/configuration)
 
 ---
 
