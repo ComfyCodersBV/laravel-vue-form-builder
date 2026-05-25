@@ -7,4 +7,6 @@ namespace TranquilTools\FormBuilder\Fields;
 class Submit extends BaseField
 {
     protected string $type = 'submit';
+
+    protected ?string $label = 'Save';
 }

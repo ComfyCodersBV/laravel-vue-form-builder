@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.21 - 2026-05-26
+* Set default label `'Save'` on `Submit` field so it serializes a non-null value — prevents Vue's `withDefaults` from being bypassed by `null`
+
 ## 1.0.20 - 2026-05-18
 * Add `fieldOverrides` prop to `Form` and `FormRenderer` — reactive `Record<fieldName, Partial<Field>>` merged at render time, enabling dynamic field attribute changes (e.g. lock/unlock a field based on another field's value)
 
