@@ -3,8 +3,9 @@ import { useForm } from '@inertiajs/vue3'
 import FormRenderer from './FormRenderer.vue'
 import { FormSchema } from '../types/form-builder'
 
-const { schema, onFieldChange, fieldOverrides } = defineProps<{
+const { schema, options, onFieldChange, fieldOverrides } = defineProps<{
     schema: FormSchema
+    options?: Record<string, any>
     onFieldChange?: (field: string, value: any, form: any) => void
     fieldOverrides?: Record<string, Partial<Record<string, any>>>
 }>()
@@ -37,7 +38,7 @@ const form = useForm(formData)
 
 const submitForm = () => {
     const method = (schema.method ?? 'post').toLowerCase()
-    const opts = { onSuccess: () => emit('success'), onError: () => emit('error') }
+    const opts = { onSuccess: () => emit('success'), onError: () => emit('error'), ...(options ?? {}) }
 
     if (method === 'get') {
         return (form as any).get(schema.action, opts)
