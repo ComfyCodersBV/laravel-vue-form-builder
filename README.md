@@ -1,4 +1,4 @@
-# A VueJS/Inertia FormBuilder package for Laravel 
+# A VueJS/Inertia FormBuilder package for Laravel
 
 Define Laravel-VueJS forms configurations in PHP.
 
@@ -7,12 +7,25 @@ Define Laravel-VueJS forms configurations in PHP.
 Full documentation is available at **[docs.comfycoders.nl](https://docs.comfycoders.nl/laravel-vue-form-builder)**.
 
 Topics covered:
+
 - [Installation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/installation)
 - [Creating a Form](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/creating-forms)
 - [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options)
 - [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage)
 - [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/validation)
 - [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/configuration)
+
+## CrudBuilder
+
+Want a complete CRUD solution? Our **[CrudBuilder](https://docs.comfycoders.nl/laravel-vue-crud-builder)** builds on top
+of this FormBuilder **and** the TableBuilder to give you full create, read, update, and delete flows without repetitive
+boilerplate.
+
+- **Docs:** [docs.comfycoders.nl/laravel-vue-crud-builder](https://docs.comfycoders.nl/laravel-vue-crud-builder)
+- **GitHub:
+  ** [github.com/ComfyCodersBV/laravel-vue-crud-builder](https://github.com/ComfyCodersBV/laravel-vue-crud-builder)
+
+Installing the CrudBuilder pulls in this package automatically as a Composer dependency.
 
 ---
 
@@ -27,6 +40,7 @@ composer require tranquil-tools/laravel-vue-form-builder
 ```
 
 Install the Quill wysiwyg editor dependencies:
+
 ```cli
 npm install vue-quilly quill quill-image-resize-module
 npm run build
@@ -41,8 +55,9 @@ php artisan vendor:publish --tag="vue-form-builder-config"
 The content of the published config can be viewed [here](./config/vue-form-builder.php).
 
 Alter you vite.config.ts to add an `@form-builder` alias:
+
 ```ts
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import path from 'path';
 
 export default defineConfig({
@@ -179,19 +194,20 @@ class ExampleFormRequest extends FormRequest
 ```
 
 ```vue
-<script setup lang="ts">
-import Form from '@form-builder/components/Form.vue';
-import { FormSchema } from '@form-builder/types/form-builder';
 
-defineProps<{
-    form: FormSchema;
-}>();
+<script setup lang="ts">
+    import Form from '@form-builder/components/Form.vue';
+    import {FormSchema} from '@form-builder/types/form-builder';
+
+    defineProps<{
+        form: FormSchema;
+    }>();
 </script>
 
 <template>
     <div class="...">
         <div class="...">
-            <Form :schema="form" />
+            <Form :schema="form"/>
         </div>
     </div>
 </template>

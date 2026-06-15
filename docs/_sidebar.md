@@ -16,4 +16,4 @@
   - [Other Fields](fields/other.md)
 - [Configuration](configuration.md)
 - [Artisan Commands](artisan-commands.md)
-- [CRUD Builder](crud-builder.md)
+- [CrudBuilder](crud-builder.md)
