@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.23 - 2026-06-23
+* Fix `TextareaField` class passing to `BaseField` instead of `Textarea` component.
+
 ## 1.0.22 - 2026-06-04
 * Add `options` prop to `Form` — passed as Inertia visit options (e.g. `{ preserveScroll: true }`) and merged into the form submission call
 
