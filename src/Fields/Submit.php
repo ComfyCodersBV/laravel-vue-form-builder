@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace TranquilTools\FormBuilder\Fields;
 
-class Submit extends BaseField
+class Submit extends Button
 {
     protected string $type = 'submit';
 
-    protected ?string $label = 'Save';
+    public function toSchema(): array
+    {
+        $this->label ??= trans('vue-form-builder::buttons.save');
+
+        return parent::toSchema();
+    }
 }

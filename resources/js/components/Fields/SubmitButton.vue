@@ -1,17 +1,28 @@
 <script setup lang="ts">
-import { Button } from '../ui/button'
+import { computed } from 'vue';
+import ButtonField from './Button.vue';
+import { cn } from '../../lib/utils';
 
 interface Props {
     label?: string
+    cancelLabel?: string
+    confirmTitle?: string
+    confirmMessage?: string
+    className?: string
 }
 
-withDefaults(defineProps<Props>(), {
-    label: 'Save',
-})
+const props = defineProps<Props>();
+
+const mergedClassName = computed(() => cn('w-fit', props.className));
 </script>
 
 <template>
-    <Button type="submit" class="inline-flex w-fit items-center rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800">
-        {{ label }}
-    </Button>
+    <ButtonField
+        :label="label"
+        :cancel-label="cancelLabel"
+        :confirm-title="confirmTitle"
+        :confirm-message="confirmMessage"
+        :class-name="mergedClassName"
+        type="submit"
+    />
 </template>
