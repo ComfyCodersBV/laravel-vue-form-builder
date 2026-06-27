@@ -11,7 +11,8 @@ Submit::make()
     ->label('Save')
 ```
 
-The `name` argument to `make()` is optional for submit buttons. The default label is `Save` (translatable via `vue-form-builder::buttons.save`).
+The `name` argument to `make()` is optional for submit buttons. The default label is `Save` (translatable via
+`vue-form-builder::buttons.save`).
 
 ### Confirm before submit
 
@@ -75,7 +76,8 @@ Button::make()
 
 ## DeleteButton
 
-A delete button with built-in confirmation dialog. On confirmation, it sends a `DELETE` request to the given URL via Inertia. All labels have translatable defaults.
+A delete button with built-in confirmation dialog. On confirmation, it sends a `DELETE` request to the given URL via
+Inertia.
 
 ```php
 use TranquilTools\FormBuilder\Fields\DeleteButton;
@@ -102,23 +104,24 @@ DeleteButton::make()
 
 All button types (`Button`, `Submit`, `DeleteButton`) support these methods:
 
-| Method | Description |
-|---|---|
-| `->label(string)` | Button label text |
-| `->variant(string)` | Button style variant (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`) |
-| `->confirmTitle(string)` | Title shown in the confirmation dialog |
-| `->confirmMessage(string)` | Body text of the confirmation dialog |
-| `->cancelLabel(string)` | Label of the cancel button in the dialog |
-| `->deleteUrl(string)` | URL for a `DELETE` request (sent via Inertia on confirm) |
+| Method                     | Description                                                                              |
+|----------------------------|------------------------------------------------------------------------------------------|
+| `->label(string)`          | Button label text                                                                        |
+| `->variant(string)`        | Button style variant (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`) |
+| `->confirmTitle(string)`   | Title shown in the confirmation dialog                                                   |
+| `->confirmMessage(string)` | Body text of the confirmation dialog                                                     |
+| `->cancelLabel(string)`    | Label of the cancel button in the dialog                                                 |
+| `->deleteUrl(string)`      | URL for a `DELETE` request (sent via Inertia on confirm)                                 |
 
 ## Translations
 
-Default button labels are translatable. Publish the language files or add entries to your `lang/vendor/vue-form-builder/` directory:
+Default button labels are translatable. Publish the language files or add entries to your
+`lang/vendor/vue-form-builder/` directory:
 
-| Key | Default (en) |
-|---|---|
-| `vue-form-builder::buttons.save` | Save |
-| `vue-form-builder::buttons.delete` | Delete |
-| `vue-form-builder::buttons.cancel` | Cancel |
-| `vue-form-builder::buttons.confirm-title` | Are you sure? |
+| Key                                         | Default (en)                                                            |
+|---------------------------------------------|-------------------------------------------------------------------------|
+| `vue-form-builder::buttons.save`            | Save                                                                    |
+| `vue-form-builder::buttons.delete`          | Delete                                                                  |
+| `vue-form-builder::buttons.cancel`          | Cancel                                                                  |
+| `vue-form-builder::buttons.confirm-title`   | Are you sure?                                                           |
 | `vue-form-builder::buttons.confirm-message` | This action cannot be undone. This will permanently delete this record. |
