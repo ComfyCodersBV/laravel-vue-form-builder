@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.24 - 2026-06-27
+* Unify Button, Submit, and DeleteButton into shared base with variant support, confirm dialogs, and translatable labels (en/nl)
+
 ## 1.0.23 - 2026-06-23
 * Fix `TextareaField` class passing to `BaseField` instead of `Textarea` component.
 

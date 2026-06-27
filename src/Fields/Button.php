@@ -16,6 +16,8 @@ class Button extends BaseField
 
     protected ?string $deleteUrl = null;
 
+    protected ?string $variant = null;
+
     public function cancelLabel(string $label): static
     {
         $this->cancelLabel = $label;
@@ -44,15 +46,27 @@ class Button extends BaseField
         return $this;
     }
 
+    public function variant(string $variant): static
+    {
+        $this->variant = $variant;
+
+        return $this;
+    }
+
     public function toSchema(): array
     {
         $schema = parent::toSchema();
+
+        if (! is_null($this->confirmTitle) || ! is_null($this->confirmMessage)) {
+            $this->cancelLabel ??= trans('vue-form-builder::buttons.cancel');
+        }
 
         return array_merge($schema, array_filter([
             'cancelLabel' => $this->cancelLabel,
             'confirmTitle' => $this->confirmTitle,
             'confirmMessage' => $this->confirmMessage,
             'deleteUrl' => $this->deleteUrl,
+            'variant' => $this->variant,
         ]));
     }
 }

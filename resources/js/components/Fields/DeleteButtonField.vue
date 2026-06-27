@@ -10,14 +10,7 @@ interface Props {
     className?: string;
 }
 
-withDefaults(defineProps<Props>(), {
-    label: 'Delete',
-    cancelLabel: 'Cancel',
-    confirmTitle: 'Are you sure?',
-    confirmMessage: 'This action cannot be undone. This will permanently delete this record.',
-    deleteUrl: undefined,
-    className: undefined,
-});
+defineProps<Props>();
 </script>
 
 <template>

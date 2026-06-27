@@ -22,21 +22,28 @@ interface Props {
     confirmMessage?: string
     deleteUrl?: string
     variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+    type?: 'button' | 'submit'
 }
 
 const props = withDefaults(defineProps<Props>(), {
     className: undefined,
     label: '',
-    cancelLabel: 'Cancel',
+    cancelLabel: undefined,
     confirmTitle: undefined,
     confirmMessage: undefined,
     deleteUrl: undefined,
     variant: 'default',
+    type: 'button',
 })
+
+const emit = defineEmits<{
+    confirm: []
+}>()
 
 const hasConfirm = computed(() => !!props.confirmTitle || !!props.confirmMessage)
 
 const showDialog = ref(false)
+const hiddenSubmit = ref<HTMLButtonElement | null>(null)
 
 function handleConfirmAction() {
     if (props.deleteUrl) {
@@ -45,12 +52,25 @@ function handleConfirmAction() {
                 showDialog.value = false;
             },
         });
+
+        return;
     }
+
+    if (props.type === 'submit') {
+        hiddenSubmit.value?.click();
+        showDialog.value = false;
+
+        return;
+    }
+
+    emit('confirm');
+    showDialog.value = false;
 }
 </script>
 
 <template>
     <template v-if="hasConfirm">
+        <button v-if="type === 'submit'" ref="hiddenSubmit" type="submit" class="hidden" />
         <Dialog v-model:open="showDialog">
             <DialogTrigger as-child>
                 <Button
@@ -88,7 +108,7 @@ function handleConfirmAction() {
     <template v-else>
         <Button
             :variant="variant"
-            type="button"
+            :type="type"
             :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
         >
             {{ label }}
