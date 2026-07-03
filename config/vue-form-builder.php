@@ -55,6 +55,22 @@ return [
     ],
 
 
+    'key_value' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Masked value key pattern
+        |--------------------------------------------------------------------------
+        |
+        | Rows in a KeyValue field whose key matches this pattern (case-insensitive,
+        | no delimiters — used as both a PHP and a JS regex source) render their
+        | value input as masked (type="password") with a reveal toggle.
+        | Override per-field with ->maskedKeyPattern('...').
+        |
+        */
+        'masked_key_pattern' => 'password|secret|token',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | (Optional) reCAPTCHA Configuration

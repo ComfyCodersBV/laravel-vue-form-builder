@@ -61,6 +61,79 @@ In this example, the `api_endpoint` and `version` keys will have their value inp
 
 ---
 
+## Masking sensitive values
+
+Any row whose key matches `password`, `secret`, or `token` (case-insensitive) automatically
+renders as a masked (`type="password"`) input with an eye icon to reveal/hide it while typing.
+This is automatic — no field method needed to opt in.
+
+```php
+KeyValue::make('credentials')
+    ->label('Credentials')
+    ->keyPlaceholder('Key')
+    ->valuePlaceholder('Value')
+    // renders "client_secret" and "access_token" rows masked; "client_id" stays plain text
+```
+
+### Configuring the pattern
+
+The default pattern (`password|secret|token`) lives in `config/vue-form-builder.php`
+under `key_value.masked_key_pattern` — a plain regex source (no delimiters, matched
+case-insensitively). Publish the config and change it to affect every `KeyValue`
+field in the app:
+
+```php
+// config/vue-form-builder.php
+'key_value' => [
+    'masked_key_pattern' => 'password|secret|token|api_key',
+],
+```
+
+Or override it for a single field with `->maskedKeyPattern(...)`, which takes
+precedence over the config default:
+
+```php
+KeyValue::make('credentials')
+    ->label('Credentials')
+    ->keyPlaceholder('Key')
+    ->valuePlaceholder('Value')
+    ->maskedKeyPattern('password|secret|token|api_key|private_key')
+```
+
+### Editing an existing secret without re-sending it to the browser
+
+Don't pass the real stored value for a sensitive key back down to the frontend — that
+defeats the masking, since the value still ends up in the page's props/JSON payload
+regardless of the input's `type`. Instead, send an empty string for that row and set
+`hasStoredValue: true`, then pair it with `->maskedValuePlaceholder(...)` so the field
+shows a hint instead of blank:
+
+```php
+KeyValue::make('credentials')
+    ->valuePlaceholder('Value')
+    ->maskedValuePlaceholder('Already set — leave blank to keep unchanged')
+```
+
+```php
+// Controller: don't leak the real secret into the response
+$values = collect($credential->values)->map(function ($value, $key) {
+    $isSensitive = preg_match('/password|secret|token/i', $key);
+
+    return [
+        'key' => $key,
+        'value' => $isSensitive ? '' : $value,
+        'hasStoredValue' => $isSensitive && $value !== '',
+    ];
+})->values()->all();
+```
+
+On submit, a blank value for a sensitive key means "unchanged" — your controller/update
+logic is responsible for falling back to the existing stored value when the submitted
+value is empty, since the form itself has no way to distinguish "left blank on purpose"
+from "cleared the secret".
+
+---
+
 ## Pre-filling data
 
 Pass an associative array via `fill()` on the `FormConfig`:

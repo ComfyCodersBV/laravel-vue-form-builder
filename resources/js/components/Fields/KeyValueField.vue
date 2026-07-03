@@ -5,13 +5,15 @@ import {Input} from '../ui/input'
 import {Button} from '../ui/button'
 import {computed, ref, watch} from 'vue'
 import {cn} from '../../lib/utils'
-import {ArrowDown, ArrowUp, Plus, Trash2} from 'lucide-vue-next'
+import {ArrowDown, ArrowUp, Eye, EyeOff, Plus, Trash2} from 'lucide-vue-next'
 
 interface KeyValueProps extends Field {
     keyLabel?: string
     valueLabel?: string
     keyPlaceholder?: string
     valuePlaceholder?: string
+    maskedValuePlaceholder?: string
+    maskedKeyPattern?: string
     addActionLabel?: string
     editableKeys?: boolean
     editableValues?: boolean
@@ -20,6 +22,8 @@ interface KeyValueProps extends Field {
     reorderable?: boolean
     readonlyValueKeys?: string[]
 }
+
+const DEFAULT_MASKED_KEY_PATTERN = 'password|secret|token'
 
 const props = withDefaults(defineProps<KeyValueProps>(), {
     className: undefined,
@@ -32,6 +36,8 @@ const props = withDefaults(defineProps<KeyValueProps>(), {
     valueLabel: 'Value',
     keyPlaceholder: 'Key',
     valuePlaceholder: 'Value',
+    maskedValuePlaceholder: undefined,
+    maskedKeyPattern: DEFAULT_MASKED_KEY_PATTERN,
     addActionLabel: 'Add row',
     editableKeys: true,
     editableValues: true,
@@ -43,17 +49,19 @@ const props = withDefaults(defineProps<KeyValueProps>(), {
 
 const emit = defineEmits<{ 'update:modelValue': [Array<{ key: string; value: string }>] }>()
 
-const rows = ref<{ key: string; value: string }[]>([])
+const rows = ref<{ key: string; value: string; hasStoredValue?: boolean }[]>([])
 const isInternalUpdate = ref(false)
+const revealed = ref<Record<number, boolean>>({})
 
-function normalizeToRows(input: any): { key: string; value: string }[] {
+function normalizeToRows(input: any): { key: string; value: string; hasStoredValue?: boolean }[] {
     if (!input) {
         return []
     }
     if (Array.isArray(input)) {
         return input.map(item => ({
             key: String(item.key ?? ''),
-            value: item.value == null ? '' : String(item.value)
+            value: item.value == null ? '' : String(item.value),
+            hasStoredValue: Boolean(item.hasStoredValue),
         }))
     }
     if (typeof input === 'object') {
@@ -63,6 +71,22 @@ function normalizeToRows(input: any): { key: string; value: string }[] {
         }))
     }
     return []
+}
+
+const maskedKeyRegex = computed(() => {
+    try {
+        return new RegExp(props.maskedKeyPattern || DEFAULT_MASKED_KEY_PATTERN, 'i')
+    } catch {
+        return new RegExp(DEFAULT_MASKED_KEY_PATTERN, 'i')
+    }
+})
+
+function isSensitiveKey(key: string): boolean {
+    return maskedKeyRegex.value.test(key)
+}
+
+function toggleReveal(idx: number) {
+    revealed.value[idx] = !revealed.value[idx]
 }
 
 watch(
@@ -157,9 +181,22 @@ function keyInputClass(k: string) {
                            :disabled="!editableKeys" :class="keyInputClass(row.key)"/>
                 </div>
                 <div class="col-span-5">
-                    <Input :placeholder="valuePlaceholder" v-model="row.value"
-                           :readonly="!editableValues || readonlyValueKeys.includes(row.key)"
-                           :disabled="!editableValues || readonlyValueKeys.includes(row.key)"/>
+                    <div class="relative">
+                        <Input
+                            :placeholder="row.hasStoredValue && maskedValuePlaceholder ? maskedValuePlaceholder : valuePlaceholder"
+                            :type="isSensitiveKey(row.key) && !revealed[i] ? 'password' : 'text'"
+                            v-model="row.value"
+                            :readonly="!editableValues || readonlyValueKeys.includes(row.key)"
+                            :disabled="!editableValues || readonlyValueKeys.includes(row.key)"
+                            :class="isSensitiveKey(row.key) ? 'pr-9' : ''"
+                        />
+                        <button v-if="isSensitiveKey(row.key)" type="button"
+                                class="absolute inset-y-0 right-0 flex items-center px-2 text-neutral-500 hover:text-neutral-800"
+                                :aria-label="revealed[i] ? 'Hide value' : 'Show value'" @click="toggleReveal(i)">
+                            <EyeOff v-if="revealed[i]" class="size-4"/>
+                            <Eye v-else class="size-4"/>
+                        </button>
+                    </div>
                 </div>
                 <div class="col-span-2 flex items-center gap-1 justify-end">
                     <Button v-if="reorderable" type="button" size="icon" variant="outline" @click="moveUp(i)">

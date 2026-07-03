@@ -13,6 +13,8 @@ class KeyValue extends BaseField
         $this->rules([
             'array',
         ]);
+
+        $this->attributes['maskedKeyPattern'] = config('vue-form-builder.key_value.masked_key_pattern', 'password|secret|token');
     }
 
     public function keyLabel(string $label): static
@@ -39,6 +41,25 @@ class KeyValue extends BaseField
     public function valuePlaceholder(string $placeholder): static
     {
         $this->attributes['valuePlaceholder'] = $placeholder;
+
+        return $this;
+    }
+
+    public function maskedValuePlaceholder(string $placeholder): static
+    {
+        $this->attributes['maskedValuePlaceholder'] = $placeholder;
+
+        return $this;
+    }
+
+    /**
+     * Regex source (no delimiters, matched case-insensitively) used to detect which
+     * row keys render their value input masked. Overrides the
+     * `vue-form-builder.key_value.masked_key_pattern` config default for this field.
+     */
+    public function maskedKeyPattern(string $pattern): static
+    {
+        $this->attributes['maskedKeyPattern'] = $pattern;
 
         return $this;
     }

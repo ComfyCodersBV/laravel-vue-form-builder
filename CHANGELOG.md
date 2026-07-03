@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.0.25 - 2026-07-03
+* Add masked password/secret/token input support to KeyValue field with configurable pattern
+
 ## 1.0.24 - 2026-06-27
 * Unify Button, Submit, and DeleteButton into shared base with variant support, confirm dialogs, and translatable labels (en/nl)
 
