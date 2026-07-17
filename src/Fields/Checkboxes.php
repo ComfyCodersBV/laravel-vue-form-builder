@@ -13,4 +13,11 @@ class Checkboxes extends BaseField
     use HasOptions;
 
     protected string $type = 'checkboxes';
+
+    public function buttons(bool $buttons = true): static
+    {
+        $this->attributes['buttons'] = $buttons;
+
+        return $this;
+    }
 }

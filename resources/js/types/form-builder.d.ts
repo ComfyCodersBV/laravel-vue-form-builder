@@ -20,6 +20,7 @@ export interface Field {
     default?: FieldValue
     error?: string | string[]
     options?: Record<string, string> | Array<{ value: string | number; label: string }> | Array<string | number>
+    fields?: Field[]
     attrs?: Record<string, unknown>
     append?: string
     prepend?: string

@@ -17,6 +17,7 @@
     import ToggleField from './Fields/ToggleField.vue'
     import FileField from './Fields/FileField.vue';
     import KeyValueField from './Fields/KeyValueField.vue'
+    import RepeaterField from './Fields/RepeaterField.vue'
     import Wysiwyg from './Fields/Wysiwyg.vue';
     import RecaptchaField from './Fields/RecaptchaField.vue'
 
@@ -44,6 +45,7 @@
         password: TextField,
         radio: RadioGroupField,
         recaptcha: RecaptchaField,
+        repeater: RepeaterField,
         select: SelectField,
         submit: SubmitButton,
         text: TextField,

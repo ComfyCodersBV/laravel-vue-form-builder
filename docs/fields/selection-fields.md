@@ -110,6 +110,7 @@ Checkboxes::make('permissions')
 | `->optionLabel(string)` | Property to use as label for object options (default: `'name'`) |
 | `->optionValue(string)` | Property to use as value for object options (default: `'id'`) |
 | `->inline()` | Display checkboxes horizontally instead of stacked vertically |
+| `->buttons()` | Render options as toggle pill buttons instead of checkboxes |
 
 ---
 

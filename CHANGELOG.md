@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.1.0 - 2026-07-17
+* Fix: file fields no longer seed a stored string value (e.g. an existing filename) into the form, which caused `mimetypes` validation to fail when submitting without choosing a new file.
+* Add `Repeater` field for repeatable groups of sub-fields (e.g. ingredient rows, steps), with add/remove/reorder, `min`/`max`, `itemLabel`, and `inline()` for horizontal row layout. Sub-field validation rules are expanded server-side into dotted wildcard rules (`name.*.subfield`).
+* Add `buttons()` display variant to the `Checkboxes` field, rendering options as toggle pills instead of checkboxes.
+* Add test coverage for all field types.
+
 ## 1.0.25 - 2026-07-03
 * Add masked password/secret/token input support to KeyValue field with configurable pattern
 

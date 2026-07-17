@@ -20,6 +20,11 @@ schema.fields.forEach((field: any) => {
         return
     }
 
+    if (field.type === 'file') {
+        formData[field.name] = field.multiple === true ? [] : ''
+        return
+    }
+
     const hasExplicit = Object.prototype.hasOwnProperty.call(formData, field.name)
     const fieldHasDefault = typeof field.default !== 'undefined' && field.default !== null && field.default !== ''
 

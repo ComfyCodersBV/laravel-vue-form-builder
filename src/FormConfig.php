@@ -157,6 +157,13 @@ class FormConfig implements JsonSerializable
                 if ($name !== null && $name !== '') {
                     $carry[$name] = $field->getRules();
                 }
+
+                if (method_exists($field, 'nestedRules')) {
+                    foreach ($field->nestedRules() as $ruleName => $rules) {
+                        $carry[$ruleName] = $rules;
+                    }
+                }
+
                 return $carry;
             },
             []

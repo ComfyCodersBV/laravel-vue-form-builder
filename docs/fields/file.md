@@ -58,6 +58,7 @@ File::make('photos')
 ## Notes
 
 - The component emits `File` objects (not strings) when a file is selected, so Inertia handles the upload as a multipart form.
+- File fields are never seeded with an existing stored value (e.g. a filename from `fill()`). Submitting the form without choosing a new file sends an empty value, so a `mimetypes:` rule won't fail against a leftover string. Use a `nullable` rule when the file is optional on update.
 - Combine with Laravel's `max:` rule (kilobytes) and `dimensions:` rule as needed:
 
 ```php
