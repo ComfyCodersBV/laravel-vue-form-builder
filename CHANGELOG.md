@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.1.1 - 2026-07-29
+* Fix: `DatePicker` no longer invents a date from an unparseable value. A `d-m-Y` string such as `29-07-2026` was read as `Y-m-d` and became a date in 1935, which could then be saved back over the stored value. `parseDate` now returns `null` unless the value is `Y-m-d` (optionally followed by a time) or an ISO 8601 string, and out-of-range months and days are rejected. An unparseable value renders the placeholder and emits nothing.
+
 ## 1.1.0 - 2026-07-17
 * Fix: file fields no longer seed a stored string value (e.g. an existing filename) into the form, which caused `mimetypes` validation to fail when submitting without choosing a new file.
 * Add `Repeater` field for repeatable groups of sub-fields (e.g. ingredient rows, steps), with add/remove/reorder, `min`/`max`, `itemLabel`, and `inline()` for horizontal row layout. Sub-field validation rules are expanded server-side into dotted wildcard rules (`name.*.subfield`).

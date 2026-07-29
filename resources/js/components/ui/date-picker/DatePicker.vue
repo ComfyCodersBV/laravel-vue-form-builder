@@ -77,8 +77,11 @@ function parseDate(s: string | null, withTime: boolean): Date | null {
   }
 
   const [datePart, timePart] = s.split(' ')
-  const [y, m, d] = datePart.split('-').map(Number)
-  if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return null
+  const segments = datePart.split('-')
+  if (segments.length !== 3) return null
+  if (!/^\d{4}$/.test(segments[0]) || !/^\d{1,2}$/.test(segments[1]) || !/^\d{1,2}$/.test(segments[2])) return null
+  const [y, m, d] = segments.map(Number)
+  if (m < 1 || m > 12 || d < 1 || d > 31) return null
   const dt = new Date(y, (m - 1), d)
   if (withTime && timePart) {
     const [hh, mm] = timePart.split(':').map(Number)
