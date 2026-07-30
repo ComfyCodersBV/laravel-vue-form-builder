@@ -35,6 +35,13 @@ class Number extends BaseField
         return $this;
     }
 
+    public function stepper(bool $stepper = true): static
+    {
+        $this->attributes['stepper'] = $stepper;
+
+        return $this;
+    }
+
     public function unsigned(): static
     {
         $this->minValue(0);

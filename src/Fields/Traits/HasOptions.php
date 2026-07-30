@@ -28,4 +28,11 @@ trait HasOptions
 
         return $this;
     }
+
+    public function searchable(bool $searchable = true): static
+    {
+        $this->attributes['searchable'] = $searchable;
+
+        return $this;
+    }
 }

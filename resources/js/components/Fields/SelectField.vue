@@ -3,6 +3,10 @@ import BaseField from './BaseField.vue';
 import type { Field } from '../../types/form-builder';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { ChevronsUpDown } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 interface Option { value: string | number; label: string }
@@ -14,6 +18,7 @@ interface SelectProps extends Field {
     multiple?: boolean;
     optionLabel?: string;
     optionValue?: string;
+    searchable?: boolean;
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
@@ -28,6 +33,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
     placeholder: undefined,
     readonly: false,
     multiple: false,
+    searchable: false,
 });
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>();
@@ -136,11 +142,71 @@ function onUpdateInternal(value: unknown) {
     const found = optionsList.value.find(o => String(o.value) === key);
     emit('update:modelValue', (found ? found.value : key) as any);
 }
+
+const comboboxOpen = ref(false);
+const comboboxQuery = ref('');
+
+const comboboxFilteredOptions = computed(() => {
+    if (!comboboxQuery.value) {
+        return optionsList.value;
+    }
+
+    const query = comboboxQuery.value.toLowerCase();
+
+    return optionsList.value.filter(option => option.label.toLowerCase().includes(query));
+});
+
+function selectComboboxOption(option: Option) {
+    onUpdateInternal(option.value);
+    comboboxOpen.value = false;
+    comboboxQuery.value = '';
+}
 </script>
 
 <template>
     <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className">
-        <template v-if="!props.multiple">
+        <template v-if="!props.multiple && props.searchable">
+            <Popover v-model:open="comboboxOpen">
+                <PopoverTrigger as-child>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        :id="props.name"
+                        :disabled="props.disabled || props.readonly"
+                        class="w-full justify-between font-normal"
+                    >
+                        <span class="truncate">
+                            <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
+                            <span v-else class="text-muted-foreground">
+                                {{ props.placeholder ?? 'Choose an option' }}
+                            </span>
+                        </span>
+                        <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
+                    <Input v-model="comboboxQuery" placeholder="Zoeken..." class="mb-2 h-8" />
+                    <div class="max-h-64 overflow-auto">
+                        <button
+                            v-for="option in comboboxFilteredOptions"
+                            :key="String(option.value)"
+                            type="button"
+                            class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+                            :class="String(option.value) === internalKey ? 'bg-accent' : ''"
+                            @click="selectComboboxOption(option)"
+                        >
+                            <span class="truncate" v-html="option.label"></span>
+                        </button>
+                        <div v-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
+                            Geen resultaten
+                        </div>
+                    </div>
+                </PopoverContent>
+            </Popover>
+            <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
+        </template>
+
+        <template v-else-if="!props.multiple">
             <Select
                 v-model="internalKey"
                 :disabled="props.disabled || props.readonly"
