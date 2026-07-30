@@ -16,6 +16,8 @@ interface NumberFieldProps extends Field {
     tooltip?: string
     step?: number | string
     stepper?: boolean
+    decrementLabel?: string
+    incrementLabel?: string
 }
 
 const props = withDefaults(defineProps<NumberFieldProps>(), {
@@ -34,6 +36,8 @@ const props = withDefaults(defineProps<NumberFieldProps>(), {
     tooltip: undefined,
     step: 1,
     stepper: false,
+    decrementLabel: 'Decrease',
+    incrementLabel: 'Increase',
 })
 
 const emit = defineEmits<{ 'update:modelValue': [string | number] }>()
@@ -130,7 +134,7 @@ function onBeforeInput(e: InputEvent) {
                     size="icon"
                     class="shrink-0 rounded-r-none border-r-0"
                     :disabled="disabled || readonly"
-                    aria-label="Verlagen"
+                    :aria-label="decrementLabel"
                     @click="decrement"
                 >
                     <Minus class="size-4" />
@@ -156,7 +160,7 @@ function onBeforeInput(e: InputEvent) {
                     size="icon"
                     class="shrink-0 rounded-l-none border-l-0"
                     :disabled="disabled || readonly"
-                    aria-label="Verhogen"
+                    :aria-label="incrementLabel"
                     @click="increment"
                 >
                     <Plus class="size-4" />

@@ -19,6 +19,9 @@ interface SelectProps extends Field {
     optionLabel?: string;
     optionValue?: string;
     searchable?: boolean;
+    searchPlaceholder?: string;
+    noResultsLabel?: string;
+    choosePlaceholder?: string;
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
@@ -34,6 +37,9 @@ const props = withDefaults(defineProps<SelectProps>(), {
     readonly: false,
     multiple: false,
     searchable: false,
+    searchPlaceholder: 'Search...',
+    noResultsLabel: 'No results',
+    choosePlaceholder: 'Choose an option',
 });
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>();
@@ -178,14 +184,14 @@ function selectComboboxOption(option: Option) {
                         <span class="truncate">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
-                                {{ props.placeholder ?? 'Choose an option' }}
+                                {{ props.placeholder ?? props.choosePlaceholder }}
                             </span>
                         </span>
                         <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
-                    <Input v-model="comboboxQuery" placeholder="Zoeken..." class="mb-2 h-8" />
+                    <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
                     <div class="max-h-64 overflow-auto">
                         <button
                             v-for="option in comboboxFilteredOptions"
@@ -198,7 +204,7 @@ function selectComboboxOption(option: Option) {
                             <span class="truncate" v-html="option.label"></span>
                         </button>
                         <div v-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
-                            Geen resultaten
+                            {{ props.noResultsLabel }}
                         </div>
                     </div>
                 </PopoverContent>
@@ -216,7 +222,7 @@ function selectComboboxOption(option: Option) {
                     <span class="truncate">
                         <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                         <span v-else class="text-muted-foreground">
-                            {{ props.placeholder ?? 'Choose an option' }}
+                            {{ props.placeholder ?? props.choosePlaceholder }}
                         </span>
                       </span>
                 </SelectTrigger>

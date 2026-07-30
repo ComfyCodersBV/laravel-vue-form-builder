@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.1.2 - 2026-07-30
+* Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.
+* Add `->searchable()` to the `Select` field for a searchable combobox variant.
+* Fix: `Select`, `Popover`, `MultiSelect`, and `DatePicker` content now portals into the nearest open InertiaUI modal instead of `body`, so dropdowns and comboboxes render above the modal instead of behind it.
+* Add translatable labels for the stepper buttons and searchable select (`vue-form-builder::fields`), following the same pattern as button labels.
+
 ## 1.1.1 - 2026-07-29
 * Fix: `DatePicker` no longer invents a date from an unparseable value. A `d-m-Y` string such as `29-07-2026` was read as `Y-m-d` and became a date in 1935, which could then be saved back over the stored value. `parseDate` now returns `null` unless the value is `Y-m-d` (optionally followed by a time) or an ISO 8601 string, and out-of-range months and days are rejected. An unparseable value renders the placeholder and emits nothing.
 
