@@ -70,6 +70,20 @@ Number::make('price')
 | `->maxValue(int\|float)` | Sets `max` attribute and adds `max:N` rule |
 | `->step(int\|float)` | Sets `step` attribute |
 | `->unsigned()` | Shorthand for `->minValue(0)` |
+| `->stepper()` | Adds increment/decrement buttons around the input |
+
+### Stepper
+
+```php
+Number::make('quantity')
+    ->label('Quantity')
+    ->minValue(0)
+    ->step(1)
+    ->stepper()
+```
+
+The increment/decrement buttons respect `minValue`/`maxValue` and are disabled together with the field.
+Their `aria-label`s are translatable, see [Translations](#translations).
 
 ## Textarea
 
@@ -144,3 +158,13 @@ Text::make('email')
 Text::make('new_password')
     ->autocomplete('new-password')  // Sets exact autocomplete value
 ```
+
+## Translations
+
+The stepper button labels on the `Number` field are translatable. Publish the language files or add entries to your
+`lang/vendor/vue-form-builder/` directory:
+
+| Key                                    | Default (en) |
+|-----------------------------------------|--------------|
+| `vue-form-builder::fields.decrement`    | Decrease     |
+| `vue-form-builder::fields.increment`    | Increase     |

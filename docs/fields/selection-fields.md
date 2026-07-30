@@ -50,6 +50,19 @@ Select::make('tags')
     ->rules('array')
 ```
 
+### Searchable
+
+Renders a combobox with a filter input instead of a plain dropdown. Not available combined with `->multiple()`.
+
+```php
+Select::make('country')
+    ->label('Country')
+    ->options(Country::query()->pluck('name', 'id')->toArray())
+    ->searchable()
+```
+
+The search placeholder and "no results" text are translatable, see [Translations](#translations).
+
 ---
 
 ## Checkbox
@@ -171,3 +184,14 @@ Toggle::make('is_public')
     ->value(true)
     ->falseValue(false)
 ```
+
+## Translations
+
+The searchable `Select` combobox text is translatable. Publish the language files or add entries to your
+`lang/vendor/vue-form-builder/` directory:
+
+| Key                                          | Default (en)     |
+|-----------------------------------------------|------------------|
+| `vue-form-builder::fields.search-placeholder` | Search...        |
+| `vue-form-builder::fields.no-results`         | No results       |
+| `vue-form-builder::fields.choose-option`      | Choose an option |

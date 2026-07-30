@@ -15,7 +15,7 @@ class Number extends BaseField
     public function minValue(int|float $value): static
     {
         $this->attributes['min'] = $value;
-        $this->rules[] = 'min:' . $value;
+        $this->rules[] = 'min:'.$value;
 
         return $this;
     }
@@ -23,7 +23,7 @@ class Number extends BaseField
     public function maxValue(int|float $value): static
     {
         $this->attributes['max'] = $value;
-        $this->rules[] = 'max:' . $value;
+        $this->rules[] = 'max:'.$value;
 
         return $this;
     }
@@ -35,10 +35,25 @@ class Number extends BaseField
         return $this;
     }
 
+    public function stepper(bool $stepper = true): static
+    {
+        $this->attributes['stepper'] = $stepper;
+
+        return $this;
+    }
+
     public function unsigned(): static
     {
         $this->minValue(0);
 
         return $this;
+    }
+
+    public function toSchema(): array
+    {
+        $this->attributes['decrementLabel'] ??= trans('vue-form-builder::fields.decrement');
+        $this->attributes['incrementLabel'] ??= trans('vue-form-builder::fields.increment');
+
+        return parent::toSchema();
     }
 }

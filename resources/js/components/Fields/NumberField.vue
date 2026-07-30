@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
 import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { computed } from 'vue';
 import type { Field } from '../../types/form-builder'
 import { cn } from '../../lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { Info } from 'lucide-vue-next';
+import { Info, Minus, Plus } from 'lucide-vue-next';
 
 interface NumberFieldProps extends Field {
     min?: number
@@ -14,6 +15,9 @@ interface NumberFieldProps extends Field {
     append?: string
     tooltip?: string
     step?: number | string
+    stepper?: boolean
+    decrementLabel?: string
+    incrementLabel?: string
 }
 
 const props = withDefaults(defineProps<NumberFieldProps>(), {
@@ -31,6 +35,9 @@ const props = withDefaults(defineProps<NumberFieldProps>(), {
     append: undefined,
     tooltip: undefined,
     step: 1,
+    stepper: false,
+    decrementLabel: 'Decrease',
+    incrementLabel: 'Increase',
 })
 
 const emit = defineEmits<{ 'update:modelValue': [string | number] }>()
@@ -44,6 +51,50 @@ const hasPrepend = computed(() => !!props.prepend)
 const hasAppend = computed(() => !!props.append)
 const hasTooltip = computed(() => !!props.tooltip)
 const hasRight = computed(() => hasAppend.value || hasTooltip.value)
+
+const stepValue = computed(() => {
+    const parsed = parseFloat(String(props.step ?? 1))
+
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+})
+
+const stepDecimals = computed(() => {
+    const raw = String(props.step ?? '')
+    const dotIndex = raw.indexOf('.')
+
+    return dotIndex === -1 ? 0 : raw.length - dotIndex - 1
+})
+
+function round(value: number) {
+    return Number(value.toFixed(stepDecimals.value))
+}
+
+function adjust(delta: number) {
+    if (props.disabled || props.readonly) {
+        return
+    }
+
+    const current = parseFloat(String(model.value)) || 0
+    let next = round(current + delta)
+
+    if (props.min !== undefined && next < props.min) {
+        next = props.min
+    }
+
+    if (props.max !== undefined && next > props.max) {
+        next = props.max
+    }
+
+    model.value = next
+}
+
+function decrement() {
+    adjust(-stepValue.value)
+}
+
+function increment() {
+    adjust(stepValue.value)
+}
 
 function rightRoundClass() {
     return hasRight.value ? 'rounded-r-none border-r-0' : ''
@@ -76,6 +127,19 @@ function onBeforeInput(e: InputEvent) {
                 {{ prepend }}
             </span>
 
+                <Button
+                    v-if="stepper"
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    class="shrink-0 rounded-r-none border-r-0"
+                    :disabled="disabled || readonly"
+                    :aria-label="decrementLabel"
+                    @click="decrement"
+                >
+                    <Minus class="size-4" />
+                </Button>
+
                 <Input
                     type="text"
                     inputmode="numeric"
@@ -86,8 +150,21 @@ function onBeforeInput(e: InputEvent) {
                     :placeholder="placeholder"
                     :disabled="disabled"
                     :readonly="readonly"
-                    :class="cn('flex-1', leftRoundClass(), rightRoundClass())"
+                    :class="cn('flex-1', stepper ? 'rounded-none text-center' : cn(leftRoundClass(), rightRoundClass()))"
                 />
+
+                <Button
+                    v-if="stepper"
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    class="shrink-0 rounded-l-none border-l-0"
+                    :disabled="disabled || readonly"
+                    :aria-label="incrementLabel"
+                    @click="increment"
+                >
+                    <Plus class="size-4" />
+                </Button>
 
                 <span
                     v-if="append"
