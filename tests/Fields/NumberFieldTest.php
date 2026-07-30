@@ -32,3 +32,26 @@ it('constrains to positive numbers via unsigned', function () {
     expect($schema['min'])->toBe(0)
         ->and($schema['rules'])->toBe(['min:0']);
 });
+
+it('adds a stepper attribute', function () {
+    expect(Number::make('quantity')->stepper()->toSchema()['stepper'])->toBeTrue();
+});
+
+it('defaults stepper button labels to translated text', function () {
+    $schema = Number::make('quantity')->toSchema();
+
+    expect($schema['decrementLabel'])->toBe('Decrease')
+        ->and($schema['incrementLabel'])->toBe('Increase');
+});
+
+it('keeps explicit stepper label overrides', function () {
+    $schema = Number::make('quantity')
+        ->attributes([
+            'decrementLabel' => 'Minder',
+            'incrementLabel' => 'Meer',
+        ])
+        ->toSchema();
+
+    expect($schema['decrementLabel'])->toBe('Minder')
+        ->and($schema['incrementLabel'])->toBe('Meer');
+});

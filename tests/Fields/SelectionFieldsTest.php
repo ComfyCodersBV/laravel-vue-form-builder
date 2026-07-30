@@ -86,6 +86,32 @@ it('accepts a collection of options', function () {
     expect($schema['options'])->toBe(['a' => 'A', 'b' => 'B']);
 });
 
+it('marks a select as searchable', function () {
+    expect(Select::make('country')->searchable()->toSchema()['searchable'])->toBeTrue();
+});
+
+it('defaults searchable select labels to translated text', function () {
+    $schema = Select::make('country')->toSchema();
+
+    expect($schema['searchPlaceholder'])->toBe('Search...')
+        ->and($schema['noResultsLabel'])->toBe('No results')
+        ->and($schema['choosePlaceholder'])->toBe('Choose an option');
+});
+
+it('keeps explicit select label overrides', function () {
+    $schema = Select::make('country')
+        ->attributes([
+            'searchPlaceholder' => 'Filter...',
+            'noResultsLabel' => 'Nothing found',
+            'choosePlaceholder' => 'Pick one',
+        ])
+        ->toSchema();
+
+    expect($schema['searchPlaceholder'])->toBe('Filter...')
+        ->and($schema['noResultsLabel'])->toBe('Nothing found')
+        ->and($schema['choosePlaceholder'])->toBe('Pick one');
+});
+
 it('groups individual radio fields into a single radios group', function () {
     $schemas = [
         Radio::make('plan')->value('starter')->label('Starter')->toSchema(),
