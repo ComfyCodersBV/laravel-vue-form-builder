@@ -38,11 +38,12 @@ You can install the package via composer:
 composer require tranquil-tools/laravel-vue-form-builder
 ```
 
-Install the frontend dependency. The package's Vue components are built on [Reka UI](https://reka-ui.com), and Vite
-resolves imports from your app's `node_modules`, so it has to live in your project:
+Install the frontend dependencies. The package ships raw `.vue` files that your application compiles,
+so their imports resolve against your `node_modules`. Beyond what the Laravel Vue starter kit already
+gives you:
 
 ```cli
-npm install reka-ui
+npm install reka-ui lucide-vue-next
 ```
 
 A WYSIWYG editor is opt-in. The package imports no editor, so nothing is needed here unless you

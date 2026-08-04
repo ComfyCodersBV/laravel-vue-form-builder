@@ -16,11 +16,20 @@ The service provider is auto-discovered. No manual registration needed.
 
 ## 2. Install frontend dependencies
 
-The package requires [Reka UI](https://reka-ui.com) for its Vue components. Because Vite resolves imports from your app's `node_modules`, it must be installed in your project even though it's listed as a dependency of the package:
+The package ships raw `.vue` files that your application compiles, and Vite resolves their imports
+against **your** `node_modules` — never against the package's own manifest. Everything the components
+import therefore has to be installed in your project.
+
+The Laravel Vue starter kit already provides `vue`, `@inertiajs/vue3`, `@vueuse/core`, `clsx`,
+`class-variance-authority` and `tailwind-merge`, so in practice you add two:
 
 ```bash
-npm install reka-ui
+npm install reka-ui lucide-vue-next
 ```
+
+The package's `package.json` declares all of them as `peerDependencies` with supported version
+ranges. It installs nothing — it exists so a version mismatch is documented rather than discovered
+through a broken component after an `npm update`.
 
 No editor dependencies are needed here. A WYSIWYG editor is opt-in: the package never imports one, so your build stays free of Quill and friends unless you register an editor yourself. See [WYSIWYG](fields/wysiwyg) and [WYSIWYG Adapters](fields/wysiwyg-adapters).
 

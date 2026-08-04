@@ -1,13 +1,24 @@
 {
-    "dependencies": {
-        "reka-ui": "^2.9.4"
-    },
+    "name": "@tranquil-tools/laravel-vue-form-builder",
+    "private": true,
     "peerDependencies": {
-        "vue-quilly": "^1",
-        "quill": "^2"
+        "@inertiajs/vue3": ">=2 <4",
+        "@vueuse/core": ">=12 <15",
+        "class-variance-authority": ">=0.7 <1",
+        "clsx": "^2.0",
+        "lucide-vue-next": ">=0.556 <2",
+        "quill": "^2.0",
+        "reka-ui": "^2.9.4",
+        "tailwind-merge": "^3.0",
+        "vue": "^3.5",
+        "vue-quilly": "^1.0"
     },
     "peerDependenciesMeta": {
-        "vue-quilly": { "optional": true },
-        "quill": { "optional": true }
+        "quill": {
+            "optional": true
+        },
+        "vue-quilly": {
+            "optional": true
+        }
     }
 }
