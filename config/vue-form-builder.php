@@ -45,15 +45,11 @@ return [
                             ['link', 'image', 'video', 'formula'],
                             ['clean'],
                         ],
-                        'imageResize' => [
-                            'modules' => ['Resize', 'DisplaySize', 'Toolbar'],
-                        ],
                     ],
                 ],
             ],
         ],
     ],
-
 
     'key_value' => [
 

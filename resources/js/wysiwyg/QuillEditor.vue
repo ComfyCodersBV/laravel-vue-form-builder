@@ -3,11 +3,7 @@ import { onMounted, shallowRef, watch, nextTick } from 'vue'
 import { QuillyEditor } from 'vue-quilly'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
-import type { Field } from '../../../types/form-builder'
-
-if (typeof window !== 'undefined') {
-    (window as any).Quill = Quill
-}
+import type { WysiwygAdapterProps } from './types'
 
 const editor = shallowRef<InstanceType<typeof QuillyEditor>>()
 const quill = shallowRef<Quill | null>(null)
@@ -16,11 +12,12 @@ const isSourceMode = shallowRef(false)
 
 const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
 
-const props = withDefaults(defineProps<{ modelValue: string } & Field>(), {
+const props = withDefaults(defineProps<WysiwygAdapterProps>(), {
     modelValue: '',
+    config: () => ({}),
 })
 
-const options = shallowRef(props.options)
+const quillOptions = shallowRef(props.config)
 
 function normalizeHtml(html: string) {
     const lines = html.split(/\n\n+/)
@@ -39,22 +36,11 @@ function normalizeHtml(html: string) {
 }
 
 onMounted(async () => {
-    if ((window as any).Quill?.imports?.parchment) {
-        (window as any).Quill.imports.parchment.Attributor.Style =
-            (window as any).Quill.imports.parchment.StyleAttributor
-    }
-
-    try {
-        await import('quill-image-resize-module')
-    } catch (e) {
-        console.warn('quill-image-resize-module could not be loaded:', e)
-    }
-
     if (!editor.value) {
         return
     }
 
-    quill.value = editor.value.initialize((window as any).Quill)
+    quill.value = editor.value.initialize(Quill)
 
     await nextTick()
 
@@ -75,7 +61,7 @@ onMounted(async () => {
         }
     })
 
-    if (props.options?.showSourceButton !== false) {
+    if (props.config?.showSourceButton !== false) {
         addSourceButton()
     }
 })
@@ -201,7 +187,7 @@ watch(
     <div class="quill-wrapper">
         <QuillyEditor
             ref="editor"
-            :options="options"
+            :options="quillOptions"
         />
     </div>
 </template>
