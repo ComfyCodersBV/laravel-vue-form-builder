@@ -4,13 +4,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 
 ## 1.2.0 - unreleased
 
-**Upgrade note — WYSIWYG editors are now opt-in.**
-
-The package no longer imports any editor implementation. This fixes a build-time problem: because Vite
-resolves bare specifiers against the *application's* `node_modules`, every consumer inherited Quill's
-npm packages and `npm run build` failed without them, even in projects that never render a WYSIWYG field.
-
-If you use `->editor('quill')` (or leave `default-editor` at `quill`), add two lines to your app entrypoint:
+**Upgrade note — WYSIWYG editors are now opt-in.** If you use `->editor('quill')`, or leave
+`default-editor` at `quill`, add two lines to your app entrypoint:
 
 ```ts
 import QuillEditor from '@form-builder/wysiwyg/QuillEditor.vue';
@@ -19,34 +14,21 @@ import { registerWysiwygEditor } from '@form-builder/wysiwyg/registry';
 registerWysiwygEditor('quill', QuillEditor);
 ```
 
-Without it, those fields render a textarea plus a `console.warn` in development instead of crashing.
+Without it those fields render a textarea plus a development warning instead of crashing.
 
-* Add a WYSIWYG editor registry (`@form-builder/wysiwyg/registry`) with `registerWysiwygEditor`,
-  `resolveWysiwygEditor` and `registeredWysiwygEditors`.
-* Add a documented, engine-agnostic adapter contract (`@form-builder/wysiwyg/types`): HTML in, HTML out,
+* Add a WYSIWYG editor registry and a documented, engine-agnostic adapter contract: HTML in, HTML out,
   with `->options()` passed through untouched as the adapter's `config` prop.
-* Move the Quill adapter to `resources/js/wysiwyg/QuillEditor.vue`. Nothing in the package imports it.
-* Drop `quill-image-resize-module`. It has been unmaintained since 2022 and declares `quill: ^1.2.2`,
-  while this adapter runs Quill 2. Its config block was removed from `vue-form-builder.php`, and the
-  `window.Quill` global plus the Parchment `StyleAttributor` shim that existed only to feed it are gone.
-  Consumers registering Quill now install `vue-quilly quill` — two packages instead of three.
-* An unknown or unregistered editor key falls back to a textarea. `textarea` keeps working without
-  registration.
-
-**Repository hygiene**, released together with the same change in table-builder and crud-builder:
-
-* `package.json` now declares the package's real import closure as `peerDependencies` with supported
-  ranges — `reka-ui: ^2.9.4`, `vue: ^3.5`, `@inertiajs/vue3: >=2 <4`, `@vueuse/core: >=12 <15`,
-  `lucide-vue-next: >=0.556 <2`, `tailwind-merge: ^3.0`, `clsx: ^2.0`,
-  `class-variance-authority: >=0.7 <1` — with `quill` and `vue-quilly` marked optional. It previously
-  listed `reka-ui` as a `dependency`, which resolves nothing: Vite reads the application's
-  `node_modules`, never this file. Nothing to do on upgrade unless your versions fall outside a range.
-* The manifest, its lockfile and the CI configuration are `export-ignore`d, so `--prefer-dist`
-  installs no longer carry files that look authoritative inside `vendor/` but are not.
-* Two fixture applications in `tests/fixtures/` build the package the way a real project does: one
-  without any editor engine installed, asserting none reaches the bundle, and one with Quill
-  installed and registered, asserting it does. Both run in CI, plus a matrix build against the lowest
-  and highest supported `reka-ui`.
+* The package imports no editor implementation, so `npm run build` no longer fails in projects that
+  never installed Quill. The Quill adapter moved to `resources/js/wysiwyg/QuillEditor.vue`.
+* Drop `quill-image-resize-module` — unmaintained since 2022 and pinned to Quill 1. Registering Quill
+  now needs `vue-quilly quill` instead of three packages.
+* `package.json` declares the real import closure as `peerDependencies` with supported ranges
+  (`reka-ui: ^2.9.4` among them), editor engines optional. It previously listed `reka-ui` as a
+  dependency, which resolves nothing. Nothing to do unless your versions fall outside a range.
+* The manifest, lockfile and CI config are `export-ignore`d, keeping dist installs to what consumers
+  actually use.
+* Two fixture applications in `tests/fixtures/` build the package the way a real project does and
+  assert, in CI, that an engine reaches the bundle only when registered.
 
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.
