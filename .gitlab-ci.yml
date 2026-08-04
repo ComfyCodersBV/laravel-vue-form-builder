@@ -1,6 +1,10 @@
 stages:
   - test
 
+.default_rules: &default_rules
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  - if: $CI_COMMIT_BRANCH == "main"
+
 pest:
   stage: test
   image: php:8.5-cli
@@ -17,6 +21,38 @@ pest:
         - composer.json
     paths:
       - vendor/
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
+  rules: *default_rules
+
+# Proves an application without any editor engine installed still builds, and
+# that no engine ends up in its bundle.
+build:bare-app:
+  stage: test
+  image: node:22
+  script:
+    - cd tests/fixtures/bare-app
+    - npm ci
+    - npm run verify
+  cache:
+    key:
+      files:
+        - tests/fixtures/bare-app/package-lock.json
+    paths:
+      - tests/fixtures/bare-app/node_modules/
+  rules: *default_rules
+
+# The opposite case: engine installed, adapter registered, engine expected in
+# the bundle. Keeps bare-app from passing because the adapter broke.
+build:quill-app:
+  stage: test
+  image: node:22
+  script:
+    - cd tests/fixtures/quill-app
+    - npm ci
+    - npm run verify
+  cache:
+    key:
+      files:
+        - tests/fixtures/quill-app/package-lock.json
+    paths:
+      - tests/fixtures/quill-app/node_modules/
+  rules: *default_rules
