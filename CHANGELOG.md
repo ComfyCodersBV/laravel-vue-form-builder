@@ -33,6 +33,21 @@ Without it, those fields render a textarea plus a `console.warn` in development 
 * An unknown or unregistered editor key falls back to a textarea. `textarea` keeps working without
   registration.
 
+**Repository hygiene**, released together with the same change in table-builder and crud-builder:
+
+* `package.json` now declares the package's real import closure as `peerDependencies` with supported
+  ranges — `reka-ui: ^2.9.4`, `vue: ^3.5`, `@inertiajs/vue3: >=2 <4`, `@vueuse/core: >=12 <15`,
+  `lucide-vue-next: >=0.556 <2`, `tailwind-merge: ^3.0`, `clsx: ^2.0`,
+  `class-variance-authority: >=0.7 <1` — with `quill` and `vue-quilly` marked optional. It previously
+  listed `reka-ui` as a `dependency`, which resolves nothing: Vite reads the application's
+  `node_modules`, never this file. Nothing to do on upgrade unless your versions fall outside a range.
+* The manifest, its lockfile and the CI configuration are `export-ignore`d, so `--prefer-dist`
+  installs no longer carry files that look authoritative inside `vendor/` but are not.
+* Two fixture applications in `tests/fixtures/` build the package the way a real project does: one
+  without any editor engine installed, asserting none reaches the bundle, and one with Quill
+  installed and registered, asserting it does. Both run in CI, plus a matrix build against the lowest
+  and highest supported `reka-ui`.
+
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.
 * Add `->searchable()` to the `Select` field for a searchable combobox variant.
