@@ -13,6 +13,7 @@
     - [Key-Value](fields/key-value.md)
     - [Repeater](fields/repeater.md)
     - [WYSIWYG](fields/wysiwyg.md)
+    - [WYSIWYG Adapters](fields/wysiwyg-adapters.md)
     - [Buttons & Actions](fields/buttons.md)
     - [Other Fields](fields/other.md)
 - [Configuration](configuration.md)

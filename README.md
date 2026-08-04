@@ -38,12 +38,15 @@ You can install the package via composer:
 composer require tranquil-tools/laravel-vue-form-builder
 ```
 
-Install the Quill wysiwyg editor dependencies:
+Install the frontend dependency. The package's Vue components are built on [Reka UI](https://reka-ui.com), and Vite
+resolves imports from your app's `node_modules`, so it has to live in your project:
 
 ```cli
-npm install vue-quilly quill quill-image-resize-module
-npm run build
+npm install reka-ui
 ```
+
+A WYSIWYG editor is opt-in. The package imports no editor, so nothing is needed here unless you
+[register one](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/wysiwyg).
 
 Optional: you may publish the config file with:
 

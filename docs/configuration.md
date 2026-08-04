@@ -16,11 +16,13 @@ This creates `config/vue-form-builder.php`.
 
 ```php
 'wysiwyg' => [
-    'default-editor' => 'quill', // 'quill' or 'textarea'
+    'default-editor' => 'quill', // any registered key, or 'textarea'
 ],
 ```
 
 The default editor applies to any `Wysiwyg` field that does not call `->editor()` explicitly.
+
+The key must be [registered in your app entrypoint](fields/wysiwyg#registering-an-editor), otherwise the field renders a textarea. Only `textarea` works without registration.
 
 ### Quill options
 
@@ -38,9 +40,6 @@ Customize the Quill toolbar and modules under `editors.quill.options`:
                     [['list' => 'ordered'], ['list' => 'bullet']],
                     ['link', 'image'],
                     ['clean'],
-                ],
-                'imageResize' => [
-                    'modules' => ['Resize', 'DisplaySize', 'Toolbar'],
                 ],
             ],
         ],

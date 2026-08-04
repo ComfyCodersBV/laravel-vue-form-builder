@@ -2,6 +2,37 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.2.0 - unreleased
+
+**Upgrade note — WYSIWYG editors are now opt-in.**
+
+The package no longer imports any editor implementation. This fixes a build-time problem: because Vite
+resolves bare specifiers against the *application's* `node_modules`, every consumer inherited Quill's
+npm packages and `npm run build` failed without them, even in projects that never render a WYSIWYG field.
+
+If you use `->editor('quill')` (or leave `default-editor` at `quill`), add two lines to your app entrypoint:
+
+```ts
+import QuillEditor from '@form-builder/wysiwyg/QuillEditor.vue';
+import { registerWysiwygEditor } from '@form-builder/wysiwyg/registry';
+
+registerWysiwygEditor('quill', QuillEditor);
+```
+
+Without it, those fields render a textarea plus a `console.warn` in development instead of crashing.
+
+* Add a WYSIWYG editor registry (`@form-builder/wysiwyg/registry`) with `registerWysiwygEditor`,
+  `resolveWysiwygEditor` and `registeredWysiwygEditors`.
+* Add a documented, engine-agnostic adapter contract (`@form-builder/wysiwyg/types`): HTML in, HTML out,
+  with `->options()` passed through untouched as the adapter's `config` prop.
+* Move the Quill adapter to `resources/js/wysiwyg/QuillEditor.vue`. Nothing in the package imports it.
+* Drop `quill-image-resize-module`. It has been unmaintained since 2022 and declares `quill: ^1.2.2`,
+  while this adapter runs Quill 2. Its config block was removed from `vue-form-builder.php`, and the
+  `window.Quill` global plus the Parchment `StyleAttributor` shim that existed only to feed it are gone.
+  Consumers registering Quill now install `vue-quilly quill` — two packages instead of three.
+* An unknown or unregistered editor key falls back to a textarea. `textarea` keeps working without
+  registration.
+
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.
 * Add `->searchable()` to the `Select` field for a searchable combobox variant.

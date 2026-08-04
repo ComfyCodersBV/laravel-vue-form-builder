@@ -22,13 +22,9 @@ The package requires [Reka UI](https://reka-ui.com) for its Vue components. Beca
 npm install reka-ui
 ```
 
-## 3. Install WYSIWYG editor dependencies
+No editor dependencies are needed here. A WYSIWYG editor is opt-in: the package never imports one, so your build stays free of Quill and friends unless you register an editor yourself. See [WYSIWYG](fields/wysiwyg) and [WYSIWYG Adapters](fields/wysiwyg-adapters).
 
-```bash
-npm install vue-quilly quill quill-image-resize-module
-```
-
-## 4. Add the Vite alias
+## 3. Add the Vite alias
 
 Add the `@form-builder` alias to your `vite.config.ts`:
 
@@ -51,7 +47,7 @@ export default defineConfig({
 });
 ```
 
-## 5. Add the Tailwind CSS source
+## 4. Add the Tailwind CSS source
 
 Add an `@source` directive to `resources/css/app.css` so Tailwind scans the package's Vue components:
 
@@ -59,13 +55,13 @@ Add an `@source` directive to `resources/css/app.css` so Tailwind scans the pack
 @source '../../vendor/tranquil-tools/laravel-vue-form-builder/resources/js/**/*.vue';
 ```
 
-## 6. Build assets
+## 5. Build assets
 
 ```bash
 npm run build
 ```
 
-## 7. Publish config (optional)
+## 6. Publish config (optional)
 
 To customize WYSIWYG or reCAPTCHA settings, publish the config file:
 

@@ -1,6 +1,6 @@
 # WYSIWYG Field
 
-A rich text editor field. Uses [Quill](https://quilljs.com) by default, with a plain-textarea fallback.
+A rich text editor field. The editor itself is resolved at runtime from a registry, so the package never imports an editor implementation and your build never inherits one.
 
 ```php
 use TranquilTools\FormBuilder\Fields\Wysiwyg;
@@ -10,22 +10,50 @@ Wysiwyg::make('content')
     ->rules('nullable', 'string')
 ```
 
-> **Dependency:** The Quill editor requires `vue-quilly`, `quill`, and `quill-image-resize-module`. See [Installation](../installation).
+---
+
+## Registering an editor
+
+An editor key only works once the matching component is registered in your app entrypoint (`resources/js/app.ts`). Register it once, use it in any form:
+
+```ts
+import QuillEditor from '@form-builder/wysiwyg/QuillEditor.vue';
+import { registerWysiwygEditor } from '@form-builder/wysiwyg/registry';
+
+registerWysiwygEditor('quill', QuillEditor);
+```
+
+Install the engine's own npm packages alongside it:
+
+```bash
+npm install vue-quilly quill
+```
+
+A field whose editor key is not registered renders a textarea instead of crashing. In development you also get a `console.warn` naming the missing key and every key that *is* registered.
+
+### Available adapters
+
+| Key | Engine | Licence | npm packages | Shipped |
+|---|---|---|---|---|
+| `textarea` | — | — | — | always available, no registration needed |
+| `quill` | [Quill 2](https://quilljs.com) | BSD-3-Clause | `vue-quilly`, `quill` | `@form-builder/wysiwyg/QuillEditor.vue` |
+
+Any other engine plugs in through the [adapter contract](wysiwyg-adapters). Only permissively licensed engines ship as first-party adapters.
 
 ---
 
 ## Choosing an editor
 
-### Use Quill (default)
+### Use a registered editor
 
 ```php
 Wysiwyg::make('content')
     ->editor('quill')
 ```
 
-### Use the textarea fallback
+### Use the textarea
 
-Useful when you only need plain text or want to avoid the Quill dependency:
+Always available, no registration and no npm packages:
 
 ```php
 Wysiwyg::make('content')
@@ -64,3 +92,16 @@ php artisan vendor:publish --tag="vue-form-builder-config"
 ```
 
 See [Configuration → WYSIWYG](../configuration#wysiwyg) for the full options reference.
+
+Whatever `->options()` contains is handed to the adapter as its `config` prop without being inspected. Its shape belongs to the engine you registered, not to this package.
+
+### Quill source-view button
+
+The bundled Quill adapter appends a button that swaps the editor for a raw HTML textarea. Turn it off per field:
+
+```php
+Wysiwyg::make('content')
+    ->options([
+        'showSourceButton' => false,
+    ])
+```
