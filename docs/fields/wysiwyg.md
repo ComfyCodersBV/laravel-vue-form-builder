@@ -95,6 +95,25 @@ See [Configuration → WYSIWYG](../configuration#wysiwyg) for the full options r
 
 Whatever `->options()` contains is handed to the adapter as its `config` prop without being inspected. Its shape belongs to the engine you registered, not to this package.
 
+### Quill themes
+
+The adapter imports `quill/dist/quill.snow.css`, so the default `snow` theme works out of the box.
+Any other theme needs its own stylesheet imported by your application — Quill ships the theme's
+positioning and tooltip styling in that file, so without it a `bubble` editor renders an invisible
+toolbar rather than no toolbar:
+
+```ts
+import 'quill/dist/quill.bubble.css';
+```
+
+```php
+Wysiwyg::make('notes')
+    ->editor('quill')
+    ->options([
+        'theme' => 'bubble',
+    ])
+```
+
 ### Quill source-view button
 
 The bundled Quill adapter appends a button that swaps the editor for a raw HTML textarea. Turn it off per field:
