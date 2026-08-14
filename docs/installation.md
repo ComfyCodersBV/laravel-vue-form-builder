@@ -83,7 +83,7 @@ npm run build
 To customize WYSIWYG or reCAPTCHA settings, publish the config file:
 
 ```bash
-php artisan vendor:publish --tag="laravel-form-builder-config"
+php artisan vendor:publish --tag="form-builder-config"
 ```
 
 This creates `config/form-builder.php`. See [Configuration](configuration) for all options.

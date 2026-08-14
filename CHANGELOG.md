@@ -7,7 +7,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 **Upgrade note — the PHP now lives in `tranquil-tools/laravel-form-builder`.** This package is the
 Vue renderer and requires the core, so `composer update` pulls it in and no application code changes:
 the `TranquilTools\FormBuilder\` namespace is unchanged. Two things move. The config file is now
-`config/form-builder.php`, published with `--tag="laravel-form-builder-config"`; an existing
+`config/form-builder.php`, published with `--tag="form-builder-config"`; an existing
 `config/vue-form-builder.php` still works and its values win, with a deprecation warning under
 `APP_DEBUG`. Translations answer to `form-builder::` as well as the old `vue-form-builder::`.
 

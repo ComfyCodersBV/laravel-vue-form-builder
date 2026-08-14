@@ -3,7 +3,7 @@
 Publish the config file to customize WYSIWYG and reCAPTCHA settings:
 
 ```bash
-php artisan vendor:publish --tag="laravel-form-builder-config"
+php artisan vendor:publish --tag="form-builder-config"
 ```
 
 This creates `config/form-builder.php`. The file belongs to the PHP core,

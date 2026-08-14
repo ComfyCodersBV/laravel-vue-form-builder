@@ -126,7 +126,7 @@ Options passed to `->options()` replace the defaults from the config file for th
 To set global defaults for all `Wysiwyg` fields, publish and edit the config file:
 
 ```bash
-php artisan vendor:publish --tag="laravel-form-builder-config"
+php artisan vendor:publish --tag="form-builder-config"
 ```
 
 See [Configuration → WYSIWYG](../configuration#wysiwyg) for the full options reference.

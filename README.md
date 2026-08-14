@@ -55,7 +55,7 @@ A WYSIWYG editor is opt-in. The package imports no editor, so nothing is needed 
 Optional: you may publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-form-builder-config"
+php artisan vendor:publish --tag="form-builder-config"
 ```
 
 This creates `config/form-builder.php`, which ships with the PHP core.
