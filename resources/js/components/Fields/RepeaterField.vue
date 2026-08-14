@@ -162,7 +162,7 @@ function moveDown(idx: number) {
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error, className, help }">
+    <BaseField v-bind="{ label, name, error, className, help, theme }">
         <div class="space-y-3">
             <div v-for="(row, i) in rows" :key="i"
                  class="rounded-md border border-neutral-200 p-3 dark:border-neutral-700">

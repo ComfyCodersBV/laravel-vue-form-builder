@@ -77,13 +77,13 @@ KeyValue::make('credentials')
 
 ### Configuring the pattern
 
-The default pattern (`password|secret|token`) lives in `config/vue-form-builder.php`
+The default pattern (`password|secret|token`) lives in `config/form-builder.php`
 under `key_value.masked_key_pattern` — a plain regex source (no delimiters, matched
 case-insensitively). Publish the config and change it to affect every `KeyValue`
 field in the app:
 
 ```php
-// config/vue-form-builder.php
+// config/form-builder.php
 'key_value' => [
     'masked_key_pattern' => 'password|secret|token|api_key',
 ],

@@ -5,7 +5,6 @@
 /.github            export-ignore
 /.gitattributes     export-ignore
 /.gitignore         export-ignore
-/phpunit.xml.dist   export-ignore
 /art                export-ignore
 /docs               export-ignore
 /tests              export-ignore
@@ -16,5 +15,12 @@
 /psalm.xml.dist     export-ignore
 /testbench.yaml     export-ignore
 /UPGRADING.md       export-ignore
-/phpstan.neon.dist  export-ignore
-/phpstan-baseline.neon  export-ignore
+/.gitlab-ci.yml     export-ignore
+/vitest.config.mts  export-ignore
+
+# The npm manifest declares supported peer ranges and hosts frontend tooling for
+# CI. It resolves nothing for consumers, because Vite resolves imports against
+# the application's node_modules, never this file. Keeping it out of dist
+# installs removes a manifest that looks authoritative inside vendor/ and is not.
+/package.json       export-ignore
+/package-lock.json  export-ignore

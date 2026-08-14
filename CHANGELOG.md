@@ -2,6 +2,64 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.2.0 - 2026-08-14
+
+**Upgrade note — the PHP now lives in `tranquil-tools/laravel-form-builder`.** This package is the
+Vue renderer and requires the core, so `composer update` pulls it in and no application code changes:
+the `TranquilTools\FormBuilder\` namespace is unchanged. Two things move. The config file is now
+`config/form-builder.php`, published with `--tag="form-builder-config"`; an existing
+`config/vue-form-builder.php` still works and its values win, with a deprecation warning under
+`APP_DEBUG`. Translations answer to `form-builder::` as well as the old `vue-form-builder::`.
+
+**Upgrade note — WYSIWYG editors are now opt-in.** If you use `->editor('quill')`, or leave
+`default-editor` at `quill`, add two lines to your app entrypoint:
+
+```ts
+import QuillEditor from '@form-builder/wysiwyg/QuillEditor.vue';
+import { registerWysiwygEditor } from '@form-builder/wysiwyg/registry';
+
+registerWysiwygEditor('quill', QuillEditor);
+```
+
+Without it those fields render a textarea plus a development warning instead of crashing.
+
+* Add a WYSIWYG editor registry and a documented, engine-agnostic adapter contract: HTML in, HTML out,
+  with `->options()` passed through untouched as the adapter's `config` prop.
+* The package imports no editor implementation, so `npm run build` no longer fails in projects that
+  never installed Quill. The Quill adapter moved to `resources/js/wysiwyg/QuillEditor.vue`.
+* Drop `quill-image-resize-module` — unmaintained since 2022 and pinned to Quill 1. Registering Quill
+  now needs `vue-quilly quill` instead of three packages.
+* Add the `hugerte` and `jodit` adapters, both MIT, both opt-in like Quill. HugeRTE is the community
+  fork of TinyMCE 6 and the migration path off TinyMCE 7's GPL; Jodit is driven through its engine API
+  directly, with only the free `jodit` package supported. A third fixture builds both and asserts they
+  reach the bundle.
+* `package.json` declares the real import closure as `peerDependencies` with supported ranges
+  (`reka-ui: ^2.9.4` among them), editor engines optional. It previously listed `reka-ui` as a
+  dependency, which resolves nothing. Nothing to do unless your versions fall outside a range.
+* The manifest, lockfile and CI config are `export-ignore`d, keeping dist installs to what consumers
+  actually use.
+* Two fixture applications in `tests/fixtures/` build the package the way a real project does and
+  assert, in CI, that an engine reaches the bundle only when registered.
+* Move the PHP core — fields, validation, config, translations, stubs, service provider and the
+  `make:` commands — to `tranquil-tools/laravel-form-builder`, required from here. This package now
+  ships `resources/js` and `docs` only and declares no `autoload`, so exactly one package owns the
+  namespace. What produces schema is core; what reads schema is this renderer.
+* Refuse to render a schema whose major `schemaVersion` this renderer does not implement: an error
+  during development, a console warning in production. A core that adds a field type the renderer
+  does not know can no longer render it as silently nothing.
+* The editor registry guard runs on Node (`npm test`) instead of Pest, since the package no longer
+  contains PHP. Same three assertions.
+* Theme the wrapper, label, help text and error message of every field from `config/form-builder.php`
+  or per field with `->theme([...])`. Layers merge through `tailwind-merge`, so overriding a colour
+  keeps the size. Requires the core at `^1.0.1`. See [Theming](docs/theming.md).
+* `<Form>` accepts a slot per field name, and per field type, replacing that field's rendering
+  entirely. Name beats type. Slots reach fields nested inside a `Repeater` too.
+* Fix: `->class()` was ignored by the checkbox, checkboxes, radio, toggle and WYSIWYG fields, which
+  never passed it on to their wrapper. It now sets the wrapper class on every field type, as
+  documented. If you relied on it doing nothing there, those wrappers change. As part of this the
+  WYSIWYG field stops handing the class to its fallback textarea — that applied only when no editor
+  was registered, and `className` is not part of the adapter contract.
+
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.
 * Add `->searchable()` to the `Select` field for a searchable combobox variant.

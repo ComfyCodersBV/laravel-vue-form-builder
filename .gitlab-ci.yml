@@ -1,22 +1,103 @@
 stages:
   - test
 
-pest:
+.default_rules: &default_rules
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  - if: $CI_COMMIT_BRANCH == "main"
+
+# This package ships no PHP, so its tests run on Node: the editor registry guard
+# on node:test, and the component tests on Vitest. Both read or mount sources
+# rather than building them, which is why the fixture builds below still earn
+# their place.
+test:node:
   stage: test
-  image: php:8.5-cli
-  before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev
-    - docker-php-ext-install zip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    - composer install --no-interaction --prefer-dist --no-progress
+  image: node:22
   script:
-    - vendor/bin/pest --compact
+    - npm ci
+    - npm test
   cache:
     key:
       files:
-        - composer.json
+        - package-lock.json
     paths:
-      - vendor/
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
+      - node_modules/
+  rules: *default_rules
+
+# Every fixture installs the package's own dependencies first. Bare specifiers
+# in resources/js resolve upwards from that file, not from the fixture, so the
+# adapters can only compile against the engines held there as devDependencies.
+# That the engines are resolvable is exactly why bare-app inspects its bundle
+# rather than trusting a failed build.
+
+# Proves an application without any editor engine installed still builds, and
+# that no engine ends up in its bundle.
+build:bare-app:
+  stage: test
+  image: node:22
+  script:
+    - npm ci
+    - cd tests/fixtures/bare-app
+    - npm ci
+    - npm run verify
+  cache:
+    key:
+      files:
+        - tests/fixtures/bare-app/package-lock.json
+    paths:
+      - tests/fixtures/bare-app/node_modules/
+  rules: *default_rules
+
+# Consumers inherit their reka-ui copy from the Laravel Vue starter kit, so they
+# control the version. This builds the bare fixture against both ends of the
+# range declared in package.json, so a major bump on their side cannot break the
+# components silently.
+build:reka-ui-range:
+  stage: test
+  image: node:22
+  parallel:
+    matrix:
+      - REKA_UI_VERSION: ['2.9.4', '2']
+  script:
+    - npm ci
+    - cd tests/fixtures/bare-app
+    - npm ci
+    - npm install --no-save "reka-ui@$REKA_UI_VERSION"
+    - npm run verify
+  rules: *default_rules
+
+# The two adapters without a fixture of their own would otherwise be code that
+# nobody compiles. Both engines installed, both adapters registered, both
+# expected in the bundle.
+build:engines-app:
+  stage: test
+  image: node:22
+  script:
+    - npm ci
+    - cd tests/fixtures/engines-app
+    - npm ci
+    - npm run verify
+  cache:
+    key:
+      files:
+        - tests/fixtures/engines-app/package-lock.json
+    paths:
+      - tests/fixtures/engines-app/node_modules/
+  rules: *default_rules
+
+# The opposite case: engine installed, adapter registered, engine expected in
+# the bundle. Keeps bare-app from passing because the adapter broke.
+build:quill-app:
+  stage: test
+  image: node:22
+  script:
+    - npm ci
+    - cd tests/fixtures/quill-app
+    - npm ci
+    - npm run verify
+  cache:
+    key:
+      files:
+        - tests/fixtures/quill-app/package-lock.json
+    paths:
+      - tests/fixtures/quill-app/node_modules/
+  rules: *default_rules

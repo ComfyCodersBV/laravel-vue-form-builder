@@ -3,10 +3,22 @@
 Publish the config file to customize WYSIWYG and reCAPTCHA settings:
 
 ```bash
-php artisan vendor:publish --tag="vue-form-builder-config"
+php artisan vendor:publish --tag="form-builder-config"
 ```
 
-This creates `config/vue-form-builder.php`.
+This creates `config/form-builder.php`. The file belongs to the PHP core,
+`tranquil-tools/laravel-form-builder`, which this package depends on.
+
+> An existing `config/vue-form-builder.php` from before the core was split out keeps working: its
+> values are merged over `form-builder.php` and win. Rename the file when convenient — the old name
+> logs a deprecation warning while `APP_DEBUG` is on.
+
+---
+
+## Theme
+
+The `theme` block sets the classes for the wrapper, label, help text and error message every field
+renders around its control. See [Theming](theming.md).
 
 ---
 
@@ -16,11 +28,13 @@ This creates `config/vue-form-builder.php`.
 
 ```php
 'wysiwyg' => [
-    'default-editor' => 'quill', // 'quill' or 'textarea'
+    'default-editor' => 'quill', // any registered key, or 'textarea'
 ],
 ```
 
 The default editor applies to any `Wysiwyg` field that does not call `->editor()` explicitly.
+
+The key must be [registered in your app entrypoint](fields/wysiwyg#registering-an-editor), otherwise the field renders a textarea. Only `textarea` works without registration.
 
 ### Quill options
 
@@ -38,9 +52,6 @@ Customize the Quill toolbar and modules under `editors.quill.options`:
                     [['list' => 'ordered'], ['list' => 'bullet']],
                     ['link', 'image'],
                     ['clean'],
-                ],
-                'imageResize' => [
-                    'modules' => ['Resize', 'DisplaySize', 'Toolbar'],
                 ],
             ],
         ],

@@ -19,7 +19,7 @@ const model = computed({
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error, className, help }">
+    <BaseField v-bind="{ label, name, error, className, help, theme }">
         <Textarea
             v-model="model"
             :placeholder="placeholder"

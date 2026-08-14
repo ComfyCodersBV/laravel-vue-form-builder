@@ -167,7 +167,7 @@ function keyInputClass(k: string) {
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error, className, help }">
+    <BaseField v-bind="{ label, name, error, className, help, theme }">
         <div class="space-y-2">
             <div class="grid grid-cols-12 gap-2 text-xs text-neutral-600">
                 <div class="col-span-5">{{ keyLabel }}</div>

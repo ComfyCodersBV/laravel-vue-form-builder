@@ -170,7 +170,7 @@ function selectComboboxOption(option: Option) {
 </script>
 
 <template>
-    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className">
+    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <template v-if="!props.multiple && props.searchable">
             <Popover v-model:open="comboboxOpen">
                 <PopoverTrigger as-child>

@@ -1,3 +1,5 @@
+import type { FormTheme } from '../lib/theme'
+
 export type FieldValue =
     | string
     | number
@@ -16,6 +18,7 @@ export interface Field {
     readonly?: boolean
     disabled?: boolean
     className?: string
+    theme?: Partial<FormTheme>
     modelValue?: FieldValue
     default?: FieldValue
     error?: string | string[]
@@ -30,11 +33,13 @@ export interface Field {
 export type TForm = Record<string, FieldValue>
 
 export interface FormSchema {
+    schemaVersion?: string
     id?: string
     method: 'get' | 'post' | 'put' | 'patch' | 'delete'
     action: string
     defaults: TForm
     fields: Field[]
+    theme?: Partial<FormTheme>
     format?: string
     locale?: string
 }
