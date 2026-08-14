@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
-## 1.2.0 - unreleased
+## 1.2.0 - 2026-08-14
 
 **Upgrade note — the PHP now lives in `tranquil-tools/laravel-form-builder`.** This package is the
 Vue renderer and requires the core, so `composer update` pulls it in and no application code changes:
