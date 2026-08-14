@@ -56,8 +56,30 @@ registerWysiwygEditor('hugerte', HugeRteEditor);
 npm install hugerte @hugerte/hugerte-vue
 ```
 
-The adapter imports the engine, its theme, model, icons and skin, so nothing is fetched from a CDN and no
-`hugerteScriptSrc` is needed. Worth knowing before you commit to it: HugeRTE is maintained by volunteers, its own
+The adapter imports the engine, its theme, model, icons, skin and content stylesheet, so nothing is fetched from a CDN
+and no `hugerteScriptSrc` is needed.
+
+**Plugins are yours to import.** The adapter ships none, because which ones a form needs is your decision. A toolbar
+entry whose plugin was never imported silently takes the whole toolbar down with it, so import each one you configure —
+next to the registration, before any form renders:
+
+```ts
+import 'hugerte/plugins/code';
+import 'hugerte/plugins/link';
+import 'hugerte/plugins/lists';
+```
+
+```php
+Wysiwyg::make('article')
+    ->editor('hugerte')
+    ->options([
+        'menubar' => false,
+        'plugins' => 'lists link code',
+        'toolbar' => 'undo redo | bold italic | bullist numlist | link | code',
+    ])
+```
+
+Worth knowing before you commit to it: HugeRTE is maintained by volunteers, its own
 documentation is still alpha and largely points at the TinyMCE 6 docs, and it cannot take in fixes from TinyMCE 7+
 because those are GPL. Sanitizing on the server is what makes that acceptable — see
 [Sanitize on the server](wysiwyg-adapters#sanitize-on-the-server).
