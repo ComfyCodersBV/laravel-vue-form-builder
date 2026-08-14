@@ -10,6 +10,7 @@ import { createApp, h } from 'vue';
  * quill fails here and the pipeline goes red.
  */
 const schema = {
+    schemaVersion: '1.0',
     id: 'bare-app-form',
     action: '/',
     method: 'POST',

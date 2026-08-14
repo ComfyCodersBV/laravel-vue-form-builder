@@ -30,6 +30,7 @@ export interface Field {
 export type TForm = Record<string, FieldValue>
 
 export interface FormSchema {
+    schemaVersion?: string
     id?: string
     method: 'get' | 'post' | 'put' | 'patch' | 'delete'
     action: string

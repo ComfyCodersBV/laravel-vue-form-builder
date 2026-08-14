@@ -13,6 +13,7 @@ import 'quill/dist/quill.snow.css';
 registerWysiwygEditor('quill', QuillEditor);
 
 const schema = {
+    schemaVersion: '1.0',
     id: 'quill-app-form',
     action: '/',
     method: 'POST',

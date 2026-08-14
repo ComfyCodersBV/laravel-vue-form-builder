@@ -1,6 +1,9 @@
 {
     "name": "@tranquil-tools/laravel-vue-form-builder",
     "private": true,
+    "scripts": {
+        "test": "node --test \"tests/**/*.test.mjs\""
+    },
     "peerDependencies": {
         "@inertiajs/vue3": ">=2 <4",
         "@vueuse/core": ">=12 <15",

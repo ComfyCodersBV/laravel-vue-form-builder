@@ -1,8 +1,8 @@
 # Build fixtures
 
 Two minimal Vite applications that consume `resources/js` through the `@form-builder` alias, the
-same way a real project does. They exist because the Pest guard in `tests/Wysiwyg` reads source
-files, and a real build is the only thing that proves what actually reaches a bundle.
+same way a real project does. They exist because the guard in `tests/wysiwyg` reads source files,
+and a real build is the only thing that proves what actually reaches a bundle.
 
 | Fixture | Installs an engine | Registers an adapter | Asserts |
 |---|---|---|---|

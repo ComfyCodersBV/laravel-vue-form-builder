@@ -3,10 +3,15 @@
 Publish the config file to customize WYSIWYG and reCAPTCHA settings:
 
 ```bash
-php artisan vendor:publish --tag="vue-form-builder-config"
+php artisan vendor:publish --tag="laravel-form-builder-config"
 ```
 
-This creates `config/vue-form-builder.php`.
+This creates `config/form-builder.php`. The file belongs to the PHP core,
+`tranquil-tools/laravel-form-builder`, which this package depends on.
+
+> An existing `config/vue-form-builder.php` from before the core was split out keeps working: its
+> values are merged over `form-builder.php` and win. Rename the file when convenient — the old name
+> logs a deprecation warning while `APP_DEBUG` is on.
 
 ---
 

@@ -5,22 +5,14 @@ stages:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_COMMIT_BRANCH == "main"
 
-pest:
+# This package ships no PHP, so the registry guard runs on Node. It reads the
+# sources rather than building them, which is why the fixture builds below still
+# earn their place.
+guard:editor-registry:
   stage: test
-  image: php:8.5-cli
-  before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev
-    - docker-php-ext-install zip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    - composer install --no-interaction --prefer-dist --no-progress
+  image: node:22
   script:
-    - vendor/bin/pest --compact
-  cache:
-    key:
-      files:
-        - composer.json
-    paths:
-      - vendor/
+    - npm test
   rules: *default_rules
 
 # Proves an application without any editor engine installed still builds, and

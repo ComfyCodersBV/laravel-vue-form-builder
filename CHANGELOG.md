@@ -4,6 +4,13 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 
 ## 1.2.0 - unreleased
 
+**Upgrade note — the PHP now lives in `tranquil-tools/laravel-form-builder`.** This package is the
+Vue renderer and requires the core, so `composer update` pulls it in and no application code changes:
+the `TranquilTools\FormBuilder\` namespace is unchanged. Two things move. The config file is now
+`config/form-builder.php`, published with `--tag="laravel-form-builder-config"`; an existing
+`config/vue-form-builder.php` still works and its values win, with a deprecation warning under
+`APP_DEBUG`. Translations answer to `form-builder::` as well as the old `vue-form-builder::`.
+
 **Upgrade note — WYSIWYG editors are now opt-in.** If you use `->editor('quill')`, or leave
 `default-editor` at `quill`, add two lines to your app entrypoint:
 
@@ -29,6 +36,15 @@ Without it those fields render a textarea plus a development warning instead of 
   actually use.
 * Two fixture applications in `tests/fixtures/` build the package the way a real project does and
   assert, in CI, that an engine reaches the bundle only when registered.
+* Move the PHP core — fields, validation, config, translations, stubs, service provider and the
+  `make:` commands — to `tranquil-tools/laravel-form-builder`, required from here. This package now
+  ships `resources/js` and `docs` only and declares no `autoload`, so exactly one package owns the
+  namespace. What produces schema is core; what reads schema is this renderer.
+* Refuse to render a schema whose major `schemaVersion` this renderer does not implement: an error
+  during development, a console warning in production. A core that adds a field type the renderer
+  does not know can no longer render it as silently nothing.
+* The editor registry guard runs on Node (`npm test`) instead of Pest, since the package no longer
+  contains PHP. Same three assertions.
 
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.

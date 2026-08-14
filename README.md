@@ -38,6 +38,9 @@ You can install the package via composer:
 composer require tranquil-tools/laravel-vue-form-builder
 ```
 
+This is the Vue renderer; it depends on `tranquil-tools/laravel-form-builder`, the PHP core that
+defines the fields, validation and schema. One `require` pulls in both.
+
 Install the frontend dependencies. The package ships raw `.vue` files that your application compiles,
 so their imports resolve against your `node_modules`. Beyond what the Laravel Vue starter kit already
 gives you:
@@ -52,10 +55,10 @@ A WYSIWYG editor is opt-in. The package imports no editor, so nothing is needed 
 Optional: you may publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="vue-form-builder-config"
+php artisan vendor:publish --tag="laravel-form-builder-config"
 ```
 
-The content of the published config can be viewed [here](./config/vue-form-builder.php).
+This creates `config/form-builder.php`, which ships with the PHP core.
 
 Alter you vite.config.ts to add an `@form-builder` alias:
 

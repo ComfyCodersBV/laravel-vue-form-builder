@@ -12,7 +12,15 @@
 composer require tranquil-tools/laravel-vue-form-builder
 ```
 
-The service provider is auto-discovered. No manual registration needed.
+This package is the Vue renderer. It pulls in `tranquil-tools/laravel-form-builder` — the PHP core
+that defines fields, validation, config and the schema — as a dependency, so a single `require` is
+still all you need. The service provider is auto-discovered and the `TranquilTools\FormBuilder\`
+namespace is unchanged, so existing application code keeps working.
+
+Core and renderer share a schema contract. The core stamps every payload with a `schemaVersion`,
+and this package refuses to render a schema whose major version it does not implement: an error
+during development, a console warning in production. Keep both packages on matching majors and the
+check never fires.
 
 ## 2. Install frontend dependencies
 
@@ -75,7 +83,7 @@ npm run build
 To customize WYSIWYG or reCAPTCHA settings, publish the config file:
 
 ```bash
-php artisan vendor:publish --tag="vue-form-builder-config"
+php artisan vendor:publish --tag="laravel-form-builder-config"
 ```
 
-This creates `config/vue-form-builder.php`. See [Configuration](configuration) for all options.
+This creates `config/form-builder.php`. See [Configuration](configuration) for all options.
