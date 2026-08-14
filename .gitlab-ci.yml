@@ -23,12 +23,19 @@ test:node:
       - node_modules/
   rules: *default_rules
 
+# Every fixture installs the package's own dependencies first. Bare specifiers
+# in resources/js resolve upwards from that file, not from the fixture, so the
+# adapters can only compile against the engines held there as devDependencies.
+# That the engines are resolvable is exactly why bare-app inspects its bundle
+# rather than trusting a failed build.
+
 # Proves an application without any editor engine installed still builds, and
 # that no engine ends up in its bundle.
 build:bare-app:
   stage: test
   image: node:22
   script:
+    - npm ci
     - cd tests/fixtures/bare-app
     - npm ci
     - npm run verify
@@ -51,10 +58,30 @@ build:reka-ui-range:
     matrix:
       - REKA_UI_VERSION: ['2.9.4', '2']
   script:
+    - npm ci
     - cd tests/fixtures/bare-app
     - npm ci
     - npm install --no-save "reka-ui@$REKA_UI_VERSION"
     - npm run verify
+  rules: *default_rules
+
+# The two adapters without a fixture of their own would otherwise be code that
+# nobody compiles. Both engines installed, both adapters registered, both
+# expected in the bundle.
+build:engines-app:
+  stage: test
+  image: node:22
+  script:
+    - npm ci
+    - cd tests/fixtures/engines-app
+    - npm ci
+    - npm run verify
+  cache:
+    key:
+      files:
+        - tests/fixtures/engines-app/package-lock.json
+    paths:
+      - tests/fixtures/engines-app/node_modules/
   rules: *default_rules
 
 # The opposite case: engine installed, adapter registered, engine expected in
@@ -63,6 +90,7 @@ build:quill-app:
   stage: test
   image: node:22
   script:
+    - npm ci
     - cd tests/fixtures/quill-app
     - npm ci
     - npm run verify

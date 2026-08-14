@@ -32,6 +32,8 @@ const sources = javascriptSources().map((path) => ({
 
 const adapters = {
     QuillEditor: ['vue-quilly', "from 'quill'", 'quill-image-resize-module'],
+    HugeRteEditor: ['hugerte'],
+    JoditEditor: ["from 'jodit'", "'jodit/"],
 };
 
 test('does not reference editor dependencies outside their own adapter', () => {

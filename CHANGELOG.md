@@ -29,6 +29,10 @@ Without it those fields render a textarea plus a development warning instead of 
   never installed Quill. The Quill adapter moved to `resources/js/wysiwyg/QuillEditor.vue`.
 * Drop `quill-image-resize-module` — unmaintained since 2022 and pinned to Quill 1. Registering Quill
   now needs `vue-quilly quill` instead of three packages.
+* Add the `hugerte` and `jodit` adapters, both MIT, both opt-in like Quill. HugeRTE is the community
+  fork of TinyMCE 6 and the migration path off TinyMCE 7's GPL; Jodit is driven through its engine API
+  directly, with only the free `jodit` package supported. A third fixture builds both and asserts they
+  reach the bundle.
 * `package.json` declares the real import closure as `peerDependencies` with supported ranges
   (`reka-ui: ^2.9.4` among them), editor engines optional. It previously listed `reka-ui` as a
   dependency, which resolves nothing. Nothing to do unless your versions fall outside a range.

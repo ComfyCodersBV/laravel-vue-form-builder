@@ -37,8 +37,46 @@ A field whose editor key is not registered renders a textarea instead of crashin
 |---|---|---|---|---|
 | `textarea` | — | — | — | always available, no registration needed |
 | `quill` | [Quill 2](https://quilljs.com) | BSD-3-Clause | `vue-quilly`, `quill` | `@form-builder/wysiwyg/QuillEditor.vue` |
+| `hugerte` | [HugeRTE](https://github.com/hugerte/hugerte) | MIT | `hugerte`, `@hugerte/hugerte-vue` | `@form-builder/wysiwyg/HugeRteEditor.vue` |
+| `jodit` | [Jodit 4](https://xdsoft.net/jodit/) | MIT | `jodit` | `@form-builder/wysiwyg/JoditEditor.vue` |
 
 Any other engine plugs in through the [adapter contract](wysiwyg-adapters). Only permissively licensed engines ship as first-party adapters.
+
+### HugeRTE
+
+The community fork of TinyMCE 6, made when TinyMCE 7 moved to GPL. Register it the same way:
+
+```ts
+import HugeRteEditor from '@form-builder/wysiwyg/HugeRteEditor.vue';
+
+registerWysiwygEditor('hugerte', HugeRteEditor);
+```
+
+```bash
+npm install hugerte @hugerte/hugerte-vue
+```
+
+The adapter imports the engine, its theme, model, icons and skin, so nothing is fetched from a CDN and no
+`hugerteScriptSrc` is needed. Worth knowing before you commit to it: HugeRTE is maintained by volunteers, its own
+documentation is still alpha and largely points at the TinyMCE 6 docs, and it cannot take in fixes from TinyMCE 7+
+because those are GPL. Sanitizing on the server is what makes that acceptable — see
+[Sanitize on the server](wysiwyg-adapters#sanitize-on-the-server).
+
+### Jodit
+
+```ts
+import JoditEditor from '@form-builder/wysiwyg/JoditEditor.vue';
+
+registerWysiwygEditor('jodit', JoditEditor);
+```
+
+```bash
+npm install jodit
+```
+
+Only the MIT `jodit` package is supported. `jodit-pro` and the OEM builds are out of scope: they are separate
+commercial products under their own terms, and the adapter is written against the free core's API. Jodit needs no Vue
+wrapper package — it is dependency-free TypeScript and the adapter drives the engine directly.
 
 ---
 

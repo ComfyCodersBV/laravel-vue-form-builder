@@ -8,30 +8,39 @@ and a real build is the only thing that proves what actually reaches a bundle.
 |---|---|---|---|
 | `bare-app` | no | no | no editor engine in the bundle |
 | `quill-app` | yes | yes | the Quill adapter *is* in the bundle |
+| `engines-app` | yes | yes | the HugeRTE and Jodit adapters *are* in the bundle |
 
-Run either one with:
+Run any of them with:
 
 ```bash
+npm ci                        # in the package root, for the engines
 cd tests/fixtures/bare-app
 npm ci
 npm run verify
 ```
 
+The first `npm ci` is not optional. Bare specifiers inside `resources/js` resolve upwards from that file, never from a
+fixture below it, so the adapters compile against the engines this package holds as devDependencies. Installing an
+engine in a fixture alone is not enough to build an adapter that imports it.
+
 ## Why the assertion inspects the bundle instead of trusting the build to fail
 
-Node resolution walks upwards out of the fixture. When this package is checked out inside a larger
-project that happens to have `quill` installed — a `vendor/` directory during development, for
-instance — a reintroduced import resolves against that outer `node_modules`, the build stays green,
-and the engine is bundled silently. `verify-bundle.mjs` greps the emitted assets for engine markers,
-which holds in both a standalone clone and a nested checkout.
+Every engine is resolvable from `resources/js`, because the package installs them all as
+devDependencies so its adapters can be compiled. A reintroduced import therefore resolves happily,
+the build stays green, and the engine is bundled silently. The same happens when this package is
+checked out inside a larger project that has an engine installed — a `vendor/` directory during
+development, for instance. Only inspecting the emitted assets catches it, so `verify-bundle.mjs`
+greps them for engine markers.
 
-`quill-app` makes the opposite assertion on purpose. Without it, `bare-app` could pass for the wrong
-reason: a moved, renamed or broken adapter also yields a bundle with no engine in it.
+`quill-app` and `engines-app` make the opposite assertion on purpose. Without them, `bare-app` could
+pass for the wrong reason: a moved, renamed or broken adapter also yields a bundle with no engine in
+it.
 
 ## Maintenance
 
-Both fixtures carry a committed `package-lock.json` so CI can use `npm ci`. Their dependency lists
+Each fixture carries a committed `package-lock.json` so CI can use `npm ci`. Their dependency lists
 are the real import closure of `resources/js` — currently `vue`, `reka-ui`, `lucide-vue-next`,
-`@vueuse/core`, `@inertiajs/vue3`, `tailwind-merge`, `clsx` and `class-variance-authority`. A new
-bare specifier anywhere in the package means adding it here too, which is intentional friction: it
-makes the cost of a new frontend dependency visible in review.
+`@vueuse/core`, `@inertiajs/vue3`, `tailwind-merge`, `clsx` and `class-variance-authority`, plus
+whichever engines that fixture registers. A new bare specifier anywhere in the package means adding
+it here too, which is intentional friction: it makes the cost of a new frontend dependency visible
+in review.

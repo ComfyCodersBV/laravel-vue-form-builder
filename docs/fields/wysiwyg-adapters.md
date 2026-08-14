@@ -82,6 +82,16 @@ Only permissively licensed engines ship as first-party adapters. That is a delib
 
 Engines below that line are supported *through this contract* instead, so the licence choice stays with whoever installs the engine.
 
+Above the line, and therefore shipped: Quill (BSD-3-Clause), HugeRTE (MIT) and Jodit (MIT). For Jodit that means the free
+`jodit` package only — `jodit-pro` and the OEM builds are separate commercial products under their own terms, and no
+first-party adapter targets them.
+
+HugeRTE is the migration path off TinyMCE. It is the community fork of TinyMCE 6, taken when TinyMCE 7 moved to GPL, so
+the configuration you already have largely carries over. Two caveats belong in the decision: it is maintained by
+volunteers rather than a company, and it cannot absorb fixes made upstream in TinyMCE 7+ because those are GPL. The
+mitigation is the same one that applies to every engine here — you sanitize on the server, so a bug in the editor is
+not a hole in your application.
+
 ### TinyMCE 7+
 
 TinyMCE is GPL-2.0-or-later or commercial. Self-hosted builds disable themselves unless you either buy a key or opt in explicitly:

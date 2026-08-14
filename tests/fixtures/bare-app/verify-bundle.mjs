@@ -6,15 +6,18 @@ import path from 'node:path';
  * never installed one.
  *
  * A successful build is not proof on its own. Node resolution walks upwards out
- * of this fixture, so when the fixture sits inside a larger project that does
- * have quill installed, a reintroduced import resolves happily and the build
- * stays green while the engine is silently bundled. Inspecting the artifact is
- * the only check that holds in both a standalone clone and a nested checkout.
+ * of this fixture into the package's own node_modules, where every engine is a
+ * devDependency so the adapters can be compiled. A reintroduced import
+ * therefore resolves happily and the build stays green while the engine is
+ * silently bundled. Inspecting the artifact is the only check that holds.
  */
 const ENGINE_MARKERS = [
     'ql-editor',
     'ql-toolbar',
     'quilly',
+    'tox-toolbar',
+    'jodit-wysiwyg',
+    'jodit_theme_default',
 ];
 
 const assetsDir = path.resolve(import.meta.dirname, 'dist/assets');
