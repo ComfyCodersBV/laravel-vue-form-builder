@@ -2,6 +2,7 @@
 import BaseField from './BaseField.vue'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
+import type { FormTheme } from '../../lib/theme'
 import { computed } from 'vue'
 
 const props = defineProps<{
@@ -15,6 +16,7 @@ const props = defineProps<{
     help?: string
     disabled?: boolean
     readonly?: boolean
+    theme?: Partial<FormTheme>
 }>()
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -43,7 +45,7 @@ const isChecked = computed({
 </script>
 
 <template>
-    <BaseField :label="label" :name="name" :error="error" :help="help">
+    <BaseField :label="label" :name="name" :error="error" :help="help" :theme="theme">
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox

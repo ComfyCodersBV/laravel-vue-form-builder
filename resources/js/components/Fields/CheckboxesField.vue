@@ -88,7 +88,7 @@ function toggle(value: string | number) {
 </script>
 
 <template>
-    <BaseField :label="label" :name="name" :error="error" :help="help">
+    <BaseField :label="label" :name="name" :error="error" :help="help" :theme="theme">
         <div v-if="buttons" class="flex flex-wrap gap-2">
             <button v-for="option in optionsList" :key="String(option.value)" type="button"
                     :disabled="option.disabled || disabled"

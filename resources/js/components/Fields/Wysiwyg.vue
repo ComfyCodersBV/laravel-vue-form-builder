@@ -53,7 +53,7 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
 </script>
 
 <template>
-    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help">
+    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :theme="props.theme">
         <input type="hidden" :name="props.name" :value="model" />
 
         <component

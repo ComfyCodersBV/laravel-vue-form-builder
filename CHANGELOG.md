@@ -45,6 +45,11 @@ Without it those fields render a textarea plus a development warning instead of 
   does not know can no longer render it as silently nothing.
 * The editor registry guard runs on Node (`npm test`) instead of Pest, since the package no longer
   contains PHP. Same three assertions.
+* Theme the wrapper, label, help text and error message of every field from `config/form-builder.php`
+  or per field with `->theme([...])`. Layers merge through `tailwind-merge`, so overriding a colour
+  keeps the size. Requires the core at `^1.0.1`. See [Theming](docs/theming.md).
+* `<Form>` accepts a slot per field name, and per field type, replacing that field's rendering
+  entirely. Name beats type. Slots reach fields nested inside a `Repeater` too.
 
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.

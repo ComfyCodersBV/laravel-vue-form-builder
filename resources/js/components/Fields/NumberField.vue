@@ -118,7 +118,7 @@ function onBeforeInput(e: InputEvent) {
 </script>
 
 <template>
-        <BaseField v-bind="{ label, name, error, className, help }">
+        <BaseField v-bind="{ label, name, error, className, help, theme }">
             <div class="flex w-full">
             <span
                 v-if="prepend"

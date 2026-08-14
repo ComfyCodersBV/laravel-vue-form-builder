@@ -58,7 +58,7 @@ function onUpdateInternal(key: string) {
 </script>
 
 <template>
-  <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help">
+  <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :theme="props.theme">
     <RadioGroup
       v-model="internalKey"
       :disabled="props.disabled || props.readonly"

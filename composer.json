@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "tranquil-tools/laravel-form-builder": "^1.0"
+        "tranquil-tools/laravel-form-builder": "^1.0.1"
     },
     "config": {
         "sort-packages": true

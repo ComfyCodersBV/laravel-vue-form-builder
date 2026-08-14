@@ -50,7 +50,7 @@ const model = computed<boolean>({
 </script>
 
 <template>
-    <BaseField :label="label" :name="name" :error="error" :help="help">
+    <BaseField :label="label" :name="name" :error="error" :help="help" :theme="theme">
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Switch

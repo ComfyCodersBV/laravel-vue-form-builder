@@ -1,2 +1,5 @@
 export { default as Form } from "./components/Form.vue"
-export type { FormSchema } from "./types/form-builder"
+export { DEFAULT_THEME, mergeTheme } from "./lib/theme"
+export type { FormTheme } from "./lib/theme"
+export type { FieldSlotProps } from "./lib/field-slots"
+export type { Field, FormSchema } from "./types/form-builder"

@@ -5,14 +5,22 @@ stages:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_COMMIT_BRANCH == "main"
 
-# This package ships no PHP, so the registry guard runs on Node. It reads the
-# sources rather than building them, which is why the fixture builds below still
-# earn their place.
-guard:editor-registry:
+# This package ships no PHP, so its tests run on Node: the editor registry guard
+# on node:test, and the component tests on Vitest. Both read or mount sources
+# rather than building them, which is why the fixture builds below still earn
+# their place.
+test:node:
   stage: test
   image: node:22
   script:
+    - npm ci
     - npm test
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
   rules: *default_rules
 
 # Proves an application without any editor engine installed still builds, and

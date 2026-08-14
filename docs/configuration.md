@@ -15,6 +15,13 @@ This creates `config/form-builder.php`. The file belongs to the PHP core,
 
 ---
 
+## Theme
+
+The `theme` block sets the classes for the wrapper, label, help text and error message every field
+renders around its control. See [Theming](theming.md).
+
+---
+
 ## WYSIWYG
 
 ### Default editor

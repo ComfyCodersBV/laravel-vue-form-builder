@@ -1,5 +1,7 @@
     <script setup lang="ts">
     import { useFormContext } from '@inertiajs/vue3'
+    import { inject } from 'vue'
+    import { fieldSlotsKey } from '../lib/field-slots'
     import type { Field } from '../types/form-builder'
 
     import Button from './Fields/Button.vue'
@@ -58,6 +60,27 @@
         return field.type ? fieldComponents[field.type] : undefined
     }
 
+    const fieldSlots = inject(fieldSlotsKey, {})
+
+    function slotFor(field: Field) {
+        return (field.name ? fieldSlots[field.name] : undefined) ?? (field.type ? fieldSlots[field.type] : undefined)
+    }
+
+    function slotPropsFor(field: Field) {
+        const name = field.name ?? ''
+
+        return {
+            field,
+            form,
+            error: form.errors?.[name],
+            modelValue: form[name],
+            'onUpdate:modelValue': (value: any) => {
+                form[name] = value
+                onFieldChange?.(name, value)
+            },
+        }
+    }
+
     function isVisible(field: Field): boolean {
         if (! field.condition) {
             return true
@@ -83,7 +106,12 @@
         <template v-for="(field, i) in fields" :key="field.name ?? i">
             <template v-if="isVisible(field)">
                 <component
-                    v-if="componentFor(field)"
+                    v-if="slotFor(field)"
+                    :is="slotFor(field)"
+                    v-bind="slotPropsFor(field)"
+                />
+                <component
+                    v-else-if="componentFor(field)"
                     :is="componentFor(field)"
                     v-bind="{ ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }"
                     v-model="form[field.name]"

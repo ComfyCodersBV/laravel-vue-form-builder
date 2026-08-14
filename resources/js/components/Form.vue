@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
+import { computed, provide, useSlots } from 'vue'
 import FormRenderer from './FormRenderer.vue'
+import { fieldSlotsKey } from '../lib/field-slots'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
+import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
 import { FormSchema } from '../types/form-builder'
 
 const { schema, options, onFieldChange, fieldOverrides } = defineProps<{
@@ -14,6 +17,9 @@ const { schema, options, onFieldChange, fieldOverrides } = defineProps<{
 const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
 
 assertSupportedSchemaVersion(schema.schemaVersion)
+
+provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, schema.theme)))
+provide(fieldSlotsKey, useSlots())
 
 const raw = (schema as any).defaults ?? {}
 const formData: Record<string, any> = Array.isArray(raw) ? {} : { ...raw }
