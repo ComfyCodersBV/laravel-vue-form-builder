@@ -23,6 +23,19 @@ The first `npm ci` is not optional. Bare specifiers inside `resources/js` resolv
 fixture below it, so the adapters compile against the engines this package holds as devDependencies. Installing an
 engine in a fixture alone is not enough to build an adapter that imports it.
 
+That same rule bites the application you develop this package inside. Once these node_modules exist, its build resolves
+`vue` and `@inertiajs/vue3` here rather than in the application, ending up with two copies of each — and a second
+Inertia brings a second, empty page store, so the first form submission throws instead of navigating. Add the packages
+that must stay singletons to the application's Vite config:
+
+```ts
+resolve: {
+    dedupe: ['@inertiajs/vue3', 'reka-ui', 'vue'],
+}
+```
+
+Applications that install this package normally never see this: Composer does not ship `node_modules`.
+
 ## Why the assertion inspects the bundle instead of trusting the build to fail
 
 Every engine is resolvable from `resources/js`, because the package installs them all as
