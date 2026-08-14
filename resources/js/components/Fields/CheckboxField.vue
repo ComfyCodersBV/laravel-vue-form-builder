@@ -16,6 +16,7 @@ const props = defineProps<{
     help?: string
     disabled?: boolean
     readonly?: boolean
+    className?: string
     theme?: Partial<FormTheme>
 }>()
 
@@ -45,7 +46,7 @@ const isChecked = computed({
 </script>
 
 <template>
-    <BaseField :label="label" :name="name" :error="error" :help="help" :theme="theme">
+    <BaseField :label="label" :name="name" :error="error" :help="help" :class-name="className" :theme="theme">
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox

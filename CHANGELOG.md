@@ -50,6 +50,11 @@ Without it those fields render a textarea plus a development warning instead of 
   keeps the size. Requires the core at `^1.0.1`. See [Theming](docs/theming.md).
 * `<Form>` accepts a slot per field name, and per field type, replacing that field's rendering
   entirely. Name beats type. Slots reach fields nested inside a `Repeater` too.
+* Fix: `->class()` was ignored by the checkbox, checkboxes, radio, toggle and WYSIWYG fields, which
+  never passed it on to their wrapper. It now sets the wrapper class on every field type, as
+  documented. If you relied on it doing nothing there, those wrappers change. As part of this the
+  WYSIWYG field stops handing the class to its fallback textarea — that applied only when no editor
+  was registered, and `className` is not part of the adapter contract.
 
 ## 1.1.2 - 2026-07-30
 * Add `->stepper()` to the `Number` field, rendering increment/decrement buttons around the input.

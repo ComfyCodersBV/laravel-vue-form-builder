@@ -53,7 +53,7 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
 </script>
 
 <template>
-    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :theme="props.theme">
+    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <input type="hidden" :name="props.name" :value="model" />
 
         <component
@@ -71,7 +71,6 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
                 :placeholder="props.placeholder"
                 :disabled="props.disabled"
                 :readonly="props.readonly"
-                :class-name="props.className"
             />
 
             <div

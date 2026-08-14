@@ -64,6 +64,33 @@ describe('theme', () => {
         expect(wrapper.classes()).toEqual(['flex', 'gap-2']);
     });
 
+    /**
+     * Every field hand-writes the props it forwards to BaseField, so a field
+     * type is one forgotten prop away from silently ignoring `->class()`.
+     * Five of them did exactly that until this test existed.
+     */
+    it.each([
+        ['text', {}],
+        ['textarea', {}],
+        ['number', {}],
+        ['date', {}],
+        ['file', {}],
+        ['keyvalue', {}],
+        ['wysiwyg', { editor: 'quill' }],
+        ['checkbox', {}],
+        ['toggle', {}],
+        ['select', { options: { a: 'A' } }],
+        ['checkboxes', { options: { a: 'A' } }],
+        ['radio', { options: { a: 'A' } }],
+        ['repeater', { fields: [{ name: 'row', type: 'text' }] }],
+    ])('lets className replace the wrapper of a %s field', (type, extra) => {
+        const wrapper = wrapperOf(
+            schemaWith({}, { type, className: 'custom-wrapper', ...extra }),
+        );
+
+        expect(wrapper.classes()).toContain('custom-wrapper');
+    });
+
     it('themes the error and help elements too', () => {
         const wrapper = wrapperOf(
             schemaWith({ theme: { help: 'text-xs italic', error: 'text-orange-600' } }),
