@@ -54,6 +54,10 @@ it.
 Each fixture carries a committed `package-lock.json` so CI can use `npm ci`. Their dependency lists
 are the real import closure of `resources/js` — currently `vue`, `reka-ui`, `lucide-vue-next`,
 `@vueuse/core`, `@inertiajs/vue3`, `tailwind-merge`, `clsx` and `class-variance-authority`, plus
-whichever engines that fixture registers. A new bare specifier anywhere in the package means adding
+whichever engines that fixture registers, plus `typescript`. That last one is not imported by
+anything: the Vue SFC compiler needs it to resolve a type declared in another file, which every
+field component does, and without it the build fails with 24 "Failed to resolve extends base type"
+errors. Keep it on 5.x — the compiler cannot read TypeScript 7. A new bare specifier anywhere in
+the package means adding
 it here too, which is intentional friction: it makes the cost of a new frontend dependency visible
 in review.
