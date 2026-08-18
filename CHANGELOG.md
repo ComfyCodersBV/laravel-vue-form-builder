@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.2.1 - 2026-08-18
+* Bump nanoid to 3.3.18 to close the advisory
+
 ## 1.2.0 - 2026-08-14
 
 **Upgrade note — the PHP now lives in `tranquil-tools/laravel-form-builder`.** This package is the
