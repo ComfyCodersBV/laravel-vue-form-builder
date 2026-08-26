@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.2.2 - 2026-08-26
+
+* The search field of a searchable `Select` and of `MultiSelect` now receives focus as soon as the dropdown opens, so
+  you can type without clicking the field first.
+
 ## 1.2.1 - 2026-08-18
 * Bump nanoid to 3.3.18 to close the advisory
 

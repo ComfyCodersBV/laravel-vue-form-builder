@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, nextTick, watch, onMounted } from 'vue'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 import { Button } from '../button'
 import { Input } from '../input'
@@ -39,6 +39,14 @@ watch(open, (o) => {
 })
 
 const query = ref('')
+const searchInput = ref<{ $el?: HTMLInputElement } | null>(null)
+
+function focusSearchInput(event: Event) {
+  event.preventDefault()
+
+  nextTick(() => searchInput.value?.$el?.focus())
+}
+
 const selected = computed<Array<string | number>>({
   get: () => (Array.isArray(props.modelValue) ? props.modelValue : []),
   set: (arr) => emit('update:modelValue', arr),
@@ -105,9 +113,9 @@ function labelFor(val: string | number) {
         <ChevronsUpDown class="ml-auto h-4 w-4 opacity-50" />
       </button>
     </PopoverTrigger>
-    <PopoverContent align="start" :style="{ width: contentWidth }" class="p-2">
+    <PopoverContent align="start" :style="{ width: contentWidth }" class="p-2" @open-auto-focus="focusSearchInput">
       <div class="flex items-center gap-2 pb-2 border-b">
-        <Input v-model="query" placeholder="Zoeken..." class="h-8" />
+        <Input ref="searchInput" v-model="query" placeholder="Zoeken..." class="h-8" />
         <Button type="button" variant="outline" size="sm" @click="clearAll" :disabled="!selected.length">Clear</Button>
       </div>
       <div class="max-h-64 overflow-auto pt-2">
