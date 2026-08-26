@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { ChevronsUpDown } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 interface Option { value: string | number; label: string }
 type Options = Record<string, string> | Array<Option> | Array<string | number>;
@@ -151,6 +151,13 @@ function onUpdateInternal(value: unknown) {
 
 const comboboxOpen = ref(false);
 const comboboxQuery = ref('');
+const comboboxSearchInput = ref<{ $el?: HTMLInputElement } | null>(null);
+
+function focusComboboxSearchInput(event: Event) {
+    event.preventDefault();
+
+    nextTick(() => comboboxSearchInput.value?.$el?.focus());
+}
 
 const comboboxFilteredOptions = computed(() => {
     if (!comboboxQuery.value) {
@@ -190,8 +197,8 @@ function selectComboboxOption(option: Option) {
                         <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
-                    <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
+                <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2" @open-auto-focus="focusComboboxSearchInput">
+                    <Input ref="comboboxSearchInput" v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
                     <div class="max-h-64 overflow-auto">
                         <button
                             v-for="option in comboboxFilteredOptions"
