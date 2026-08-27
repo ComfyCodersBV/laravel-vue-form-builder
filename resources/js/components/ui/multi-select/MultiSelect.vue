@@ -35,17 +35,15 @@ onMounted(() => {
 })
 
 watch(open, (o) => {
-  if (o && triggerRef.value) contentWidth.value = `${triggerRef.value.getBoundingClientRect().width}px`
+  if (!o) return
+
+  if (triggerRef.value) contentWidth.value = `${triggerRef.value.getBoundingClientRect().width}px`
+
+  nextTick(() => requestAnimationFrame(() => searchWrapper.value?.querySelector('input')?.focus()))
 })
 
 const query = ref('')
-const searchInput = ref<{ $el?: HTMLInputElement } | null>(null)
-
-function focusSearchInput(event: Event) {
-  event.preventDefault()
-
-  nextTick(() => searchInput.value?.$el?.focus())
-}
+const searchWrapper = ref<HTMLElement | null>(null)
 
 const selected = computed<Array<string | number>>({
   get: () => (Array.isArray(props.modelValue) ? props.modelValue : []),
@@ -113,9 +111,9 @@ function labelFor(val: string | number) {
         <ChevronsUpDown class="ml-auto h-4 w-4 opacity-50" />
       </button>
     </PopoverTrigger>
-    <PopoverContent align="start" :style="{ width: contentWidth }" class="p-2" @open-auto-focus="focusSearchInput">
-      <div class="flex items-center gap-2 pb-2 border-b">
-        <Input ref="searchInput" v-model="query" placeholder="Zoeken..." class="h-8" />
+    <PopoverContent align="start" :style="{ width: contentWidth }" class="p-2">
+      <div ref="searchWrapper" class="flex items-center gap-2 pb-2 border-b">
+        <Input v-model="query" placeholder="Zoeken..." class="h-8" />
         <Button type="button" variant="outline" size="sm" @click="clearAll" :disabled="!selected.length">Clear</Button>
       </div>
       <div class="max-h-64 overflow-auto pt-2">
