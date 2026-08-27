@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.2.3 - 2026-08-27
+
+* Fix the autofocus of the search field in a searchable `Select` and in `MultiSelect`: it relied on the `openAutoFocus`
+  event of the popover, which does not fire in every host application. The focus is now applied when the dropdown opens.
+
 ## 1.2.2 - 2026-08-26
 
 * The search field of a searchable `Select` and of `MultiSelect` now receives focus as soon as the dropdown opens, so

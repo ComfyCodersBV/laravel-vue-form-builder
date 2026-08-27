@@ -151,13 +151,15 @@ function onUpdateInternal(value: unknown) {
 
 const comboboxOpen = ref(false);
 const comboboxQuery = ref('');
-const comboboxSearchInput = ref<{ $el?: HTMLInputElement } | null>(null);
+const comboboxSearchWrapper = ref<HTMLElement | null>(null);
 
-function focusComboboxSearchInput(event: Event) {
-    event.preventDefault();
+watch(comboboxOpen, (open) => {
+    if (!open) {
+        return;
+    }
 
-    nextTick(() => comboboxSearchInput.value?.$el?.focus());
-}
+    nextTick(() => requestAnimationFrame(() => comboboxSearchWrapper.value?.querySelector('input')?.focus()));
+});
 
 const comboboxFilteredOptions = computed(() => {
     if (!comboboxQuery.value) {
@@ -197,8 +199,10 @@ function selectComboboxOption(option: Option) {
                         <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2" @open-auto-focus="focusComboboxSearchInput">
-                    <Input ref="comboboxSearchInput" v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
+                <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
+                    <div ref="comboboxSearchWrapper">
+                        <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
+                    </div>
                     <div class="max-h-64 overflow-auto">
                         <button
                             v-for="option in comboboxFilteredOptions"
