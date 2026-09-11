@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.2.4 - 2026-09-11
+
+* Fix a checkbox or toggle nobody touches being submitted as an empty string. Laravel's `ConvertEmptyStringsToNull`
+  middleware turns that into `null`, which a `NOT NULL` boolean column refuses, so saving a form with an unticked box
+  ended in an integrity constraint violation. Such a field now starts on its own `falseValue`, the same value it gets
+  when you tick it off yourself. A stored `false` still reads as false, and a stored `null` is read as false too.
+
 ## 1.2.3 - 2026-08-27
 
 * Fix the autofocus of the search field in a searchable `Select` and in `MultiSelect`: it relied on the `openAutoFocus`
