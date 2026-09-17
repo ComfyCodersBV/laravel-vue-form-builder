@@ -14,6 +14,7 @@ export interface Field {
     label?: string
     condition?: string
     help?: string
+    fullWidth?: boolean
     placeholder?: string
     readonly?: boolean
     disabled?: boolean

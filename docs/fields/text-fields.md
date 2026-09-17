@@ -100,7 +100,7 @@ Textarea::make('description')
 
 ## Color
 
-A color picker input.
+A native color picker next to a text input, so a value can be picked or typed. The text input is the value that gets submitted; the picker falls back to `#000000` while the typed value is not yet a complete `#rrggbb`.
 
 ```php
 use TranquilTools\FormBuilder\Fields\Color;
@@ -108,6 +108,19 @@ use TranquilTools\FormBuilder\Fields\Color;
 Color::make('brand_color')
     ->label('Brand color')
     ->default('#3b82f6')
+```
+
+### Swatches
+
+Pass `swatches` to show a row of preset colors under the input. Clicking one fills the field, and the selected swatch is marked with a ring.
+
+```vue
+<template>
+    <Form
+        :schema="form"
+        :field-overrides="{ brand_color: { swatches: ['#3b82f6', '#ef4444', '#22c55e'] } }"
+    />
+</template>
 ```
 
 ---

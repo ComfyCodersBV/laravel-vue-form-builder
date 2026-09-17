@@ -1,85 +1,23 @@
     <script setup lang="ts">
     import { useFormContext } from '@inertiajs/vue3'
-    import { inject } from 'vue'
-    import { fieldSlotsKey } from '../lib/field-slots'
+    import FormField from './FormField.vue'
     import type { Field } from '../types/form-builder'
 
-    import Button from './Fields/Button.vue'
-    import CheckboxField from './Fields/CheckboxField.vue'
-    import CheckboxesField from './Fields/CheckboxesField.vue'
-    import DateField from './Fields/DateField.vue'
-    import DeleteButtonField from './Fields/DeleteButtonField.vue'
-    import HiddenField from './Fields/HiddenField.vue'
-    import NumberField from './Fields/NumberField.vue'
-    import RadioGroupField from './Fields/RadioGroupField.vue'
-    import SelectField from './Fields/SelectField.vue'
-    import SubmitButton from './Fields/SubmitButton.vue'
-    import TextField from './Fields/TextField.vue'
-    import TextareaField from './Fields/TextareaField.vue'
-    import ToggleField from './Fields/ToggleField.vue'
-    import FileField from './Fields/FileField.vue';
-    import KeyValueField from './Fields/KeyValueField.vue'
-    import RepeaterField from './Fields/RepeaterField.vue'
-    import Wysiwyg from './Fields/Wysiwyg.vue';
-    import RecaptchaField from './Fields/RecaptchaField.vue'
-
-    const { fields, form: propForm, onFieldChange, fieldOverrides } = defineProps<{
+    const { fields, form: propForm, onFieldChange, fieldOverrides, columns = 1 } = defineProps<{
         fields: Field[]
         form?: any
         onFieldChange?: (field: string, value: any) => void
         fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
+        columns?: 1 | 2
     }>()
 
+    const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden']
+
+    function spansFullWidth(field: Field): boolean {
+        return field.fullWidth === true || FULL_WIDTH_TYPES.includes(field.type ?? '')
+    }
+
     const form = propForm ?? useFormContext()
-
-    const fieldComponents: Record<string, any> = {
-        button: Button,
-        checkbox: CheckboxField,
-        checkboxes: CheckboxesField,
-        color: TextField,
-        date: DateField,
-        delete: DeleteButtonField,
-        email: TextField,
-        file: FileField,
-        hidden: HiddenField,
-        keyvalue: KeyValueField,
-        number: NumberField,
-        password: TextField,
-        radio: RadioGroupField,
-        recaptcha: RecaptchaField,
-        repeater: RepeaterField,
-        select: SelectField,
-        submit: SubmitButton,
-        text: TextField,
-        textarea: TextareaField,
-        toggle: ToggleField,
-        wysiwyg: Wysiwyg,
-    }
-
-    function componentFor(field: Field) {
-        return field.type ? fieldComponents[field.type] : undefined
-    }
-
-    const fieldSlots = inject(fieldSlotsKey, {})
-
-    function slotFor(field: Field) {
-        return (field.name ? fieldSlots[field.name] : undefined) ?? (field.type ? fieldSlots[field.type] : undefined)
-    }
-
-    function slotPropsFor(field: Field) {
-        const name = field.name ?? ''
-
-        return {
-            field,
-            form,
-            error: form.errors?.[name],
-            modelValue: form[name],
-            'onUpdate:modelValue': (value: any) => {
-                form[name] = value
-                onFieldChange?.(name, value)
-            },
-        }
-    }
 
     function isVisible(field: Field): boolean {
         if (! field.condition) {
@@ -103,24 +41,28 @@
     </script>
 
     <template>
-        <template v-for="(field, i) in fields" :key="field.name ?? i">
-            <template v-if="isVisible(field)">
-                <component
-                    v-if="slotFor(field)"
-                    :is="slotFor(field)"
-                    v-bind="slotPropsFor(field)"
-                />
-                <component
-                    v-else-if="componentFor(field)"
-                    :is="componentFor(field)"
-                    v-bind="{ ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }"
-                    v-model="form[field.name]"
-                    :error="form.errors[field.name]"
-                    @update:modelValue="onFieldChange?.(field.name, $event)"
-                />
-                <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                    Unknown field type: <code class="font-mono">{{ field.type }}</code>
+        <div v-if="columns === 2" class="grid gap-x-6 gap-y-4 md:grid-cols-2">
+            <template v-for="(field, i) in fields" :key="field.name ?? i">
+                <div v-if="isVisible(field)" :class="spansFullWidth(field) ? 'md:col-span-2' : ''">
+                    <FormField
+                        :field="field"
+                        :form="form"
+                        :on-field-change="onFieldChange"
+                        :field-overrides="fieldOverrides"
+                    />
                 </div>
+            </template>
+        </div>
+
+        <template v-else>
+            <template v-for="(field, i) in fields" :key="field.name ?? i">
+                <FormField
+                    v-if="isVisible(field)"
+                    :field="field"
+                    :form="form"
+                    :on-field-change="onFieldChange"
+                    :field-overrides="fieldOverrides"
+                />
             </template>
         </template>
     </template>

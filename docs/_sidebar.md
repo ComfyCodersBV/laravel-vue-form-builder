@@ -16,6 +16,7 @@
     - [WYSIWYG Adapters](fields/wysiwyg-adapters.md)
     - [Buttons & Actions](fields/buttons.md)
     - [Other Fields](fields/other.md)
+- [Standalone Components](components.md)
 - [Theming](theming.md)
 - [Configuration](configuration.md)
 - [Artisan Commands](artisan-commands.md)
