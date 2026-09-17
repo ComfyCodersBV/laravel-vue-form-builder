@@ -42,6 +42,10 @@ provide(layoutKey, computed((): FormLayout => layout))
 const raw = (schema as any).defaults ?? {}
 const formData: Record<string, any> = Array.isArray(raw) ? {} : { ...raw }
 
+const BOOLEAN_FIELD_TYPES = ['checkbox', 'toggle']
+
+const isBlank = (value: any) => value === null || typeof value === 'undefined' || value === ''
+
 schema.fields.forEach((field: any) => {
     if (!field?.name) {
         return
@@ -54,6 +58,17 @@ schema.fields.forEach((field: any) => {
 
     const hasExplicit = Object.prototype.hasOwnProperty.call(formData, field.name)
     const fieldHasDefault = typeof field.default !== 'undefined' && field.default !== null && field.default !== ''
+
+    // A checkbox nobody touches has to submit the same value as one that is
+    // ticked off, because an empty string reaches Laravel as null and the
+    // column behind a checkbox rarely takes one. An explicit false stays false.
+    if (BOOLEAN_FIELD_TYPES.includes(field.type)) {
+        if (isBlank(hasExplicit ? formData[field.name] : undefined)) {
+            formData[field.name] = fieldHasDefault ? field.default : (field.falseValue ?? '0')
+        }
+
+        return
+    }
 
     if (!hasExplicit) {
         if (fieldHasDefault) {
