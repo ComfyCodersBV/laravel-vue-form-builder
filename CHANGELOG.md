@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
-## 1.2.4 - 2026-09-11
+## 1.2.4 - 2026-09-17
 
 * Fix a checkbox or toggle nobody touches being submitted as an empty string. Laravel's `ConvertEmptyStringsToNull`
   middleware turns that into `null`, which a `NOT NULL` boolean column refuses, so saving a form with an unticked box
