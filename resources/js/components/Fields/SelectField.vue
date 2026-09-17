@@ -6,7 +6,7 @@ import { MultiSelect } from '../ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { ChevronsUpDown } from 'lucide-vue-next';
+import { ChevronsUpDown, X } from 'lucide-vue-next';
 import { computed, nextTick, ref, watch } from 'vue';
 
 interface Option { value: string | number; label: string }
@@ -22,6 +22,8 @@ interface SelectProps extends Field {
     searchPlaceholder?: string;
     noResultsLabel?: string;
     choosePlaceholder?: string;
+    clearable?: boolean;
+    clearLabel?: string;
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
@@ -36,11 +38,18 @@ const props = withDefaults(defineProps<SelectProps>(), {
     placeholder: undefined,
     readonly: false,
     multiple: false,
+    clearable: false,
+    clearLabel: 'Clear field',
     searchable: false,
     searchPlaceholder: 'Search...',
     noResultsLabel: 'No results',
     choosePlaceholder: 'Choose an option',
 });
+
+function clearValue() {
+    internalKey.value = ''
+    onUpdateInternal('')
+}
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>();
 
@@ -224,6 +233,7 @@ function selectComboboxOption(option: Option) {
         </template>
 
         <template v-else-if="!props.multiple">
+            <div class="flex items-center gap-1">
             <Select
                 v-model="internalKey"
                 :disabled="props.disabled || props.readonly"
@@ -248,6 +258,18 @@ function selectComboboxOption(option: Option) {
                 </SelectContent>
                 <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
             </Select>
+            <button
+                v-if="props.clearable && internalKey !== '' && internalKey !== null && internalKey !== undefined"
+                type="button"
+                class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
+                :title="props.clearLabel"
+                :aria-label="props.clearLabel"
+                :disabled="props.disabled || props.readonly"
+                @click="clearValue"
+            >
+                <X class="size-4" />
+            </button>
+            </div>
         </template>
 
         <template v-else>

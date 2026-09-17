@@ -5,13 +5,30 @@ import FormRenderer from './FormRenderer.vue'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
 import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
+import { layoutKey, type FormLayout } from '../lib/layout'
 import { FormSchema } from '../types/form-builder'
+import { useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
 
-const { schema, options, onFieldChange, fieldOverrides } = defineProps<{
+const {
+    schema,
+    options,
+    onFieldChange,
+    fieldOverrides,
+    transport = 'inertia',
+    submitter,
+    errorAdapter,
+    layout = 'stacked',
+    columns = 1,
+} = defineProps<{
     schema: FormSchema
     options?: Record<string, any>
     onFieldChange?: (field: string, value: any, form: any) => void
     fieldOverrides?: Record<string, Partial<Record<string, any>>>
+    transport?: 'inertia' | 'http'
+    submitter?: HttpFormSubmitter
+    errorAdapter?: HttpFormErrorAdapter
+    layout?: FormLayout
+    columns?: 1 | 2
 }>()
 
 const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
@@ -20,6 +37,7 @@ assertSupportedSchemaVersion(schema.schemaVersion)
 
 provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, schema.theme)))
 provide(fieldSlotsKey, useSlots())
+provide(layoutKey, computed((): FormLayout => layout))
 
 const raw = (schema as any).defaults ?? {}
 const formData: Record<string, any> = Array.isArray(raw) ? {} : { ...raw }
@@ -48,7 +66,9 @@ schema.fields.forEach((field: any) => {
     }
 })
 
-const form = useForm(formData)
+const form = transport === 'http'
+    ? useHttpForm(formData, { submitter, errorAdapter })
+    : useForm(formData)
 
 const submitForm = () => {
     const method = (schema.method ?? 'post').toLowerCase()
@@ -64,6 +84,8 @@ const submitForm = () => {
 
     return (form as any).post(schema.action, opts)
 }
+
+defineExpose({submit: submitForm, form})
 </script>
 
 <template>
@@ -73,6 +95,7 @@ const submitForm = () => {
         @submit.prevent="submitForm"
     >
         <FormRenderer
+            :columns="columns"
             :fields="schema.fields"
             :form="form"
             :on-field-change="onFieldChange ? (field, value) => onFieldChange(field, value, form) : undefined"

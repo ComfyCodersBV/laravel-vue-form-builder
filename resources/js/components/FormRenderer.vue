@@ -7,6 +7,7 @@
     import Button from './Fields/Button.vue'
     import CheckboxField from './Fields/CheckboxField.vue'
     import CheckboxesField from './Fields/CheckboxesField.vue'
+    import ColorField from './Fields/ColorField.vue'
     import DateField from './Fields/DateField.vue'
     import DeleteButtonField from './Fields/DeleteButtonField.vue'
     import HiddenField from './Fields/HiddenField.vue'
@@ -23,12 +24,21 @@
     import Wysiwyg from './Fields/Wysiwyg.vue';
     import RecaptchaField from './Fields/RecaptchaField.vue'
 
-    const { fields, form: propForm, onFieldChange, fieldOverrides } = defineProps<{
+    const { fields, form: propForm, onFieldChange, fieldOverrides, columns = 1 } = defineProps<{
         fields: Field[]
         form?: any
         onFieldChange?: (field: string, value: any) => void
         fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
+        columns?: 1 | 2
     }>()
+
+    const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden']
+
+    function spansFullWidth(field: Field): boolean {
+        return columns === 1
+            || (field as any).fullWidth === true
+            || FULL_WIDTH_TYPES.includes(field.type ?? '')
+    }
 
     const form = propForm ?? useFormContext()
 
@@ -36,7 +46,7 @@
         button: Button,
         checkbox: CheckboxField,
         checkboxes: CheckboxesField,
-        color: TextField,
+        color: ColorField,
         date: DateField,
         delete: DeleteButtonField,
         email: TextField,
@@ -103,8 +113,9 @@
     </script>
 
     <template>
+        <div :class="columns === 2 ? 'grid gap-x-6 gap-y-4 md:grid-cols-2' : 'space-y-4'">
         <template v-for="(field, i) in fields" :key="field.name ?? i">
-            <template v-if="isVisible(field)">
+            <div v-if="isVisible(field)" :class="columns === 2 && spansFullWidth(field) ? 'md:col-span-2' : ''">
                 <component
                     v-if="slotFor(field)"
                     :is="slotFor(field)"
@@ -121,6 +132,7 @@
                 <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                     Unknown field type: <code class="font-mono">{{ field.type }}</code>
                 </div>
-            </template>
+            </div>
         </template>
+        </div>
     </template>
