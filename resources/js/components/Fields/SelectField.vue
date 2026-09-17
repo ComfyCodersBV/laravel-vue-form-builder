@@ -46,11 +46,6 @@ const props = withDefaults(defineProps<SelectProps>(), {
     choosePlaceholder: 'Choose an option',
 });
 
-function clearValue() {
-    internalKey.value = ''
-    onUpdateInternal('')
-}
-
 const emit = defineEmits<{ 'update:modelValue': [any] }>();
 
 const optionLabel = computed(() => props.optionLabel!);
@@ -185,90 +180,113 @@ function selectComboboxOption(option: Option) {
     comboboxOpen.value = false;
     comboboxQuery.value = '';
 }
+
+const isClearable = computed(() => props.clearable
+    && !props.disabled
+    && !props.readonly
+    && internalKey.value !== '');
+
+function clearValue() {
+    onUpdateInternal('');
+}
 </script>
 
 <template>
     <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <template v-if="!props.multiple && props.searchable">
-            <Popover v-model:open="comboboxOpen">
-                <PopoverTrigger as-child>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        :id="props.name"
-                        :disabled="props.disabled || props.readonly"
-                        class="w-full justify-between font-normal"
-                    >
+            <div class="flex items-center gap-1">
+                <Popover v-model:open="comboboxOpen">
+                    <PopoverTrigger as-child>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            :id="props.name"
+                            :disabled="props.disabled || props.readonly"
+                            class="w-full justify-between font-normal"
+                        >
+                            <span class="truncate">
+                                <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
+                                <span v-else class="text-muted-foreground">
+                                    {{ props.placeholder ?? props.choosePlaceholder }}
+                                </span>
+                            </span>
+                            <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
+                        <div ref="comboboxSearchWrapper">
+                            <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
+                        </div>
+                        <div class="max-h-64 overflow-auto">
+                            <button
+                                v-for="option in comboboxFilteredOptions"
+                                :key="String(option.value)"
+                                type="button"
+                                class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+                                :class="String(option.value) === internalKey ? 'bg-accent' : ''"
+                                @click="selectComboboxOption(option)"
+                            >
+                                <span class="truncate" v-html="option.label"></span>
+                            </button>
+                            <div v-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
+                                {{ props.noResultsLabel }}
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+
+                <button
+                    v-if="isClearable"
+                    type="button"
+                    class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
+                    :title="props.clearLabel"
+                    :aria-label="props.clearLabel"
+                    @click="clearValue"
+                >
+                    <X class="size-4" />
+                </button>
+            </div>
+
+            <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
+        </template>
+
+        <template v-else-if="!props.multiple">
+            <div class="flex items-center gap-1">
+                <Select
+                    v-model="internalKey"
+                    :disabled="props.disabled || props.readonly"
+                    @update:model-value="onUpdateInternal"
+                >
+                    <SelectTrigger :id="props.name" class="w-full justify-between">
                         <span class="truncate">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
                                 {{ props.placeholder ?? props.choosePlaceholder }}
                             </span>
                         </span>
-                        <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
-                    <div ref="comboboxSearchWrapper">
-                        <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
-                    </div>
-                    <div class="max-h-64 overflow-auto">
-                        <button
-                            v-for="option in comboboxFilteredOptions"
+                    </SelectTrigger>
+                    <SelectContent class="min-w-[var(--reka-select-trigger-width)]">
+                        <SelectItem
+                            v-for="option in optionsList"
                             :key="String(option.value)"
-                            type="button"
-                            class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
-                            :class="String(option.value) === internalKey ? 'bg-accent' : ''"
-                            @click="selectComboboxOption(option)"
+                            :value="String(option.value)"
                         >
-                            <span class="truncate" v-html="option.label"></span>
-                        </button>
-                        <div v-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
-                            {{ props.noResultsLabel }}
-                        </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
-            <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
-        </template>
+                            <div v-html="option.label" class="flex justify-between items-center w-full"></div>
+                        </SelectItem>
+                    </SelectContent>
+                    <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
+                </Select>
 
-        <template v-else-if="!props.multiple">
-            <div class="flex items-center gap-1">
-            <Select
-                v-model="internalKey"
-                :disabled="props.disabled || props.readonly"
-                @update:model-value="onUpdateInternal"
-            >
-                <SelectTrigger :id="props.name" class="w-full justify-between">
-                    <span class="truncate">
-                        <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
-                        <span v-else class="text-muted-foreground">
-                            {{ props.placeholder ?? props.choosePlaceholder }}
-                        </span>
-                      </span>
-                </SelectTrigger>
-                <SelectContent class="min-w-[var(--reka-select-trigger-width)]">
-                    <SelectItem
-                        v-for="option in optionsList"
-                        :key="String(option.value)"
-                        :value="String(option.value)"
-                    >
-                        <div v-html="option.label" class="flex justify-between items-center w-full"></div>
-                    </SelectItem>
-                </SelectContent>
-                <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
-            </Select>
-            <button
-                v-if="props.clearable && internalKey !== '' && internalKey !== null && internalKey !== undefined"
-                type="button"
-                class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
-                :title="props.clearLabel"
-                :aria-label="props.clearLabel"
-                :disabled="props.disabled || props.readonly"
-                @click="clearValue"
-            >
-                <X class="size-4" />
-            </button>
+                <button
+                    v-if="isClearable"
+                    type="button"
+                    class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
+                    :title="props.clearLabel"
+                    :aria-label="props.clearLabel"
+                    @click="clearValue"
+                >
+                    <X class="size-4" />
+                </button>
             </div>
         </template>
 

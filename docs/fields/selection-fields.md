@@ -63,11 +63,24 @@ Select::make('country')
 
 The search placeholder and "no results" text are translatable, see [Translations](#translations).
 
+### Clearable
+
+A single select keeps its value once something is picked, because a native select has no empty state to go back to. Pass `clearable` to add a button next to the dropdown that empties the field again. It works on a plain and on a searchable select, and is hidden while the field is empty, disabled or readonly.
+
+```vue
+<template>
+    <Form
+        :schema="form"
+        :field-overrides="{ country_id: { clearable: true, clearLabel: 'Clear country' } }"
+    />
+</template>
+```
+
 ---
 
 ## Checkbox
 
-A single checkbox for boolean values. Defaults to submitting `'1'` when checked and `'0'` when unchecked.
+A single checkbox for boolean values. Defaults to submitting `'1'` when checked and `'0'` when unchecked. A checkbox nobody touches submits its `falseValue` as well, so a `NOT NULL` boolean column never receives the `null` that `ConvertEmptyStringsToNull` would otherwise make of an empty value.
 
 ```php
 use TranquilTools\FormBuilder\Fields\Checkbox;

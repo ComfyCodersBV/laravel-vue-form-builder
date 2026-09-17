@@ -2,6 +2,19 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.3.0 - 2026-09-17
+
+* Add `transport="http"` to `Form`, which submits over `fetch` and keeps the page where it is instead of going through
+  Inertia. The built-in submitter sends the CSRF token Laravel expects, switches to `multipart/form-data` with a spoofed
+  `_method` as soon as a field holds a file, and spreads nested values into `filters[status][0]=open` style query
+  parameters. Pass your own `submitter` and `errorAdapter` to talk to an API that answers in another shape.
+* Add `columns="2"` for a responsive two-column form and `layout="horizontal"` for labels beside their control. A
+  single-column form still renders exactly the markup it did before, without a wrapper element around the fields.
+* Add a `ColorField` with optional swatches, a `clearable` single `Select` that can be emptied again, and the
+  `TreeView`, `SortableList` and `Tabs` components for the screens around a form.
+* A field whose name collides with the form API (`data`, `errors`, `reset`, `post`, …) now throws on setup instead of
+  silently replacing that method.
+
 ## 1.2.4 - 2026-09-17
 
 * Fix a checkbox or toggle nobody touches being submitted as an empty string. Laravel's `ConvertEmptyStringsToNull`
