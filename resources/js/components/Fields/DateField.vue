@@ -46,8 +46,8 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
       :min-date="props.minDate"
       :max-date="props.maxDate"
       :week-starts-on="props.weekStartsOn"
-      :format="(props as any).format || 'locale'"
-      :locale="(props as any).locale"
+      :format="props.format || 'locale'"
+      :locale="props.locale"
       :disabled="!!props.disabled"
       :readonly="!!props.readonly"
     />

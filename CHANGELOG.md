@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## Unreleased
+
+* `Date` fields now honour `format` and `locale`. Both were declared on the form schema but not on a field, so the
+  props never reached `DateField` and every date trigger rendered through the browser default: a Dutch admin saw
+  `12/20/2026` for a field configured as `DD-MM-YYYY`. The stored value was never affected.
+
 ## 1.3.0 - 2026-09-17
 
 * Add `transport="http"` to `Form`, which submits over `fetch` and keeps the page where it is instead of going through
