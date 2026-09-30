@@ -3,17 +3,14 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## 1.3.2 - 2026-09-30
-
 * Fix `->if()` conditions on a checkbox or toggle. An unticked field holds its false value (`'0'` by default), which is
   a truthy string in JavaScript, so a field behind `->if('form.is_active')` never disappeared. Conditions now see
   checkbox and toggle fields as real booleans; the values that are submitted stay exactly as they were.
 
 ## 1.3.1 - 2026-09-17
-
 * Allow @vueuse/core 15 in the peer range
 
 ## 1.3.0 - 2026-09-17
-
 * Add `transport="http"` to `Form`, which submits over `fetch` and keeps the page where it is instead of going through
   Inertia. The built-in submitter sends the CSRF token Laravel expects, switches to `multipart/form-data` with a spoofed
   `_method` as soon as a field holds a file, and spreads nested values into `filters[status][0]=open` style query
@@ -26,19 +23,16 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   silently replacing that method.
 
 ## 1.2.4 - 2026-09-17
-
 * Fix a checkbox or toggle nobody touches being submitted as an empty string. Laravel's `ConvertEmptyStringsToNull`
   middleware turns that into `null`, which a `NOT NULL` boolean column refuses, so saving a form with an unticked box
   ended in an integrity constraint violation. Such a field now starts on its own `falseValue`, the same value it gets
   when you tick it off yourself. A stored `false` still reads as false, and a stored `null` is read as false too.
 
 ## 1.2.3 - 2026-08-27
-
 * Fix the autofocus of the search field in a searchable `Select` and in `MultiSelect`: it relied on the `openAutoFocus`
   event of the popover, which does not fire in every host application. The focus is now applied when the dropdown opens.
 
 ## 1.2.2 - 2026-08-26
-
 * The search field of a searchable `Select` and of `MultiSelect` now receives focus as soon as the dropdown opens, so
   you can type without clicking the field first.
 
