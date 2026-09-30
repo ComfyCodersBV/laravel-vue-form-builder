@@ -19,15 +19,43 @@
 
     const form = propForm ?? useFormContext()
 
+    const BOOLEAN_FIELD_TYPES = ['checkbox', 'toggle']
+
+    function isOn(value: any, onValue: any): boolean {
+        if (value === true || value === false) {
+            return value
+        }
+
+        if (value === undefined || value === null) {
+            return false
+        }
+
+        return String(value) === String(onValue ?? '1')
+    }
+
+    function conditionData(data: Record<string, any>): Record<string, any> {
+        const normalized = { ...data }
+
+        fields.forEach((field: any) => {
+            if (! field?.name || ! BOOLEAN_FIELD_TYPES.includes(field.type) || ! (field.name in normalized)) {
+                return
+            }
+
+            normalized[field.name] = isOn(normalized[field.name], field.value)
+        })
+
+        return normalized
+    }
+
     function isVisible(field: Field): boolean {
         if (! field.condition) {
             return true
         }
 
         try {
-            const data: Record<string, any> = typeof (form as any).data === 'function'
+            const data: Record<string, any> = conditionData(typeof (form as any).data === 'function'
                 ? (form as any).data()
-                : { ...form }
+                : { ...form })
 
             const keys = Object.keys(data)
             const values = keys.map((k) => data[k])

@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.3.2 - 2026-09-30
+
+* Fix `->if()` conditions on a checkbox or toggle. An unticked field holds its false value (`'0'` by default), which is
+  a truthy string in JavaScript, so a field behind `->if('form.is_active')` never disappeared. Conditions now see
+  checkbox and toggle fields as real booleans; the values that are submitted stay exactly as they were.
+
 ## 1.3.0 - 2026-09-17
 
 * Add `transport="http"` to `Form`, which submits over `fetch` and keeps the page where it is instead of going through
