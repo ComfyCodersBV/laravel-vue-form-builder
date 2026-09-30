@@ -29,6 +29,8 @@ export interface Field {
     append?: string
     prepend?: string
     tooltip?: string
+    format?: string
+    locale?: string
 }
 
 export type TForm = Record<string, FieldValue>

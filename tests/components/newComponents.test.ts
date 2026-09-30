@@ -3,6 +3,7 @@ import {mount} from '@vue/test-utils'
 import ColorField from '../../resources/js/components/Fields/ColorField.vue'
 import SortableList from '../../resources/js/components/SortableList.vue'
 import TreeView from '../../resources/js/components/TreeView.vue'
+import DateField from '../../resources/js/components/Fields/DateField.vue'
 import Tabs from '../../resources/js/components/Tabs.vue'
 
 describe('ColorField', () => {
@@ -104,5 +105,23 @@ describe('Tabs', () => {
         await wrapper.findAll('[role="tab"] button')[0].trigger('click')
 
         expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    })
+})
+
+describe('DateField', () => {
+    it('renders the trigger with the requested pattern instead of the browser default', () => {
+        const wrapper = mount(DateField, {
+            props: {name: 'from_date', modelValue: '2026-12-20', format: 'DD-MM-YYYY'},
+        })
+
+        expect(wrapper.text()).toContain('20-12-2026')
+    })
+
+    it('falls back to the given locale when no pattern is set', () => {
+        const wrapper = mount(DateField, {
+            props: {name: 'from_date', modelValue: '2026-12-20', locale: 'nl-NL'},
+        })
+
+        expect(wrapper.text()).toContain('20-12-2026')
     })
 })

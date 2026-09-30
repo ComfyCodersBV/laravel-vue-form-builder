@@ -6,6 +6,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * Fix `->if()` conditions on a checkbox or toggle. An unticked field holds its false value (`'0'` by default), which is
   a truthy string in JavaScript, so a field behind `->if('form.is_active')` never disappeared. Conditions now see
   checkbox and toggle fields as real booleans; the values that are submitted stay exactly as they were.
+* `Date` fields now honour `format` and `locale`. Both were declared on the form schema but not on a field, so the
+  props never reached `DateField` and every date trigger rendered through the browser default: a Dutch admin saw
+  `12/20/2026` for a field configured as `DD-MM-YYYY`. The stored value was never affected.
 
 ## 1.3.1 - 2026-09-17
 * Allow @vueuse/core 15 in the peer range
