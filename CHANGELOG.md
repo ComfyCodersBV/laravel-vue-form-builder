@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.3.3 - 2026-10-01
+* Fix modal dialogs ignoring every click inside them. `DialogContent` bound all of its props onto reka's
+  `DialogContent`, and Vue fills unset boolean props with `false`, so reka received `trapFocus: false` and
+  `disableOutsidePointerEvents: false` instead of its modal defaults. The page kept `pointer-events: none` while the
+  content never got it back, so a click inside landed on the overlay and closed the dialog. It now forwards only the
+  props that were set, and forwards reka's events (`escapeKeyDown`, `pointerDownOutside`, `focusOutside`,
+  `interactOutside`, `openAutoFocus`, `closeAutoFocus`) so an owner can intercept a dismissal.
+
 ## 1.3.2 - 2026-09-30
 * Fix `->if()` conditions on a checkbox or toggle. An unticked field holds its false value (`'0'` by default), which is
   a truthy string in JavaScript, so a field behind `->if('form.is_active')` never disappeared. Conditions now see
