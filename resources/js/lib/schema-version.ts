@@ -11,7 +11,7 @@
  * That schema is by definition the shape this renderer already handles, so it is a
  * development-time nudge to upgrade and nothing more.
  */
-export const SUPPORTED_SCHEMA_VERSION = '1.0';
+export const SUPPORTED_SCHEMA_VERSION = '1.2';
 
 const majorOf = (version: string): string => version.split('.')[0];
 

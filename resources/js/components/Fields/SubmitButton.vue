@@ -5,6 +5,8 @@ import { cn } from '../../lib/utils';
 
 interface Props {
     label?: string
+    labelHtml?: string
+    ariaLabel?: string
     cancelLabel?: string
     confirmTitle?: string
     confirmMessage?: string
@@ -19,6 +21,8 @@ const mergedClassName = computed(() => cn('w-fit', props.className));
 <template>
     <ButtonField
         :label="label"
+        :label-html="labelHtml"
+        :aria-label="ariaLabel"
         :cancel-label="cancelLabel"
         :confirm-title="confirmTitle"
         :confirm-message="confirmMessage"

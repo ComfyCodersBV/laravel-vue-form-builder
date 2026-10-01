@@ -14,6 +14,23 @@ Submit::make()
 The `name` argument to `make()` is optional for submit buttons. The default label is `Save` (translatable via
 `vue-form-builder::buttons.save`).
 
+### Icon or markup on a button
+
+Pass an `HtmlString` as label to put an icon or other markup on any button. Give icon-only buttons an `ariaLabel()` so
+screen readers can name them:
+
+```php
+use Illuminate\Support\HtmlString;
+
+Submit::make()
+    ->label(new HtmlString('<svg ...></svg>'))
+    ->ariaLabel('Add')
+```
+
+The markup is rendered as-is, so only pass HTML you control. A plain string label is always shown as text. The schema
+keeps the text of the HTML in `label` (or the default label when there is none), which is also what the confirm
+dialog shows.
+
 ### Confirm before submit
 
 ```php
@@ -107,6 +124,8 @@ All button types (`Button`, `Submit`, `DeleteButton`) support these methods:
 | Method                     | Description                                                                              |
 |----------------------------|------------------------------------------------------------------------------------------|
 | `->label(string)`          | Button label text                                                                        |
+| `->label(HtmlString)`      | Button label as markup, e.g. an icon (rendered as-is)                                    |
+| `->ariaLabel(string)`      | Accessible name, for icon-only buttons                                                   |
 | `->variant(string)`        | Button style variant (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`) |
 | `->confirmTitle(string)`   | Title shown in the confirmation dialog                                                   |
 | `->confirmMessage(string)` | Body text of the confirmation dialog                                                     |

@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.4.0 - 2026-10-01
+* Buttons render an HTML label. `Button`, `Submit` and `DeleteButton` show `labelHtml` from the schema as-is, so an
+  icon (or other markup) can sit on the button; a plain `label` stays text. `ariaLabel` from the schema becomes the
+  button's `aria-label`, for icon-only buttons. The confirm dialog keeps showing the plain label.
+* Supports schema version `1.2` of `tranquil-tools/laravel-form-builder` (`^1.1`), which adds `labelHtml` and
+  `ariaLabel`. Older cores keep working; their buttons simply have no HTML label.
+
 ## 1.3.4 - 2026-10-01
 * Bump the dev dependency `undici` to 7.30.0 for the TLS certificate validation bypass in `BalancedPool`. It only
   reaches the test suite through `jsdom`; nothing that ships changes.

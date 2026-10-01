@@ -17,6 +17,8 @@ import {
 interface Props {
     className?: string
     label?: string
+    labelHtml?: string
+    ariaLabel?: string
     cancelLabel?: string
     confirmTitle?: string
     confirmMessage?: string
@@ -28,6 +30,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
     className: undefined,
     label: '',
+    labelHtml: undefined,
+    ariaLabel: undefined,
     cancelLabel: undefined,
     confirmTitle: undefined,
     confirmMessage: undefined,
@@ -77,8 +81,10 @@ function handleConfirmAction() {
                     :variant="variant"
                     type="button"
                     :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
+                    :aria-label="ariaLabel"
                 >
-                    {{ label }}
+                    <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />
+                    <template v-else>{{ label }}</template>
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -99,7 +105,7 @@ function handleConfirmAction() {
                         type="button"
                         @click="handleConfirmAction"
                     >
-                        {{ label }}
+                        {{ label || ariaLabel }}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -110,8 +116,10 @@ function handleConfirmAction() {
             :variant="variant"
             :type="type"
             :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
+            :aria-label="ariaLabel"
         >
-            {{ label }}
+            <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />
+            <template v-else>{{ label }}</template>
         </Button>
     </template>
 </template>
