@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.3.4 - 2026-10-01
+* Bump the dev dependency `undici` to 7.30.0 for the TLS certificate validation bypass in `BalancedPool`. It only
+  reaches the test suite through `jsdom`; nothing that ships changes.
+* Bump the dev dependencies `vitest` to 4.1.11 and `brace-expansion` to 2.1.7 for their audit advisories.
+
 ## 1.3.3 - 2026-10-01
 * Fix modal dialogs ignoring every click inside them. `DialogContent` bound all of its props onto reka's
   `DialogContent`, and Vue fills unset boolean props with `false`, so reka received `trapFocus: false` and
