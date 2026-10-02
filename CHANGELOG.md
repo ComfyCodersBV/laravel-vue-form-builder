@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.5.0 - 2026-10-02
+* Add a `Time` field (type `time`) for a time of day as `HH:MM`. Typing is forgiving: on blur or Enter `9` becomes
+  `09:00`, `930` becomes `09:30` and `9.30` becomes `09:30`; input that is no time stays as typed and is marked
+  invalid. Focus opens a list of times in steps of `step` minutes (default 15, limited by `min` and `max`), scrolled to
+  the current value or the current time. ArrowUp and ArrowDown move by the step and wrap around midnight, Enter
+  commits, Escape closes. A field that is not required gets a clear button.
+* Add a `PopoverAnchor` to the popover components.
+* Supports schema version `1.3` of `tranquil-tools/laravel-form-builder` (`^1.2`), which adds the `time` type.
+
 ## 1.4.0 - 2026-10-01
 * Buttons render an HTML label. `Button`, `Submit` and `DeleteButton` show `labelHtml` from the schema as-is, so an
   icon (or other markup) can sit on the button; a plain `label` stays text. `ariaLabel` from the schema becomes the

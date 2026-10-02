@@ -20,6 +20,7 @@ import SelectField from './Fields/SelectField.vue'
 import SubmitButton from './Fields/SubmitButton.vue'
 import TextField from './Fields/TextField.vue'
 import TextareaField from './Fields/TextareaField.vue'
+import TimeField from './Fields/TimeField.vue'
 import ToggleField from './Fields/ToggleField.vue'
 import Wysiwyg from './Fields/Wysiwyg.vue'
 
@@ -50,6 +51,7 @@ const fieldComponents: Record<string, any> = {
     submit: SubmitButton,
     text: TextField,
     textarea: TextareaField,
+    time: TimeField,
     toggle: ToggleField,
     wysiwyg: Wysiwyg,
 }
