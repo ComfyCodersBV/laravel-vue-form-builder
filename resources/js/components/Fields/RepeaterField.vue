@@ -9,6 +9,7 @@ import {ArrowDown, ArrowUp, Plus, Trash2} from 'lucide-vue-next'
 // sub-fields through FormRenderer). The mutual import is resolved at render
 // time, so a static import is safe here.
 import FormRenderer from '../FormRenderer.vue'
+import { useFormMessages } from '../../lib/messages'
 
 interface RepeaterProps extends Field {
     fields?: Field[]
@@ -30,7 +31,7 @@ const props = withDefaults(defineProps<RepeaterProps>(), {
     name: undefined,
     modelValue: undefined,
     fields: () => [],
-    addActionLabel: 'Add item',
+    addActionLabel: undefined,
     itemLabel: undefined,
     inline: false,
     min: undefined,
@@ -41,6 +42,9 @@ const props = withDefaults(defineProps<RepeaterProps>(), {
 })
 
 const emit = defineEmits<{ 'update:modelValue': [Array<Record<string, any>>] }>()
+
+const messageContext = useFormMessages()
+const messages = computed(() => messageContext.value.messages)
 
 const rows = ref<Record<string, any>[]>([])
 const isInternalUpdate = ref(false)
@@ -172,15 +176,15 @@ function moveDown(idx: number) {
                     </span>
                     <div class="flex items-center gap-1">
                         <Button v-if="reorderable" type="button" size="icon" variant="outline"
-                                :disabled="i === 0" @click="moveUp(i)">
+                                :disabled="i === 0" :aria-label="messages.moveUp" @click="moveUp(i)">
                             <ArrowUp class="size-4"/>
                         </Button>
                         <Button v-if="reorderable" type="button" size="icon" variant="outline"
-                                :disabled="i === rows.length - 1" @click="moveDown(i)">
+                                :disabled="i === rows.length - 1" :aria-label="messages.moveDown" @click="moveDown(i)">
                             <ArrowDown class="size-4"/>
                         </Button>
                         <Button v-if="deletable" type="button" size="icon" variant="destructive"
-                                :disabled="!canDelete()" @click="removeRow(i)">
+                                :disabled="!canDelete()" :aria-label="messages.remove" @click="removeRow(i)">
                             <Trash2 class="size-4"/>
                         </Button>
                     </div>
@@ -192,13 +196,13 @@ function moveDown(idx: number) {
             </div>
 
             <p v-if="!rows.length" class="text-sm text-neutral-500">
-                {{ addActionLabel }}
+                {{ addActionLabel ?? messages.addItem }}
             </p>
 
             <div>
                 <Button v-if="canAdd" type="button" variant="outline" @click="addRow">
                     <Plus class="size-4"/>
-                    <span>{{ addActionLabel }}</span>
+                    <span>{{ addActionLabel ?? messages.addItem }}</span>
                 </Button>
             </div>
         </div>

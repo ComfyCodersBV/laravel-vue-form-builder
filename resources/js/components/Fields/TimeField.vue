@@ -6,6 +6,7 @@ import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover'
 import { Clock, X } from 'lucide-vue-next'
 import { computed, nextTick, ref, watch } from 'vue'
 import { buildTimeSlots, closestSlotIndex, currentMinutes, minutesOf, normalizeTime, stepTime } from '../../lib/time'
+import { useFormMessages } from '../../lib/messages'
 
 interface TimeFieldProps extends Field {
     step?: number | string
@@ -18,7 +19,7 @@ interface TimeFieldProps extends Field {
 const props = withDefaults(defineProps<TimeFieldProps>(), {
     className: undefined,
     clearable: false,
-    clearLabel: 'Clear field',
+    clearLabel: undefined,
     disabled: false,
     error: undefined,
     label: undefined,
@@ -30,6 +31,9 @@ const props = withDefaults(defineProps<TimeFieldProps>(), {
     readonly: false,
     step: 15,
 })
+
+const messageContext = useFormMessages()
+const messages = computed(() => messageContext.value.messages)
 
 const emit = defineEmits<{ 'update:modelValue': [string | null] }>()
 
@@ -224,8 +228,8 @@ function clear(): void {
                     v-if="isClearable"
                     type="button"
                     class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
-                    :title="clearLabel"
-                    :aria-label="clearLabel"
+                    :title="clearLabel ?? messages.clear"
+                    :aria-label="clearLabel ?? messages.clear"
                     @click="clear"
                 >
                     <X class="size-4" />

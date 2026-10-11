@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import { X } from 'lucide-vue-next'
 import { cn } from '../lib/utils'
+import { useFormMessages } from '../lib/messages'
+
+const messageContext = useFormMessages()
 
 export interface TabItem {
     key: string
@@ -72,7 +75,7 @@ function select(tab: TabItem): void {
             <button type="button" class="flex cursor-pointer items-center gap-1.5" @click="select(tab)">
                 <component :is="tab.icon" v-if="tab.icon" class="size-4" />
                 <span class="max-w-40 truncate">{{ tab.label }}</span>
-                <span v-if="tab.dirty" class="size-1.5 rounded-full bg-amber-500" aria-label="Unsaved changes" />
+                <span v-if="tab.dirty" class="size-1.5 rounded-full bg-amber-500" :aria-label="messageContext.messages.unsavedChanges" />
             </button>
 
             <button

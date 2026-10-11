@@ -7,6 +7,9 @@ import type { Field } from '../../types/form-builder'
 import { cn } from '../../lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { Info, Minus, Plus } from 'lucide-vue-next';
+import { useFormMessages } from '../../lib/messages'
+
+const messageContext = useFormMessages()
 
 interface NumberFieldProps extends Field {
     min?: number
@@ -36,8 +39,8 @@ const props = withDefaults(defineProps<NumberFieldProps>(), {
     tooltip: undefined,
     step: 1,
     stepper: false,
-    decrementLabel: 'Decrease',
-    incrementLabel: 'Increase',
+    decrementLabel: undefined,
+    incrementLabel: undefined,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [string | number] }>()
@@ -134,7 +137,7 @@ function onBeforeInput(e: InputEvent) {
                     size="icon"
                     class="shrink-0 rounded-r-none border-r-0"
                     :disabled="disabled || readonly"
-                    :aria-label="decrementLabel"
+                    :aria-label="decrementLabel ?? messageContext.messages.decrement"
                     @click="decrement"
                 >
                     <Minus class="size-4" />
@@ -160,7 +163,7 @@ function onBeforeInput(e: InputEvent) {
                     size="icon"
                     class="shrink-0 rounded-l-none border-l-0"
                     :disabled="disabled || readonly"
-                    :aria-label="incrementLabel"
+                    :aria-label="incrementLabel ?? messageContext.messages.increment"
                     @click="increment"
                 >
                     <Plus class="size-4" />

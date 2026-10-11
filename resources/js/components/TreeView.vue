@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue'
 import { ChevronDown, ChevronRight, GripVertical } from 'lucide-vue-next'
 import { cn } from '../lib/utils'
+import { useFormMessages } from '../lib/messages'
+
+const messageContext = useFormMessages()
 
 export interface TreeNode {
     id: string | number
@@ -145,7 +148,7 @@ function indicatorClass(node: TreeNode): string {
                     v-if="hasChildren(node)"
                     type="button"
                     class="shrink-0 text-muted-foreground"
-                    :aria-label="isExpanded(node) ? 'Collapse' : 'Expand'"
+                    :aria-label="isExpanded(node) ? messageContext.messages.collapse : messageContext.messages.expand"
                     @click.stop="toggle(node)"
                 >
                     <ChevronDown v-if="isExpanded(node)" class="size-4" />

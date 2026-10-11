@@ -5,6 +5,7 @@ import { Button } from '../button'
 import { Input } from '../input'
 import { X, ChevronsUpDown } from 'lucide-vue-next'
 import { cn } from '../../../lib/utils'
+import { useFormMessages } from '../../../lib/messages'
 
 export interface Option { value: string | number; label: string }
 
@@ -19,12 +20,15 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: () => [],
   options: () => [],
-  placeholder: 'Select...',
+  placeholder: undefined,
   disabled: false,
   readonly: false,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [Array<string | number>] }>()
+
+const messageContext = useFormMessages()
+const messages = computed(() => messageContext.value.messages)
 
 const open = ref(false)
 const triggerRef = ref<HTMLElement | null>(null)
@@ -100,21 +104,21 @@ function labelFor(val: string | number) {
               type="button"
               class="ml-1 rounded hover:bg-accent/70"
               @click.stop="remove(val)"
-              aria-label="Remove"
+              :aria-label="messages.remove"
               :disabled="props.disabled || props.readonly"
             >
               <X class="h-3.5 w-3.5" />
             </button>
           </span>
         </template>
-        <span v-else class="text-muted-foreground">{{ props.placeholder }}</span>
+        <span v-else class="text-muted-foreground">{{ props.placeholder ?? messages.select }}</span>
         <ChevronsUpDown class="ml-auto h-4 w-4 opacity-50" />
       </button>
     </PopoverTrigger>
     <PopoverContent align="start" :style="{ width: contentWidth }" class="p-2">
       <div ref="searchWrapper" class="flex items-center gap-2 pb-2 border-b">
-        <Input v-model="query" placeholder="Zoeken..." class="h-8" />
-        <Button type="button" variant="outline" size="sm" @click="clearAll" :disabled="!selected.length">Clear</Button>
+        <Input v-model="query" :placeholder="messages.search" class="h-8" />
+        <Button type="button" variant="outline" size="sm" @click="clearAll" :disabled="!selected.length">{{ messages.clearAll }}</Button>
       </div>
       <div class="max-h-64 overflow-auto pt-2">
         <button
@@ -127,9 +131,9 @@ function labelFor(val: string | number) {
           :disabled="props.disabled || props.readonly"
         >
           <span class="truncate mr-2">{{ opt.label }}</span>
-          <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">Geselecteerd</span>
+          <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">{{ messages.selected }}</span>
         </button>
-        <div v-if="!filtered.length" class="px-2 py-3 text-xs text-muted-foreground">Geen resultaten</div>
+        <div v-if="!filtered.length" class="px-2 py-3 text-xs text-muted-foreground">{{ messages.noResults }}</div>
       </div>
     </PopoverContent>
   </Popover>

@@ -6,6 +6,7 @@ import {Button} from '../ui/button'
 import {computed, ref, watch} from 'vue'
 import {cn} from '../../lib/utils'
 import {ArrowDown, ArrowUp, Eye, EyeOff, Plus, Trash2} from 'lucide-vue-next'
+import { useFormMessages } from '../../lib/messages'
 
 interface KeyValueProps extends Field {
     keyLabel?: string
@@ -32,13 +33,13 @@ const props = withDefaults(defineProps<KeyValueProps>(), {
     help: undefined,
     name: undefined,
     modelValue: undefined,
-    keyLabel: 'Key',
-    valueLabel: 'Value',
-    keyPlaceholder: 'Key',
-    valuePlaceholder: 'Value',
+    keyLabel: undefined,
+    valueLabel: undefined,
+    keyPlaceholder: undefined,
+    valuePlaceholder: undefined,
     maskedValuePlaceholder: undefined,
     maskedKeyPattern: DEFAULT_MASKED_KEY_PATTERN,
-    addActionLabel: 'Add row',
+    addActionLabel: undefined,
     editableKeys: true,
     editableValues: true,
     addable: true,
@@ -48,6 +49,9 @@ const props = withDefaults(defineProps<KeyValueProps>(), {
 })
 
 const emit = defineEmits<{ 'update:modelValue': [Array<{ key: string; value: string }>] }>()
+
+const messageContext = useFormMessages()
+const messages = computed(() => messageContext.value.messages)
 
 const rows = ref<{ key: string; value: string; hasStoredValue?: boolean }[]>([])
 const isInternalUpdate = ref(false)
@@ -177,13 +181,13 @@ function keyInputClass(k: string) {
 
             <div v-for="(row, i) in rows" :key="i" class="grid grid-cols-12 gap-2 items-center">
                 <div class="col-span-5">
-                    <Input :placeholder="keyPlaceholder" v-model="row.key" :readonly="!editableKeys"
+                    <Input :placeholder="keyPlaceholder ?? messages.key" v-model="row.key" :readonly="!editableKeys"
                            :disabled="!editableKeys" :class="keyInputClass(row.key)"/>
                 </div>
                 <div class="col-span-5">
                     <div class="relative">
                         <Input
-                            :placeholder="row.hasStoredValue && maskedValuePlaceholder ? maskedValuePlaceholder : valuePlaceholder"
+                            :placeholder="row.hasStoredValue && maskedValuePlaceholder ? maskedValuePlaceholder : (valuePlaceholder ?? messages.value)"
                             :type="isSensitiveKey(row.key) && !revealed[i] ? 'password' : 'text'"
                             v-model="row.value"
                             :readonly="!editableValues || readonlyValueKeys.includes(row.key)"
@@ -192,7 +196,7 @@ function keyInputClass(k: string) {
                         />
                         <button v-if="isSensitiveKey(row.key)" type="button"
                                 class="absolute inset-y-0 right-0 flex items-center px-2 text-neutral-500 hover:text-neutral-800"
-                                :aria-label="revealed[i] ? 'Hide value' : 'Show value'" @click="toggleReveal(i)">
+                                :aria-label="revealed[i] ? messages.hideValue : messages.showValue" @click="toggleReveal(i)">
                             <EyeOff v-if="revealed[i]" class="size-4"/>
                             <Eye v-else class="size-4"/>
                         </button>
@@ -218,11 +222,11 @@ function keyInputClass(k: string) {
             <div>
                 <Button v-if="addable" type="button" variant="outline" @click="addRow">
                     <Plus class="size-4"/>
-                    <span>{{ addActionLabel }}</span>
+                    <span>{{ addActionLabel ?? messages.addRow }}</span>
                 </Button>
             </div>
 
-            <p v-if="duplicateKeys.size" class="text-xs text-red-600">Keys moeten uniek zijn.</p>
+            <p v-if="duplicateKeys.size" class="text-xs text-red-600">{{ messages.duplicateKeys }}</p>
         </div>
     </BaseField>
 </template>

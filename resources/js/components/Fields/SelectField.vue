@@ -8,6 +8,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { ChevronsUpDown, X } from 'lucide-vue-next';
 import { computed, nextTick, ref, watch } from 'vue';
+import { useFormMessages } from '../../lib/messages'
 
 interface Option { value: string | number; label: string }
 type Options = Record<string, string> | Array<Option> | Array<string | number>;
@@ -39,14 +40,17 @@ const props = withDefaults(defineProps<SelectProps>(), {
     readonly: false,
     multiple: false,
     clearable: false,
-    clearLabel: 'Clear field',
+    clearLabel: undefined,
     searchable: false,
-    searchPlaceholder: 'Search...',
-    noResultsLabel: 'No results',
-    choosePlaceholder: 'Choose an option',
+    searchPlaceholder: undefined,
+    noResultsLabel: undefined,
+    choosePlaceholder: undefined,
 });
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>();
+
+const messageContext = useFormMessages()
+const messages = computed(() => messageContext.value.messages)
 
 const optionLabel = computed(() => props.optionLabel!);
 const optionValue = computed(() => props.optionValue!);
@@ -207,7 +211,7 @@ function clearValue() {
                             <span class="truncate">
                                 <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                                 <span v-else class="text-muted-foreground">
-                                    {{ props.placeholder ?? props.choosePlaceholder }}
+                                    {{ props.placeholder ?? props.choosePlaceholder ?? messages.chooseOption }}
                                 </span>
                             </span>
                             <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
@@ -215,7 +219,7 @@ function clearValue() {
                     </PopoverTrigger>
                     <PopoverContent align="start" class="w-[var(--reka-popover-trigger-width)] p-2">
                         <div ref="comboboxSearchWrapper">
-                            <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder" class="mb-2 h-8" />
+                            <Input v-model="comboboxQuery" :placeholder="props.searchPlaceholder ?? messages.search" class="mb-2 h-8" />
                         </div>
                         <div class="max-h-64 overflow-auto">
                             <button
@@ -229,7 +233,7 @@ function clearValue() {
                                 <span class="truncate" v-html="option.label"></span>
                             </button>
                             <div v-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
-                                {{ props.noResultsLabel }}
+                                {{ props.noResultsLabel ?? messages.noResults }}
                             </div>
                         </div>
                     </PopoverContent>
@@ -239,8 +243,8 @@ function clearValue() {
                     v-if="isClearable"
                     type="button"
                     class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
-                    :title="props.clearLabel"
-                    :aria-label="props.clearLabel"
+                    :title="props.clearLabel ?? messages.clear"
+                    :aria-label="props.clearLabel ?? messages.clear"
                     @click="clearValue"
                 >
                     <X class="size-4" />
@@ -261,7 +265,7 @@ function clearValue() {
                         <span class="truncate">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
-                                {{ props.placeholder ?? props.choosePlaceholder }}
+                                {{ props.placeholder ?? props.choosePlaceholder ?? messages.chooseOption }}
                             </span>
                         </span>
                     </SelectTrigger>
@@ -281,8 +285,8 @@ function clearValue() {
                     v-if="isClearable"
                     type="button"
                     class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
-                    :title="props.clearLabel"
-                    :aria-label="props.clearLabel"
+                    :title="props.clearLabel ?? messages.clear"
+                    :aria-label="props.clearLabel ?? messages.clear"
                     @click="clearValue"
                 >
                     <X class="size-4" />
@@ -295,7 +299,7 @@ function clearValue() {
             <MultiSelect
                 v-model="selectedLocal"
                 :options="optionsList"
-                :placeholder="props.placeholder ?? ''"
+                :placeholder="props.placeholder ?? undefined"
                 :disabled="props.disabled"
                 :readonly="props.readonly"
             />

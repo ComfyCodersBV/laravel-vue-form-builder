@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { GripVertical } from 'lucide-vue-next'
 import { cn } from '../lib/utils'
+import { useFormMessages } from '../lib/messages'
+
+const messageContext = useFormMessages()
 
 const props = withDefaults(defineProps<{
     modelValue: any[]
@@ -113,7 +116,7 @@ function reset(): void {
                     type="button"
                     class="rounded px-1 text-xs text-muted-foreground hover:bg-muted disabled:opacity-40"
                     :disabled="disabled || index === 0"
-                    aria-label="Move up"
+                    :aria-label="messageContext.messages.moveUp"
                     @click="moveBy(index, -1)"
                 >
                     &uarr;
@@ -122,7 +125,7 @@ function reset(): void {
                     type="button"
                     class="rounded px-1 text-xs text-muted-foreground hover:bg-muted disabled:opacity-40"
                     :disabled="disabled || index === modelValue.length - 1"
-                    aria-label="Move down"
+                    :aria-label="messageContext.messages.moveDown"
                     @click="moveBy(index, 1)"
                 >
                     &darr;
