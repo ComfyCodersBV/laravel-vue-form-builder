@@ -2,6 +2,42 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.7.0 - 2026-10-11
+* **Icons now come from `@lucide/vue` instead of `lucide-vue-next`.** `@lucide/vue` is the maintained successor with
+  the same icon names, and the one the current Laravel Vue starter kit installs, so most applications already have
+  it. An application that only has `lucide-vue-next` runs `npm install @lucide/vue` when upgrading; nothing else
+  changes. This is the one upgrade step in this release, which is why it is a minor and not a major.
+* Add the `money` type: an amount edited as a localised decimal with its currency symbol (`1.234,50 €`, `$1,234.50`),
+  held and submitted as whole minor units. Typing is forgiving (`12,5`, `12.50` and `€ 12,50` in Dutch); on blur the
+  amount is formatted; text that is no amount stays as typed and is marked invalid.
+* Add the `translatable` type: one value per locale as `{ nl: ..., en: ... }`, with a tab per locale (or stacked
+  inputs), the inner field per locale, its errors under its own input and a dot on the tab of a locale with an error.
+  A plain stored string loads into the default locale.
+* A single checkbox and a toggle show their label once, next to the control, instead of above it as well. With a
+  `checkboxLabel` the label stays above.
+* `hideLabel` hides a label visually on any field and keeps it for screen readers; a horizontal layout then drops the
+  label column.
+* A password with `stored` shows a masked placeholder and the hint that leaving it empty keeps the stored value; with
+  a `removeFlag` a "Remove the stored value" checkbox submits that flag.
+* `<Form>` resets after a successful submit with `resetOnSuccess` from the schema or the `reset-on-success` prop. File
+  fields always forget the chosen file (and untick their remove checkbox) after a successful submit, so a second
+  submit does not upload it again.
+* Errors whose key belongs to no field (`conflicts`, `form`, a failed HTTP request) show at the top of the form in a
+  `role="alert"` block. The `form-errors` slot replaces it; `formErrors` is exposed on the component.
+* A `GET` form submits as a query string through an Inertia GET visit with `preserveState` and `preserveScroll`,
+  without blank values, to the current path when there is no action. `submitOnChange` (schema or prop) submits 300 ms
+  after the last change; `submit-delay` changes that.
+* Radio options show a `description` as text and an optional link (`href`, `linkLabel`) next to the label. Only
+  relative, `http`, `https`, `mailto` and `tel` links render; a link starting with `/` navigates through Inertia.
+* Fix radios grouped by the core (type `radios`) rendering as "Unknown field type".
+* Fix a textarea without an `id` and `name`, so its label points at it.
+* The sources pass `vue-tsc` in strict mode, so applications can type-check their pages together with them, and CI
+  runs `npm run typecheck`. Fixes the reported errors in the radio group, the tree view slots, the Quill adapter and
+  the missing HugeRTE Vue types.
+* Built-in texts `storedValue`, `removeStoredValue` and `containsErrors` in English and Dutch.
+* Supports schema version `1.5` of `tranquil-tools/laravel-form-builder` (`^1.4`), which adds `money`,
+  `translatable`, `hideLabel`, `stored`, `resetOnSuccess`, `submitOnChange` and the option details.
+
 ## 1.6.0 - 2026-10-11
 * Date fields with a time take a timezone (`timezone` and `serverTimezone` from the schema). The picker then shows and
   edits the time in that timezone, whatever the browser's is, and sends ISO 8601 with the offset
