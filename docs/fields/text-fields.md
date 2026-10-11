@@ -48,6 +48,31 @@ Password::make('password')
     ->minLength(8)
 ```
 
+### A stored value
+
+A password, API key or secret is never sent back to the browser, so the field cannot show it. `->stored()` says a
+value exists: the input gets a masked placeholder and a hint that leaving it empty keeps the stored value.
+`->removable()` adds a "Remove the stored value" checkbox that submits a flag, like the [File field](file.md):
+
+```php
+Password::make('api_key')
+    ->label('API key')
+    ->stored(filled($settings->api_key))
+    ->removable()
+    ->rules('nullable', 'string', 'max:255')
+```
+
+The flag is `remove_{name}` unless you pass one (`->removable(true, 'forget_api_key')`), gets a `nullable|boolean` rule,
+and is read back with `removalRequested()`:
+
+```php
+if ($request->boolean('remove_api_key')) {
+    $settings->api_key = null;
+} elseif ($request->filled('api_key')) {
+    $settings->api_key = $request->input('api_key');
+}
+```
+
 ## Number
 
 A numeric input with optional min, max, and step constraints.

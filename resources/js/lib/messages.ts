@@ -35,6 +35,9 @@ export interface FormMessages {
     currentFile: string;
     removeCurrentFile: string;
     unknownFieldType: string;
+    storedValue: string;
+    removeStoredValue: string;
+    containsErrors: string;
 }
 
 export const en: FormMessages = {
@@ -72,6 +75,9 @@ export const en: FormMessages = {
     currentFile: 'Current file',
     removeCurrentFile: 'Remove current file',
     unknownFieldType: 'Unknown field type:',
+    storedValue: 'A value is stored. Leave this empty to keep it.',
+    removeStoredValue: 'Remove the stored value',
+    containsErrors: 'Contains errors',
 };
 
 export const nl: FormMessages = {
@@ -109,6 +115,9 @@ export const nl: FormMessages = {
     currentFile: 'Huidig bestand',
     removeCurrentFile: 'Huidig bestand verwijderen',
     unknownFieldType: 'Onbekend veldtype:',
+    storedValue: 'Er is een waarde opgeslagen. Laat dit leeg om die te houden.',
+    removeStoredValue: 'Opgeslagen waarde verwijderen',
+    containsErrors: 'Bevat fouten',
 };
 
 export const DEFAULT_LOCALE = 'en';

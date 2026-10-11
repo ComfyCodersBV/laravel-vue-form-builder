@@ -8,6 +8,21 @@ export type FieldValue =
     | { start?: string | null; end?: string | null }
     | null
 
+export interface FieldOption {
+    value: string | number
+    label: string
+    help?: string
+    description?: string
+    disabled?: boolean
+    href?: string
+    linkLabel?: string
+}
+
+export interface LocaleOption {
+    value: string
+    label: string
+}
+
 export interface Field {
     name?: string
     type?: string
@@ -23,7 +38,7 @@ export interface Field {
     modelValue?: FieldValue
     default?: FieldValue
     error?: string | string[]
-    options?: Record<string, string> | Array<{ value: string | number; label: string }> | Array<string | number>
+    options?: Record<string, string> | Array<FieldOption> | Array<string | number>
     fields?: Field[]
     attrs?: Record<string, unknown>
     append?: string
@@ -39,6 +54,15 @@ export interface Field {
     currentName?: string
     preview?: boolean
     removeFlag?: string
+    hideLabel?: boolean
+    stored?: boolean
+    currency?: string
+    decimals?: number
+    locales?: LocaleOption[]
+    defaultLocale?: string
+    requiredLocales?: string[]
+    field?: Field
+    display?: 'tabs' | 'stacked'
 }
 
 export type TForm = Record<string, FieldValue>
@@ -54,4 +78,6 @@ export interface FormSchema {
     theme?: Partial<FormTheme>
     format?: string
     locale?: string
+    resetOnSuccess?: boolean
+    submitOnChange?: boolean
 }

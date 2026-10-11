@@ -5,7 +5,8 @@ import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
 import { cn } from '../../lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { Info } from 'lucide-vue-next'
+import { Info } from '@lucide/vue'
+import { useFormMessages } from '../../lib/messages'
 
 interface TextFieldProps extends Field {
     append?: string
@@ -14,6 +15,7 @@ interface TextFieldProps extends Field {
     minlength?: number
     prepend?: string
     tooltip?: string
+    removeRequested?: boolean | string | number
 }
 
 const props = withDefaults(defineProps<TextFieldProps>(), {
@@ -30,11 +32,35 @@ const props = withDefaults(defineProps<TextFieldProps>(), {
     placeholder: undefined,
     prepend: undefined,
     readonly: false,
+    removeFlag: undefined,
+    removeRequested: false,
+    stored: false,
     tooltip: undefined,
     type: 'text',
 })
 
-const emit = defineEmits<{ 'update:modelValue': [string | number] }>()
+const emit = defineEmits<{
+    'update:modelValue': [string | number]
+    'update:formValue': [string, any]
+}>()
+
+const messageContext = useFormMessages()
+
+const STORED_PLACEHOLDER = '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'
+
+const showsStored = computed(() => props.type === 'password' && props.stored)
+
+const isRemoving = computed(() => [true, 1, '1', 'true'].includes(props.removeRequested as any))
+
+const resolvedPlaceholder = computed(() => props.placeholder ?? (showsStored.value ? STORED_PLACEHOLDER : undefined))
+
+function toggleRemoval(event: Event) {
+    if (!props.removeFlag) {
+        return
+    }
+
+    emit('update:formValue', props.removeFlag, (event.target as HTMLInputElement).checked)
+}
 
 const model = computed<string | number>({
   get: () => (props.modelValue as any) ?? '',
@@ -70,9 +96,9 @@ function leftRoundClass() {
         :disabled="disabled"
         :maxlength="maxlength"
         :minlength="minlength"
-        :placeholder="placeholder"
+        :placeholder="resolvedPlaceholder"
         :readonly="readonly"
-        :autocomplete="autocomplete"
+        :autocomplete="autocomplete ?? (showsStored ? 'new-password' : undefined)"
         :type="type"
         v-model="model"
         :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass())"
@@ -98,6 +124,21 @@ function leftRoundClass() {
           {{ tooltip }}
         </TooltipContent>
       </Tooltip>
+    </div>
+
+    <div v-if="showsStored" class="mt-1 space-y-1 text-xs text-muted-foreground" data-stored-value>
+      <p>{{ messageContext.messages.storedValue }}</p>
+      <label v-if="removeFlag" class="inline-flex cursor-pointer items-center gap-2">
+        <input
+          type="checkbox"
+          class="size-4"
+          :checked="isRemoving"
+          :disabled="!!disabled || !!readonly"
+          @change="toggleRemoval"
+        />
+        {{ messageContext.messages.removeStoredValue }}
+      </label>
+      <input v-if="removeFlag" type="hidden" :name="removeFlag" :value="isRemoving ? '1' : '0'" />
     </div>
   </BaseField>
 </template>

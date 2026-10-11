@@ -2,10 +2,10 @@
 import BaseField from './BaseField.vue'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { cn } from '../../lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { Info } from 'lucide-vue-next'
+import { Info } from '@lucide/vue'
 import { useFormMessages } from '../../lib/messages'
 
 interface FileFieldProps extends Field {
@@ -49,6 +49,20 @@ const emit = defineEmits<{
 }>()
 
 const messageContext = useFormMessages()
+
+const control = ref<HTMLElement | null>(null)
+
+watch(() => props.modelValue, (value) => {
+    if (value !== '' && value !== null && !(Array.isArray(value) && value.length === 0)) {
+        return
+    }
+
+    const input = control.value?.querySelector<HTMLInputElement>('input[type="file"]')
+
+    if (input) {
+        input.value = ''
+    }
+})
 
 const IMAGE_PATTERN = /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i
 
@@ -106,7 +120,7 @@ function getName() {
 
 <template>
     <BaseField v-bind="{ label, name, error, className, help, theme }">
-      <div class="flex w-full">
+      <div ref="control" class="flex w-full">
           <span
               v-if="prepend"
               class="inline-flex items-center rounded-l-md border border-input bg-muted px-3 text-sm text-muted-foreground"

@@ -21,6 +21,8 @@ const model = computed({
 <template>
     <BaseField v-bind="{ label, name, error, className, help, theme }">
         <Textarea
+            :id="name"
+            :name="name"
             v-model="model"
             :placeholder="placeholder"
             :disabled="disabled"

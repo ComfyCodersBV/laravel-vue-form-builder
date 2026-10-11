@@ -91,6 +91,9 @@ Checkbox::make('active')
     ->checked()
 ```
 
+The label of a single checkbox sits next to the box, once. With a `checkboxLabel()` as well, the label goes above the
+field and the `checkboxLabel()` next to the box.
+
 **Methods:**
 
 | Method | Description |
@@ -166,13 +169,40 @@ Radio::make('gender')
     ->inline()
 ```
 
+### Descriptions and links per option
+
+An option given as an array can carry a `description` (shown as text under the label) and a link next to it, for an
+action that belongs to that option:
+
+```php
+Radio::make('unit_id')
+    ->label('Unit')
+    ->options([
+        ['value' => 1, 'label' => 'Main hall', 'description' => '120 seats', 'href' => route('units.move', 1), 'linkLabel' => 'Move'],
+        ['value' => 2, 'label' => 'Attic', 'description' => '20 seats'],
+    ])
+
+// Keyed options work too
+Radio::make('plan')->options([
+    'pro' => ['label' => 'Pro', 'description' => 'Billed monthly', 'href' => '/plans/pro', 'linkLabel' => 'Compare'],
+    'starter' => 'Starter',
+])
+```
+
+Separate radios take `->description('...')` and `->link($href, $label)`.
+
+Descriptions and link labels are rendered as text, never as HTML. A link only renders for a relative URL or an
+`http`, `https`, `mailto` or `tel` URL; anything else (`javascript:`, `data:`, …) is dropped by the core and ignored by
+the renderer. A link starting with `/` navigates through Inertia.
+
 `Radios` is an alias for `Radio` — both behave identically.
 
 ---
 
 ## Toggle
 
-A toggle switch for boolean values. Behaves like a `Checkbox` but renders as a sliding toggle.
+A toggle switch for boolean values. Behaves like a `Checkbox` but renders as a sliding toggle. Its label sits next to
+the switch, once.
 
 ```php
 use TranquilTools\FormBuilder\Fields\Toggle;

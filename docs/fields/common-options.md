@@ -10,6 +10,20 @@ Text::make('name')
     ->placeholder('Enter your name')
 ```
 
+## Hidden label
+
+`->hideLabel()` hides the label visually but keeps it for screen readers (`sr-only`), on every field type. Use it when
+the context already says what a field is, such as a search box above a table:
+
+```php
+Text::make('q')
+    ->label('Search bookings')
+    ->placeholder('Search…')
+    ->hideLabel()
+```
+
+In a horizontal layout a field with a hidden label drops the label column.
+
 ## Default value
 
 Sets the initial value when the form loads (before any `fill()` data):

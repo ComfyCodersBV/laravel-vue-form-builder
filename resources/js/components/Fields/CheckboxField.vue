@@ -4,6 +4,7 @@ import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import type { FormTheme } from '../../lib/theme'
 import { computed } from 'vue'
+import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
 
 const props = defineProps<{
     modelValue?: any
@@ -18,7 +19,14 @@ const props = defineProps<{
     readonly?: boolean
     className?: string
     theme?: Partial<FormTheme>
+    hideLabel?: boolean
 }>()
+
+const labelHidden = useHiddenLabel(() => props.hideLabel)
+
+const groupLabel = computed(() => props.checkboxLabel ? props.label : undefined)
+
+const inlineLabel = computed(() => props.checkboxLabel ?? props.label)
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
 
@@ -46,7 +54,7 @@ const isChecked = computed({
 </script>
 
 <template>
-    <BaseField :label="label" :name="name" :error="error" :help="help" :class-name="className" :theme="theme">
+    <BaseField :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox
@@ -56,7 +64,7 @@ const isChecked = computed({
                 v-model="isChecked"
                 :disabled="disabled"
             />
-            <Label v-if="checkboxLabel || label" :for="`${name}-cb`">{{ checkboxLabel ?? label }}</Label>
+            <Label v-if="inlineLabel" :for="`${name}-cb`" :class="labelHidden && !checkboxLabel ? VISUALLY_HIDDEN : undefined">{{ inlineLabel }}</Label>
         </div>
     </BaseField>
 </template>

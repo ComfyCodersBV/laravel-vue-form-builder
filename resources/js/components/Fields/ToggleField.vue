@@ -3,6 +3,7 @@ import BaseField from './BaseField.vue'
 import { Switch } from '../ui/switch'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
+import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
 
 type Props = Omit<Field, 'modelValue'> & {
     modelValue?: any
@@ -13,6 +14,8 @@ type Props = Omit<Field, 'modelValue'> & {
 const props = withDefaults(defineProps<Props>(), {
     disabled: false,
 })
+
+const labelHidden = useHiddenLabel(() => props.hideLabel)
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
 
@@ -50,7 +53,7 @@ const model = computed<boolean>({
 </script>
 
 <template>
-    <BaseField :label="label" :name="name" :error="error" :help="help" :class-name="className" :theme="theme">
+    <BaseField :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Switch
@@ -60,7 +63,7 @@ const model = computed<boolean>({
                 :value="String(value ?? '1')"
                 :disabled="disabled"
             />
-            <label v-if="label" class="text-sm" :for="`${name}-tgl`">{{ label }}</label>
+            <label v-if="label" :class="labelHidden ? VISUALLY_HIDDEN : 'text-sm'" :for="`${name}-tgl`">{{ label }}</label>
         </div>
     </BaseField>
 </template>

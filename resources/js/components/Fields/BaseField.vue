@@ -3,9 +3,11 @@ import { computed, inject } from 'vue'
 import type { Field } from '../../types/form-builder'
 import { DEFAULT_THEME, mergeTheme, themeKey, type FormTheme } from '../../lib/theme'
 import { layoutKey, type FormLayout } from '../../lib/layout'
+import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
 
 interface BaseFieldProps extends Field {
     theme?: Partial<FormTheme>
+    inlineLabel?: boolean
 }
 
 const props = withDefaults(defineProps<BaseFieldProps>(), {
@@ -15,6 +17,8 @@ const props = withDefaults(defineProps<BaseFieldProps>(), {
     label: undefined,
     name: undefined,
     theme: undefined,
+    hideLabel: false,
+    inlineLabel: false,
 })
 
 const formTheme = inject(themeKey, computed(() => DEFAULT_THEME))
@@ -30,7 +34,11 @@ const wrapperClass = computed(() => props.className ?? theme.value.wrapper)
 
 const layout = inject(layoutKey, computed((): FormLayout => 'stacked'))
 
-const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(props.label))
+const labelHidden = useHiddenLabel(() => props.hideLabel)
+
+const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(props.label) && !labelHidden.value)
+
+const alignsWithControls = computed(() => layout.value === 'horizontal' && props.inlineLabel && !props.label)
 </script>
 
 <template>
@@ -46,8 +54,8 @@ const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(pro
         </div>
     </div>
 
-    <div v-else :class="wrapperClass">
-        <label v-if="label" :for="name" :class="theme.label">{{ label }}</label>
+    <div v-else :class="[wrapperClass, alignsWithControls ? 'sm:pl-[10.75rem]' : '']">
+        <label v-if="label" :for="name" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}</label>
         <div>
             <slot />
         </div>

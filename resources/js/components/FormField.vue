@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { computed, inject, provide } from 'vue'
 import { useFormMessages } from '../lib/messages'
 import { fieldSlotsKey } from '../lib/field-slots'
+import { hideLabelKey } from '../lib/label'
 import type { Field } from '../types/form-builder'
 
 import Button from './Fields/Button.vue'
@@ -13,6 +14,7 @@ import DeleteButtonField from './Fields/DeleteButtonField.vue'
 import FileField from './Fields/FileField.vue'
 import HiddenField from './Fields/HiddenField.vue'
 import KeyValueField from './Fields/KeyValueField.vue'
+import MoneyField from './Fields/MoneyField.vue'
 import NumberField from './Fields/NumberField.vue'
 import RadioGroupField from './Fields/RadioGroupField.vue'
 import RecaptchaField from './Fields/RecaptchaField.vue'
@@ -24,6 +26,7 @@ import TextField from './Fields/TextField.vue'
 import TextareaField from './Fields/TextareaField.vue'
 import TimeField from './Fields/TimeField.vue'
 import ToggleField from './Fields/ToggleField.vue'
+import TranslatableField from './Fields/TranslatableField.vue'
 import Wysiwyg from './Fields/Wysiwyg.vue'
 
 const { field, form, onFieldChange, fieldOverrides } = defineProps<{
@@ -44,9 +47,11 @@ const fieldComponents: Record<string, any> = {
     file: FileField,
     hidden: HiddenField,
     keyvalue: KeyValueField,
+    money: MoneyField,
     number: NumberField,
     password: TextField,
     radio: RadioGroupField,
+    radios: RadioGroupField,
     recaptcha: RecaptchaField,
     repeater: RepeaterField,
     select: SelectField,
@@ -55,21 +60,26 @@ const fieldComponents: Record<string, any> = {
     textarea: TextareaField,
     time: TimeField,
     toggle: ToggleField,
+    translatable: TranslatableField,
     wysiwyg: Wysiwyg,
 }
 
 const fieldSlots = inject(fieldSlotsKey, {})
 
+provide(hideLabelKey, computed(() => field.hideLabel === true))
+
 const messageContext = useFormMessages()
 
 function extraProps(): Record<string, any> {
-    const removeFlag = (field as any).removeFlag
+    if (field.type === 'translatable') {
+        return { form }
+    }
 
-    if (field.type !== 'file' || !removeFlag) {
+    if (!field.removeFlag) {
         return {}
     }
 
-    return { removeRequested: form[removeFlag] }
+    return { removeRequested: form[field.removeFlag] }
 }
 
 function updateFormValue(name: string, value: any): void {
