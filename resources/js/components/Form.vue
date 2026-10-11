@@ -1,25 +1,19 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { computed, provide, useSlots } from 'vue'
+import { computed, provide, useSlots, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import { fieldSlotsKey } from '../lib/field-slots'
+import { flattenFields, formFieldsKey } from '../lib/fields'
+import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
 import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
-import { layoutKey, type FormLayout } from '../lib/layout'
+import { columnsKey, layoutKey, type FormLayout } from '../lib/layout'
 import { FormSchema } from '../types/form-builder'
-import { useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
+import { carriesFiles, useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
 
-const {
-    schema,
-    options,
-    onFieldChange,
-    fieldOverrides,
-    transport = 'inertia',
-    submitter,
-    errorAdapter,
-    layout = 'stacked',
-    columns = 1,
-} = defineProps<{
+type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+
+const props = defineProps<{
     schema: FormSchema
     options?: Record<string, any>
     onFieldChange?: (field: string, value: any, form: any) => void
@@ -29,78 +23,147 @@ const {
     errorAdapter?: HttpFormErrorAdapter
     layout?: FormLayout
     columns?: 1 | 2
+    action?: string
+    method?: FormMethod
+    defaults?: Record<string, any>
+    locale?: string
+    messages?: Partial<FormMessages>
 }>()
 
 const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
 
-assertSupportedSchemaVersion(schema.schemaVersion)
+assertSupportedSchemaVersion(props.schema.schemaVersion)
 
-provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, schema.theme)))
+const fields = flattenFields(props.schema.fields)
+
+provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, props.schema.theme)))
 provide(fieldSlotsKey, useSlots())
-provide(layoutKey, computed((): FormLayout => layout))
+provide(layoutKey, computed((): FormLayout => props.layout ?? 'stacked'))
+provide(columnsKey, computed((): 1 | 2 => props.columns ?? 1))
+provide(formFieldsKey, fields)
+provide(messagesKey, computed(() => {
+    const locale = resolveLocale(props.locale, props.schema.locale)
 
-const raw = (schema as any).defaults ?? {}
-const formData: Record<string, any> = Array.isArray(raw) ? {} : { ...raw }
+    return {
+        locale,
+        messages: resolveMessages(locale, props.messages),
+    }
+}))
 
 const BOOLEAN_FIELD_TYPES = ['checkbox', 'toggle']
 
+const SPOOFED_METHODS = ['put', 'patch', 'delete']
+
 const isBlank = (value: any) => value === null || typeof value === 'undefined' || value === ''
 
-schema.fields.forEach((field: any) => {
-    if (!field?.name) {
-        return
-    }
+function schemaDefaults(): Record<string, any> {
+    const raw = (props.schema as any).defaults ?? {}
 
-    if (field.type === 'file') {
-        formData[field.name] = field.multiple === true ? [] : ''
-        return
-    }
+    return Array.isArray(raw) ? {} : { ...raw }
+}
 
+function initialValue(field: any, formData: Record<string, any>): any {
     const hasExplicit = Object.prototype.hasOwnProperty.call(formData, field.name)
     const fieldHasDefault = typeof field.default !== 'undefined' && field.default !== null && field.default !== ''
 
-    // A checkbox nobody touches has to submit the same value as one that is
-    // ticked off, because an empty string reaches Laravel as null and the
-    // column behind a checkbox rarely takes one. An explicit false stays false.
     if (BOOLEAN_FIELD_TYPES.includes(field.type)) {
-        if (isBlank(hasExplicit ? formData[field.name] : undefined)) {
-            formData[field.name] = fieldHasDefault ? field.default : (field.falseValue ?? '0')
+        if (!isBlank(hasExplicit ? formData[field.name] : undefined)) {
+            return formData[field.name]
         }
 
-        return
+        return fieldHasDefault ? field.default : (field.falseValue ?? '0')
     }
 
-    if (!hasExplicit) {
-        if (fieldHasDefault) {
-            formData[field.name] = field.default
-        } else if (field.multiple === true) {
-            formData[field.name] = []
-        } else {
-            formData[field.name] = ''
-        }
-    }
-})
-
-const form = transport === 'http'
-    ? useHttpForm(formData, { submitter, errorAdapter })
-    : useForm(formData)
-
-const submitForm = () => {
-    const method = (schema.method ?? 'post').toLowerCase()
-    const opts = { onSuccess: () => emit('success'), onError: () => emit('error'), ...(options ?? {}) }
-
-    if (method === 'get') {
-        return (form as any).get(schema.action, opts)
+    if (hasExplicit) {
+        return formData[field.name]
     }
 
-    if (['post', 'put', 'patch', 'delete'].includes(method)) {
-        return (form as any)[method].call(form, schema.action, opts)
+    if (fieldHasDefault) {
+        return field.default
     }
 
-    return (form as any).post(schema.action, opts)
+    return field.multiple === true ? [] : ''
 }
 
-defineExpose({submit: submitForm, form})
+function buildFormData(overrides: Record<string, any> = {}): Record<string, any> {
+    const formData: Record<string, any> = { ...schemaDefaults(), ...overrides }
+
+    fields.forEach((field: any) => {
+        if (!field?.name) {
+            return
+        }
+
+        if (field.type !== 'file') {
+            formData[field.name] = initialValue(field, formData)
+
+            return
+        }
+
+        formData[field.name] = field.multiple === true ? [] : ''
+
+        if (field.removeFlag) {
+            formData[field.removeFlag] = false
+        }
+    })
+
+    return formData
+}
+
+const form: any = props.transport === 'http'
+    ? useHttpForm(buildFormData(props.defaults), { submitter: props.submitter, errorAdapter: props.errorAdapter })
+    : useForm(buildFormData(props.defaults))
+
+watch(() => JSON.stringify(props.defaults ?? {}), () => {
+    const data = buildFormData(props.defaults)
+
+    Object.entries(data).forEach(([key, value]) => {
+        form[key] = value
+    })
+
+    if (typeof form.defaults === 'function') {
+        form.defaults(data)
+    }
+
+    form.clearErrors?.()
+})
+
+let spoofing = false
+
+function resolvedMethod(): FormMethod {
+    const method = (props.method ?? props.schema.method ?? 'post').toLowerCase()
+
+    return ['get', 'post', 'put', 'patch', 'delete'].includes(method) ? method as FormMethod : 'post'
+}
+
+function submitInertia(method: FormMethod, action: string, options: Record<string, any>) {
+    if (SPOOFED_METHODS.includes(method) && carriesFiles(form.data())) {
+        spoofing = true
+        form.transform((data: Record<string, any>) => ({ ...data, _method: method }))
+
+        return form.post(action, options)
+    }
+
+    if (spoofing) {
+        spoofing = false
+        form.transform((data: Record<string, any>) => data)
+    }
+
+    return form[method](action, options)
+}
+
+const submitForm = () => {
+    const method = resolvedMethod()
+    const action = props.action ?? props.schema.action
+    const options = { onSuccess: () => emit('success'), onError: () => emit('error'), ...(props.options ?? {}) }
+
+    if (props.transport === 'http') {
+        return form[method](action, options)
+    }
+
+    return submitInertia(method, action, options)
+}
+
+defineExpose({ submit: submitForm, form })
 </script>
 
 <template>
@@ -110,10 +173,10 @@ defineExpose({submit: submitForm, form})
         @submit.prevent="submitForm"
     >
         <FormRenderer
-            :columns="columns"
+            :columns="columns ?? 1"
             :fields="schema.fields"
             :form="form"
-            :on-field-change="onFieldChange ? (field, value) => onFieldChange(field, value, form) : undefined"
+            :on-field-change="onFieldChange ? (field, value) => onFieldChange!(field, value, form) : undefined"
             :field-overrides="fieldOverrides"
         />
     </form>

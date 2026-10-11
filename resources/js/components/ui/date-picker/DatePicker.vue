@@ -3,6 +3,8 @@ import { ref, computed, watch } from 'vue'
 import { Button } from '../button/index'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/index'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from 'lucide-vue-next'
+import { useFormMessages } from '../../../lib/messages'
+import { dateOfWallClock, resolveTimezone, toDisplayWallClock, toZonedIso, wallClockOfDate } from '../../../lib/timezone'
 
 interface Props {
   modelValue?: any // string|null for single; { start: string|null, end: string|null } for range
@@ -16,11 +18,13 @@ interface Props {
   locale?: string
   disabled?: boolean
   readonly?: boolean
+  timezone?: string
+  serverTimezone?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: null,
-  placeholder: 'Pick a date',
+  placeholder: undefined,
   enableTime: false,
   format: 'locale', // default to localized display
   range: false,
@@ -30,7 +34,23 @@ const props = withDefaults(defineProps<Props>(), {
   locale: undefined,
   disabled: false,
   readonly: false,
+  timezone: undefined,
+  serverTimezone: undefined,
 })
+
+const messageContext = useFormMessages()
+const messages = computed(() => messageContext.value.messages)
+const calendarLocale = computed(() => props.locale ?? messageContext.value.locale)
+const zone = computed(() => props.enableTime ? resolveTimezone(props.timezone) : null)
+
+const weekdayLabels = computed(() => {
+  const formatter = new Intl.DateTimeFormat(calendarLocale.value, { weekday: 'short' })
+  const labels = Array.from({ length: 7 }, (_, i) => formatter.format(new Date(2023, 0, 1 + i)))
+
+  return (props.weekStartsOn ?? 0) === 1 ? [...labels.slice(1), labels[0]] : labels
+})
+
+const monthLabel = computed(() => new Date(viewYear.value, viewMonth.value, 1).toLocaleString(calendarLocale.value, { month: 'long', year: 'numeric' }))
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
 
@@ -38,6 +58,7 @@ function pad(n: number) { return n < 10 ? `0${n}` : String(n) }
 // ISO formatting for submission
 function formatISO(d: Date | null, withTime: boolean) {
   if (!d) return null
+  if (withTime && zone.value) return toZonedIso(wallClockOfDate(d), zone.value)
   const y = d.getFullYear()
   const m = pad(d.getMonth() + 1)
   const day = pad(d.getDate())
@@ -64,11 +85,16 @@ function formatDisplay(d: Date | null, fmt: string, withTime: boolean, locale?: 
   }
   let out = fmt
   for (const [k, v] of Object.entries(tokens)) out = out.replace(k, v)
-  if (withTime) return out.includes('HH') ? out : `${out} ${tokens['HH']}:${tokens['mm']}`
+  if (withTime) return fmt.includes('HH') ? out : `${out} ${tokens['HH']}:${tokens['mm']}`
   return out
 }
 function parseDate(s: string | null, withTime: boolean): Date | null {
   if (!s) return null
+
+  if (withTime && zone.value) {
+    const wall = toDisplayWallClock(s, zone.value, props.serverTimezone)
+    return wall ? dateOfWallClock(wall) : null
+  }
 
   // Handle ISO 8601 format (e.g. "2026-03-19T13:56:08.000000Z") by parsing natively
   if (s.includes('T')) {
@@ -244,7 +270,7 @@ const minutes = computed({
         <CalendarIcon class="mr-2 h-4 w-4" />
         <template v-if="!props.range">
           <span v-if="selected">{{ formatDisplay(selected, props.format, props.enableTime, props.locale) }}</span>
-          <span v-else class="text-muted-foreground">{{ props.placeholder }}</span>
+          <span v-else class="text-muted-foreground">{{ props.placeholder ?? messages.pickDate }}</span>
         </template>
         <template v-else>
           <span v-if="selectedStart || selectedEnd">
@@ -252,40 +278,23 @@ const minutes = computed({
             –
             {{ selectedEnd ? formatDisplay(selectedEnd, props.format, props.enableTime, props.locale) : '…' }}
           </span>
-          <span v-else class="text-muted-foreground">{{ props.placeholder }}</span>
+          <span v-else class="text-muted-foreground">{{ props.placeholder ?? messages.pickPeriod }}</span>
         </template>
       </Button>
     </PopoverTrigger>
     <PopoverContent align="start" class="w-auto p-3">
       <div class="flex items-center justify-between mb-2">
-      <Button variant="ghost" size="icon" @click="prevMonth" aria-label="Vorige maand"><ChevronLeft class="w-4 h-4" /></Button>
-        <div class="text-sm font-medium">{{ new Date(viewYear, viewMonth, 1).toLocaleString(undefined, { month: 'long', year: 'numeric' }) }}</div>
-        <Button variant="ghost" size="icon" @click="nextMonth" aria-label="Volgende maand"><ChevronRight class="w-4 h-4" /></Button>
+      <Button variant="ghost" size="icon" @click="prevMonth" :aria-label="messages.previousMonth"><ChevronLeft class="w-4 h-4" /></Button>
+        <div class="text-sm font-medium">{{ monthLabel }}</div>
+        <Button variant="ghost" size="icon" @click="nextMonth" :aria-label="messages.nextMonth"><ChevronRight class="w-4 h-4" /></Button>
       </div>
       <div class="flex gap-2 mb-2">
-        <Button variant="outline" size="sm" @click="() => setSelected(new Date())">Vandaag</Button>
-        <Button v-if="props.range" variant="outline" size="sm" @click="() => { const e=new Date(); const s=new Date(); s.setDate(e.getDate()-6); selectedStart=s; selectedEnd=e; emit('update:modelValue', { start: formatISO(s, props.enableTime), end: formatISO(e, props.enableTime) }) }">Laatste 7 dagen</Button>
-        <Button v-if="props.range" variant="outline" size="sm" @click="() => { const a=new Date(viewYear, viewMonth, 1); const b=new Date(viewYear, viewMonth+1, 0); selectedStart=a; selectedEnd=b; emit('update:modelValue', { start: formatISO(a, props.enableTime), end: formatISO(b, props.enableTime) }) }">Deze maand</Button>
+        <Button variant="outline" size="sm" @click="() => setSelected(new Date())">{{ messages.today }}</Button>
+        <Button v-if="props.range" variant="outline" size="sm" @click="() => { const e=new Date(); const s=new Date(); s.setDate(e.getDate()-6); selectedStart=s; selectedEnd=e; emit('update:modelValue', { start: formatISO(s, props.enableTime), end: formatISO(e, props.enableTime) }) }">{{ messages.lastSevenDays }}</Button>
+        <Button v-if="props.range" variant="outline" size="sm" @click="() => { const a=new Date(viewYear, viewMonth, 1); const b=new Date(viewYear, viewMonth+1, 0); selectedStart=a; selectedEnd=b; emit('update:modelValue', { start: formatISO(a, props.enableTime), end: formatISO(b, props.enableTime) }) }">{{ messages.thisMonth }}</Button>
       </div>
       <div class="grid grid-cols-7 gap-1 text-xs text-muted-foreground mb-1">
-        <template v-if="(props.weekStartsOn ?? 0) === 1">
-          <span class="text-center">Mo</span>
-          <span class="text-center">Tu</span>
-          <span class="text-center">We</span>
-          <span class="text-center">Th</span>
-          <span class="text-center">Fr</span>
-          <span class="text-center">Sa</span>
-          <span class="text-center">Su</span>
-        </template>
-        <template v-else>
-          <span class="text-center">Su</span>
-          <span class="text-center">Mo</span>
-          <span class="text-center">Tu</span>
-          <span class="text-center">We</span>
-          <span class="text-center">Th</span>
-          <span class="text-center">Fr</span>
-          <span class="text-center">Sa</span>
-        </template>
+        <span v-for="label in weekdayLabels" :key="label" class="text-center">{{ label }}</span>
       </div>
       <div class="grid grid-cols-7 gap-1">
         <template v-for="(row, i) in weeks" :key="'r-'+i">
@@ -315,6 +324,7 @@ const minutes = computed({
           type="number"
           min="0"
           max="23"
+          :aria-label="messages.hours"
           class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
           :value="hours"
           @input="hours = Number(($event.target as HTMLInputElement).value)"
@@ -324,6 +334,7 @@ const minutes = computed({
           type="number"
           min="0"
           max="59"
+          :aria-label="messages.minutes"
           class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
           :value="minutes"
           @input="minutes = Number(($event.target as HTMLInputElement).value)"
@@ -336,9 +347,10 @@ const minutes = computed({
             type="number"
             min="0"
             max="23"
+          :aria-label="messages.hours"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedStart ? selectedStart.getHours() : 0"
-            @input="() => {
+            @input="($event: Event) => {
                 if (!selectedStart) selectedStart = new Date(viewYear, viewMonth, 1) as any;
                 (selectedStart as Date).setHours(Number(($event.target as HTMLInputElement).value));
                 emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
@@ -349,9 +361,10 @@ const minutes = computed({
             type="number"
             min="0"
             max="59"
+          :aria-label="messages.minutes"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedStart ? selectedStart.getMinutes() : 0"
-            @input="() => {
+            @input="($event: Event) => {
                 if (!selectedStart) selectedStart = new Date(viewYear, viewMonth, 1) as any;
                 (selectedStart as Date).setMinutes(Number(($event.target as HTMLInputElement).value));
                 emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
@@ -364,9 +377,10 @@ const minutes = computed({
             type="number"
             min="0"
             max="23"
+          :aria-label="messages.hours"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedEnd ? selectedEnd.getHours() : 0"
-            @input="() => {
+            @input="($event: Event) => {
                 if (!selectedEnd) selectedEnd = new Date(viewYear, viewMonth, 1) as any;
                 (selectedEnd as Date).setHours(Number(($event.target as HTMLInputElement).value));
                 emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })
@@ -377,9 +391,10 @@ const minutes = computed({
             type="number"
             min="0"
             max="59"
+          :aria-label="messages.minutes"
             class="w-14 rounded border border-input bg-transparent px-2 py-1 text-sm"
             :value="selectedEnd ? selectedEnd.getMinutes() : 0"
-            @input="() => {
+            @input="($event: Event) => {
                 if (!selectedEnd) selectedEnd = new Date(viewYear, viewMonth, 1) as any;
                 (selectedEnd as Date).setMinutes(Number(($event.target as HTMLInputElement).value));
                 emit('update:modelValue', { start: formatISO(selectedStart, true), end: formatISO(selectedEnd, true) })

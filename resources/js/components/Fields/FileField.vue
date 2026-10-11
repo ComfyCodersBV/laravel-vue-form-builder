@@ -6,6 +6,7 @@ import { computed } from 'vue'
 import { cn } from '../../lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { Info } from 'lucide-vue-next'
+import { useFormMessages } from '../../lib/messages'
 
 interface FileFieldProps extends Field {
     prepend?: string
@@ -13,6 +14,11 @@ interface FileFieldProps extends Field {
     tooltip?: string
     multiple?: boolean
     accept?: Array<string>
+    currentUrl?: string
+    currentName?: string
+    preview?: boolean
+    removeFlag?: string
+    removeRequested?: boolean | string | number
 }
 
 const props = withDefaults(defineProps<FileFieldProps>(), {
@@ -30,9 +36,43 @@ const props = withDefaults(defineProps<FileFieldProps>(), {
     tooltip: undefined,
     multiple: false,
     accept: undefined,
+    currentUrl: undefined,
+    currentName: undefined,
+    preview: true,
+    removeFlag: undefined,
+    removeRequested: false,
 })
 
-const emit = defineEmits<{ 'update:modelValue': [File | File[] | string] }>()
+const emit = defineEmits<{
+    'update:modelValue': [File | File[] | string]
+    'update:formValue': [string, any]
+}>()
+
+const messageContext = useFormMessages()
+
+const IMAGE_PATTERN = /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i
+
+const showsImage = computed(() => {
+    if (!props.preview || !props.currentUrl) {
+        return false
+    }
+
+    if (props.currentUrl.startsWith('data:image/')) {
+        return true
+    }
+
+    return IMAGE_PATTERN.test(props.currentUrl.split(/[?#]/)[0])
+})
+
+const isRemoving = computed(() => [true, 1, '1', 'true'].includes(props.removeRequested as any))
+
+function toggleRemoval(event: Event) {
+    if (!props.removeFlag) {
+        return
+    }
+
+    emit('update:formValue', props.removeFlag, (event.target as HTMLInputElement).checked)
+}
 
 function handleChange(event: Event) {
     const input = event.target as HTMLInputElement
@@ -56,7 +96,7 @@ function leftRoundClass() {
 }
 
 function getName() {
-    if (props.multiple && ! props.name.endsWith("[]")) {
+    if (props.multiple && props.name && ! props.name.endsWith("[]")) {
         return props.name + "[]"
     }
 
@@ -107,6 +147,38 @@ function getName() {
                     {{ tooltip }}
                 </TooltipContent>
             </Tooltip>
+        </div>
+
+        <div v-if="currentUrl" class="mt-2 flex items-center gap-3 text-sm" data-current-file>
+            <a v-if="showsImage" :href="currentUrl" target="_blank" rel="noopener" class="shrink-0">
+                <img
+                    :src="currentUrl"
+                    :alt="currentName ?? ''"
+                    :class="cn('size-16 rounded-md border border-input object-cover', isRemoving ? 'opacity-40' : '')"
+                />
+            </a>
+            <div class="min-w-0 flex-1 space-y-1">
+                <div class="text-xs text-muted-foreground">{{ messageContext.messages.currentFile }}</div>
+                <a
+                    :href="currentUrl"
+                    target="_blank"
+                    rel="noopener"
+                    :class="cn('block truncate underline underline-offset-2', isRemoving ? 'text-muted-foreground line-through' : '')"
+                >
+                    {{ currentName || currentUrl }}
+                </a>
+                <label v-if="removeFlag" class="inline-flex cursor-pointer items-center gap-2 text-xs">
+                    <input
+                        type="checkbox"
+                        class="size-4"
+                        :checked="isRemoving"
+                        :disabled="!!disabled || !!readonly"
+                        @change="toggleRemoval"
+                    />
+                    {{ messageContext.messages.removeCurrentFile }}
+                </label>
+            </div>
+            <input v-if="removeFlag" type="hidden" :name="removeFlag" :value="isRemoving ? '1' : '0'" />
         </div>
     </BaseField>
 </template>

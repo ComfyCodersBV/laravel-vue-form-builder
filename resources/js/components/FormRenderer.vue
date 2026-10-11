@@ -2,6 +2,8 @@
     import { useFormContext } from '@inertiajs/vue3'
     import FormField from './FormField.vue'
     import type { Field } from '../types/form-builder'
+    import { inject } from 'vue'
+    import { flattenFields, formFieldsKey } from '../lib/fields'
 
     const { fields, form: propForm, onFieldChange, fieldOverrides, columns = 1 } = defineProps<{
         fields: Field[]
@@ -11,13 +13,15 @@
         columns?: 1 | 2
     }>()
 
-    const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden']
+    const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden', 'section']
 
     function spansFullWidth(field: Field): boolean {
         return field.fullWidth === true || FULL_WIDTH_TYPES.includes(field.type ?? '')
     }
 
     const form = propForm ?? useFormContext()
+
+    const formFields = inject(formFieldsKey, [])
 
     const BOOLEAN_FIELD_TYPES = ['checkbox', 'toggle']
 
@@ -36,7 +40,7 @@
     function conditionData(data: Record<string, any>): Record<string, any> {
         const normalized = { ...data }
 
-        fields.forEach((field: any) => {
+        flattenFields([...formFields, ...fields]).forEach((field: any) => {
             if (! field?.name || ! BOOLEAN_FIELD_TYPES.includes(field.type) || ! (field.name in normalized)) {
                 return
             }

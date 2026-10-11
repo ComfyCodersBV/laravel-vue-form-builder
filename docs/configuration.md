@@ -22,6 +22,20 @@ renders around its control. See [Theming](theming.md).
 
 ---
 
+## Dates
+
+```php
+'dates' => [
+    'timezone' => null,
+],
+```
+
+The timezone date fields with a time show and send their value in. `null` keeps the wall-clock value without timezone;
+an IANA name such as `'Europe/Amsterdam'`, or `'browser'` for the user's own timezone, sends ISO 8601 with an offset.
+See [Timezone](fields/date-time.md#timezone).
+
+---
+
 ## WYSIWYG
 
 ### Default editor

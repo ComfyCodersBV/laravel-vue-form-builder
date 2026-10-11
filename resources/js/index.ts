@@ -17,3 +17,6 @@ export type {
     HttpFormErrorAdapter,
 } from "./composables/useHttpForm"
 export { default as BaseField } from "./components/Fields/BaseField.vue"
+export { configureFormMessages, resetFormMessages, useFormMessages, en as englishMessages, nl as dutchMessages } from "./lib/messages"
+export type { FormMessages, FormMessagesConfig } from "./lib/messages"
+export { BROWSER_TIMEZONE } from "./lib/timezone"

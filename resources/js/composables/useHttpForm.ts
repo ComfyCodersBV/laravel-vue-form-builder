@@ -76,7 +76,7 @@ function isFileLike(value: any): boolean {
         || (typeof FileList !== 'undefined' && value instanceof FileList)
 }
 
-function carriesFiles(value: any): boolean {
+export function carriesFiles(value: any): boolean {
     if (isFileLike(value)) {
         return true
     }

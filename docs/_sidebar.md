@@ -15,6 +15,7 @@
     - [WYSIWYG](fields/wysiwyg.md)
     - [WYSIWYG Adapters](fields/wysiwyg-adapters.md)
     - [Buttons & Actions](fields/buttons.md)
+    - [Sections](fields/sections.md)
     - [Other Fields](fields/other.md)
 - [Standalone Components](components.md)
 - [Theming](theming.md)

@@ -145,6 +145,68 @@ With the default `columns="1"` the renderer still emits no wrapper element at al
 </template>
 ```
 
+## Reusing one schema for many rows
+
+A dialog per table row ("reject booking", "put on option") does not need a schema per row. Render the form once in PHP
+and override the target and the values per use:
+
+```vue
+<template>
+    <Dialog v-model:open="open">
+        <Form
+            :schema="rejectForm"
+            :action="`/bookings/${booking.id}/reject`"
+            method="patch"
+            :defaults="{ reason: booking.reason ?? '' }"
+            @success="open = false"
+        />
+    </Dialog>
+</template>
+```
+
+- `action` and `method` replace the schema's own for this form only.
+- `defaults` are merged over the schema defaults. When they change (another row opens the same dialog), the form loads
+  them, resets the rest to the schema defaults and clears its errors. Values typed by the user stay as long as the
+  defaults stay the same.
+- `fieldOverrides` keeps working for per-row props on a field, such as options.
+
+## Translations
+
+Every text the renderer shows itself (date picker buttons, placeholders, "No results", aria labels, …) comes from a
+message catalogue. English is the default and Dutch is built in. Labels the schema carries, such as `->placeholder()`
+or the translated labels PHP sends for selects and numbers, still win.
+
+The locale is the first of:
+
+1. the `locale` prop on `<Form>`
+2. the locale set with `configureFormMessages({ locale })`
+3. the `locale` in the schema, which the PHP core fills with `app()->getLocale()` (override with `$form->locale('nl')`)
+4. `en`
+
+A regional locale such as `nl-BE` falls back to `nl`; a missing message falls back to English.
+
+```ts
+// app.ts
+import { configureFormMessages } from '@form-builder';
+
+configureFormMessages({
+    locale: 'nl',
+    messages: {
+        de: { pickDate: 'Datum wählen', today: 'Heute' },
+        nl: { pickDate: 'Kies een dag' },
+    },
+});
+```
+
+Override single messages for one form with the `messages` prop:
+
+```vue
+<Form :schema="form" :messages="{ pickDate: 'Arrival day' }" />
+```
+
+The standalone components (`TreeView`, `SortableList`, `Tabs`) follow the global locale. The full list of keys is the
+`FormMessages` type; `englishMessages` and `dutchMessages` are exported as starting points for a new language.
+
 ## Submitting without Inertia
 
 By default the form submits through Inertia's `useForm()`. Pass `transport="http"` to submit over `fetch` instead and stay on the page — useful in a modal, a side panel or an admin screen that keeps its own state.
@@ -159,6 +221,7 @@ The built-in submitter:
 - sends the `XSRF-TOKEN` cookie as an `X-XSRF-TOKEN` header, falling back to a `<meta name="csrf-token">` tag, so Laravel's `VerifyCsrfToken` does not answer `419`
 - sends `X-Requested-With: XMLHttpRequest` and `Accept: application/json`, so validation failures come back as `422` JSON instead of a redirect
 - switches to `multipart/form-data` as soon as a field holds a file, and spoofs `_method` for `PUT`, `PATCH` and `DELETE`
+  (the Inertia transport does the same: a `PUT` with a file goes out as a `POST` with `_method`)
 - spreads nested arrays and objects into `filters[status][0]=open` style parameters on a `GET`
 
 Validation errors land on the matching field. Any other failure lands under the key `form`, which no field renders — read it yourself if you want to show it:

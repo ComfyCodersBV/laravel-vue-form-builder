@@ -101,12 +101,38 @@ Date::make('expires_on')
 
 ### Locale
 
-Set the locale for month names, day names, and other text in the picker:
+Set the locale for the displayed date, and for the month and day names in the picker. Without it the picker follows the
+form's locale (see [Translations](../vue-usage.md#translations)):
 
 ```php
 Date::make('event_date')
     ->locale('nl')
 ```
+
+### Timezone
+
+By default a date field with a time sends the wall-clock time the user picked, such as `2026-10-11 14:30`, without
+saying in which timezone that is. Declare a timezone to make the value unambiguous:
+
+```php
+DateTime::make('starts_at')
+    ->timezone('Europe/Amsterdam')
+
+DateTime::make('starts_at')
+    ->timezone(Date::BROWSER_TIMEZONE) // the timezone of whoever fills in the form
+```
+
+The picker then shows and edits the time in that timezone, whatever timezone the browser is in, and sends an ISO 8601
+value with its UTC offset: `2026-10-11T14:30:00+02:00`. A value that comes in with an offset (such as Eloquent's
+`2026-10-11T12:30:00.000000Z`) is shown in the field's timezone; a value without one is read in the application
+timezone (`config('app.timezone')`), which the schema sends along as `serverTimezone`.
+
+`FormConfig::validate()` (and `AbstractForm::validate()`) converts these values to the application timezone as
+`Y-m-d H:i:s`, ready for an Eloquent `datetime` column. Validating through a FormRequest instead? Convert yourself with
+`$form->normalizeValues($request->validated())` or a single field's `->normalizeValue($value)`.
+
+Set a default for every field in `config/form-builder.php` under `dates.timezone`; `->timezone()` on a field wins over
+it. A date without a time ignores the timezone: a calendar date has no offset.
 
 ### Time step
 

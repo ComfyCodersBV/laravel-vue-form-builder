@@ -9,9 +9,9 @@ interface DateFieldProps extends Field {
   range?: boolean
   minDate?: string
   maxDate?: string
-  weekStartsOn?: number // 0=Sun, 1=Mon
-  disabled?: boolean | string
-  readonly?: boolean | string
+  weekStartsOn?: number
+  timezone?: string
+  serverTimezone?: string
 }
 
 const props = withDefaults(defineProps<DateFieldProps>(), {
@@ -22,6 +22,8 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   weekStartsOn: 0,
   disabled: false,
   readonly: false,
+  timezone: undefined,
+  serverTimezone: undefined,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -41,7 +43,7 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
     <DatePicker
       v-model="internal"
       :enable-time="props.enableTime"
-      :placeholder="props.placeholder || (props.range ? 'Kies periode' : 'Kies datum')"
+      :placeholder="props.placeholder || undefined"
       :range="props.range"
       :min-date="props.minDate"
       :max-date="props.maxDate"
@@ -50,6 +52,8 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
       :locale="props.locale"
       :disabled="!!props.disabled"
       :readonly="!!props.readonly"
+      :timezone="props.timezone"
+      :server-timezone="props.serverTimezone"
     />
 
     <template v-if="props.name && !props.range">

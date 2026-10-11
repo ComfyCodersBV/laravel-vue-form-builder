@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { inject } from 'vue'
+import { useFormMessages } from '../lib/messages'
 import { fieldSlotsKey } from '../lib/field-slots'
 import type { Field } from '../types/form-builder'
 
@@ -16,6 +17,7 @@ import NumberField from './Fields/NumberField.vue'
 import RadioGroupField from './Fields/RadioGroupField.vue'
 import RecaptchaField from './Fields/RecaptchaField.vue'
 import RepeaterField from './Fields/RepeaterField.vue'
+import SectionField from './Fields/SectionField.vue'
 import SelectField from './Fields/SelectField.vue'
 import SubmitButton from './Fields/SubmitButton.vue'
 import TextField from './Fields/TextField.vue'
@@ -58,6 +60,23 @@ const fieldComponents: Record<string, any> = {
 
 const fieldSlots = inject(fieldSlotsKey, {})
 
+const messageContext = useFormMessages()
+
+function extraProps(): Record<string, any> {
+    const removeFlag = (field as any).removeFlag
+
+    if (field.type !== 'file' || !removeFlag) {
+        return {}
+    }
+
+    return { removeRequested: form[removeFlag] }
+}
+
+function updateFormValue(name: string, value: any): void {
+    form[name] = value
+    onFieldChange?.(name, value)
+}
+
 function componentFor() {
     return field.type ? fieldComponents[field.type] : undefined
 }
@@ -95,15 +114,23 @@ function updateValue(value: any): void {
         :is="slotFor()"
         v-bind="slotPropsFor()"
     />
+    <SectionField
+        v-else-if="field.type === 'section'"
+        :field="field"
+        :form="form"
+        :on-field-change="onFieldChange"
+        :field-overrides="fieldOverrides"
+    />
     <component
         v-else-if="componentFor()"
         :is="componentFor()"
-        v-bind="{ ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }"
+        v-bind="{ ...field, ...extraProps(), ...(fieldOverrides?.[field.name ?? ''] ?? {}) }"
         :model-value="form[field.name!]"
         :error="form.errors[field.name!]"
         @update:modelValue="updateValue"
+        @update:formValue="updateFormValue"
     />
     <div v-else class="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-        Unknown field type: <code class="font-mono">{{ field.type }}</code>
+        {{ messageContext.messages.unknownFieldType }} <code class="font-mono">{{ field.type }}</code>
     </div>
 </template>

@@ -31,6 +31,14 @@ export interface Field {
     tooltip?: string
     format?: string
     locale?: string
+    timezone?: string
+    serverTimezone?: string
+    title?: string
+    description?: string
+    currentUrl?: string
+    currentName?: string
+    preview?: boolean
+    removeFlag?: string
 }
 
 export type TForm = Record<string, FieldValue>
@@ -38,8 +46,9 @@ export type TForm = Record<string, FieldValue>
 export interface FormSchema {
     schemaVersion?: string
     id?: string
-    method: 'get' | 'post' | 'put' | 'patch' | 'delete'
+    method: 'get' | 'post' | 'put' | 'patch' | 'delete' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     action: string
+    formClass?: string | string[]
     defaults: TForm
     fields: Field[]
     theme?: Partial<FormTheme>

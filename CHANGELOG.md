@@ -2,6 +2,30 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.6.0 - 2026-10-11
+* Date fields with a time take a timezone (`timezone` and `serverTimezone` from the schema). The picker then shows and
+  edits the time in that timezone, whatever the browser's is, and sends ISO 8601 with the offset
+  (`2026-10-11T14:30:00+02:00`) instead of a bare wall-clock time. `browser` means the user's own timezone. Values
+  without an offset are read in the server timezone. Without a timezone nothing changes.
+* `<Form>` takes `action`, `method` and `defaults` props, so one schema serves a dialog per table row without cloning
+  it. `defaults` merge over the schema defaults; when they change, the form loads them and clears its errors.
+* Every built-in text is translatable. English is the default, Dutch is built in. The locale comes from the `locale`
+  prop, `configureFormMessages({ locale })`, the schema's `locale` (the app locale, sent by the core), then `en`.
+  `configureFormMessages({ messages })` adds a language or overrides single messages, the `messages` prop does so for
+  one form. This replaces the hardcoded Dutch "Kies datum", "Vandaag", "Zoeken...", "Geselecteerd" and "Keys moeten
+  uniek zijn." and the hardcoded English labels elsewhere. Weekday and month names follow the locale through `Intl`.
+* File fields show the current file (`currentUrl`, `currentName`) as a link, with a thumbnail when it is an image
+  (`preview: false` turns that off). With a `removeFlag` a "Remove current file" checkbox submits that flag.
+* Add the `section` type: a heading with an optional description that groups fields. Its fields are ordinary form
+  fields for values, conditions and errors; in two columns a section spans both and lays out its own fields in two.
+* A form with a file and the method `PUT`, `PATCH` or `DELETE` is sent through Inertia as a `POST` with `_method`, as
+  the HTTP transport already did, because PHP does not parse multipart bodies for other methods.
+* The time inputs of the date picker have an aria label.
+* Fix a date format with a time in it (`DD-MM-YYYY HH:mm`) showing the time twice.
+* Fix a multiple select showing no placeholder at all.
+* Supports schema version `1.4` of `tranquil-tools/laravel-form-builder` (`^1.3`), which adds `section`, the timezone,
+  the current file, the remove flag and the form locale.
+
 ## 1.5.0 - 2026-10-02
 * Add a `Time` field (type `time`) for a time of day as `HH:MM`. Typing is forgiving: on blur or Enter `9` becomes
   `09:00`, `930` becomes `09:30` and `9.30` becomes `09:30`; input that is no time stays as typed and is marked
