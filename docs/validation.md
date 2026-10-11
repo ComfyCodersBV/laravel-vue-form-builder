@@ -74,6 +74,11 @@ public function store(ProductFormRequest $request): RedirectResponse
 }
 ```
 
+## Errors outside the fields
+
+Errors on keys that match no field are shown at the top of the form. See
+[Vue Usage](vue-usage.md#errors-that-belong-to-no-field).
+
 ## Inline validation
 
 For cases where you don't want a dedicated `FormRequest`, call `validate()` directly on the form config:

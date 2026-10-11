@@ -61,7 +61,10 @@ public function configure(FormConfig $form): void
 | `id(string)` | HTML `id` attribute on the form element |
 | `class(string\|array)` | CSS classes on the form element |
 | `action(string)` | Form submission URL |
-| `method(string)` | HTTP method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` |
+| `method(string)` | HTTP method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`. A `GET` form submits as a query string, see [Filter Forms](filter-forms.md) |
+| `resetOnSuccess(bool)` | Clear the inputs after a successful submit, for "add another" forms. See [Vue Usage](vue-usage.md#resetting-after-a-successful-submit) |
+| `submitOnChange(bool)` | Submit shortly after every change, for filter bars |
+| `fillFromQuery(bool)` | Take defaults from the query string. On by default for `GET` forms |
 
 > **Note:** `action` and `method` are usually set in the controller so you can pass different values for create vs. edit without subclassing the form.
 

@@ -4,10 +4,13 @@
     - [Creating a Form](creating-forms.md)
     - [Vue Usage](vue-usage.md)
     - [Validation](validation.md)
+    - [Filter Forms (GET)](filter-forms.md)
 - Fields
     - [Common Options](fields/common-options.md)
     - [Text Fields](fields/text-fields.md)
     - [Selection Fields](fields/selection-fields.md)
+    - [Money](fields/money.md)
+    - [Translatable](fields/translatable.md)
     - [Date & Time](fields/date-time.md)
     - [File Upload](fields/file.md)
     - [Key-Value](fields/key-value.md)

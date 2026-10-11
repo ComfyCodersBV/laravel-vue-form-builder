@@ -170,6 +170,51 @@ and override the target and the values per use:
   defaults stay the same.
 - `fieldOverrides` keeps working for per-row props on a field, such as options.
 
+## Resetting after a successful submit
+
+A form that adds lines ("add booking line", "add guest") should be empty again after each submit. Inertia keeps the
+page state after a POST, so the typed values would otherwise stay. Turn it on in PHP or per use:
+
+```php
+$form->resetOnSuccess();
+```
+
+```vue
+<Form :schema="lineForm" reset-on-success />
+```
+
+After a successful submit the form goes back to its defaults and clears its errors. A failed submit keeps what was
+typed. The prop wins over the schema, so `:reset-on-success="false"` keeps the values for one use.
+
+Independent of this option, file fields always forget the chosen file after a successful submit (and their remove
+checkbox unticks): the upload is done, and submitting again should not upload it twice.
+
+## Errors that belong to no field
+
+An error whose key matches no field — `conflicts`, `form`, a failed HTTP request — has nowhere to go under a field, so
+it is shown at the top of the form in a `role="alert"` block:
+
+```php
+throw ValidationException::withMessages([
+    'conflicts' => 'This booking overlaps with another one.',
+]);
+```
+
+Keys of a field's nested values (`lines.0.amount` for a repeater `lines`, `title.nl` for a translatable `title`) and of
+remove flags count as that field's own. Replace the block with the `form-errors` slot:
+
+```vue
+<Form :schema="form">
+    <template #form-errors="{ errors }">
+        <Alert variant="destructive">
+            <AlertDescription v-for="(message, key) in errors" :key="key">{{ message }}</AlertDescription>
+        </Alert>
+    </template>
+</Form>
+```
+
+The same `formErrors` (key to first message) is exposed on the component ref.
+
 ## Translations
 
 Every text the renderer shows itself (date picker buttons, placeholders, "No results", aria labels, …) comes from a
