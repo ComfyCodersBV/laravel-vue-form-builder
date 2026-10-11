@@ -23,6 +23,22 @@ test:node:
       - node_modules/
   rules: *default_rules
 
+# Consumers type-check their pages together with these sources, so an error here
+# becomes theirs. strict, like the Laravel starter kit.
+typecheck:
+  stage: test
+  image: node:22
+  script:
+    - npm ci
+    - npm run typecheck
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+  rules: *default_rules
+
 # Every fixture installs the package's own dependencies first. Bare specifiers
 # in resources/js resolve upwards from that file, not from the fixture, so the
 # adapters can only compile against the engines held there as devDependencies.

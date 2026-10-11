@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/// <reference path="./HugeRteEditor.shim.d.ts" />
 import Editor from '@hugerte/hugerte-vue'
 import 'hugerte/hugerte'
 import 'hugerte/icons/default'

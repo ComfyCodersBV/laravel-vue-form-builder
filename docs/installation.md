@@ -32,12 +32,16 @@ The Laravel Vue starter kit already provides `vue`, `@inertiajs/vue3`, `@vueuse/
 `class-variance-authority` and `tailwind-merge`, so in practice you add two:
 
 ```bash
-npm install reka-ui lucide-vue-next
+npm install reka-ui @lucide/vue
 ```
 
 The package's `package.json` declares all of them as `peerDependencies` with supported version
 ranges. It installs nothing — it exists so a version mismatch is documented rather than discovered
 through a broken component after an `npm update`.
+
+Icons come from `@lucide/vue`, the maintained successor of `lucide-vue-next` that the current Laravel Vue starter kit
+installs. Up to 1.6 this package imported `lucide-vue-next`; an application that still only has that one adds
+`@lucide/vue` (the icon names are the same).
 
 No editor dependencies are needed here. A WYSIWYG editor is opt-in: the package never imports one, so your build stays free of Quill and friends unless you register an editor yourself. See [WYSIWYG](fields/wysiwyg) and [WYSIWYG Adapters](fields/wysiwyg-adapters).
 

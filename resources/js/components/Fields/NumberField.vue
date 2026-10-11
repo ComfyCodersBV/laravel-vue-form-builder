@@ -6,7 +6,7 @@ import { computed } from 'vue';
 import type { Field } from '../../types/form-builder'
 import { cn } from '../../lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { Info, Minus, Plus } from 'lucide-vue-next';
+import { Info, Minus, Plus } from '@lucide/vue';
 import { useFormMessages } from '../../lib/messages'
 
 const messageContext = useFormMessages()

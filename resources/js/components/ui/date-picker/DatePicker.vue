@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { Button } from '../button/index'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/index'
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from 'lucide-vue-next'
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from '@lucide/vue'
 import { useFormMessages } from '../../../lib/messages'
 import { dateOfWallClock, resolveTimezone, toDisplayWallClock, toZonedIso, wallClockOfDate } from '../../../lib/timezone'
 

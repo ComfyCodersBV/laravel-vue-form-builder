@@ -9,12 +9,12 @@
     "dependencies": {
         "@hugerte/hugerte-vue": "^2.0.2",
         "@inertiajs/vue3": "^3.0.0",
+        "@lucide/vue": "^1.0.1",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "hugerte": "^1.0.12",
         "jodit": "^4.13.22",
-        "lucide-vue-next": "^1.0.0",
         "reka-ui": "^2.10.1",
         "tailwind-merge": "^3.2.0",
         "vue": "^3.5.13"

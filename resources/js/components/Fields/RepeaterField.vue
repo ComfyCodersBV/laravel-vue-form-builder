@@ -3,7 +3,7 @@ import BaseField from './BaseField.vue'
 import type {Field} from '../../types/form-builder'
 import {Button} from '../ui/button'
 import {computed, ref, watch} from 'vue'
-import {ArrowDown, ArrowUp, Plus, Trash2} from 'lucide-vue-next'
+import {ArrowDown, ArrowUp, Plus, Trash2} from '@lucide/vue'
 // FormRenderer and RepeaterField reference each other (FormRenderer registers
 // RepeaterField in its component map; RepeaterField renders each row's
 // sub-fields through FormRenderer). The mutual import is resolved at render

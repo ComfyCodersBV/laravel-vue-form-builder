@@ -40,7 +40,8 @@ onMounted(async () => {
         return
     }
 
-    quill.value = editor.value.initialize(Quill)
+    const instance: Quill = editor.value.initialize(Quill)
+    quill.value = instance
 
     await nextTick()
 
@@ -48,15 +49,15 @@ onMounted(async () => {
     if (initial) {
         const needsNormalization = initial.indexOf('<p>') === -1 && initial.indexOf('<div>') === -1
         const html = needsNormalization ? normalizeHtml(initial) : initial
-        quill.value.clipboard.dangerouslyPasteHTML(0, html, 'silent')
+        instance.clipboard.dangerouslyPasteHTML(0, html, 'silent')
     }
-    quill.value.setSelection(0, 0, 'silent')
+    instance.setSelection(0, 0, 'silent')
 
-    quill.value.on('text-change', (delta, oldDelta, source) => {
+    instance.on('text-change', (_delta, _oldDelta, source) => {
         if (source === 'user' && !isUpdating.value && !isSourceMode.value) {
-            const html = typeof quill.value.getSemanticHTML === 'function'
-                ? quill.value.getSemanticHTML()
-                : quill.value.root.innerHTML
+            const html = typeof instance.getSemanticHTML === 'function'
+                ? instance.getSemanticHTML()
+                : instance.root.innerHTML
             emit('update:modelValue', html)
         }
     })
@@ -71,7 +72,7 @@ function addSourceButton() {
         return
     }
 
-    const toolbar = quill.value.getModule('toolbar')
+    const toolbar = quill.value.getModule('toolbar') as { container?: HTMLElement } | undefined
     if (!toolbar || !toolbar.container) {
         return
     }

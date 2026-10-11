@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ChevronDown, ChevronRight, GripVertical } from 'lucide-vue-next'
+import { ChevronDown, ChevronRight, GripVertical } from '@lucide/vue'
 import { cn } from '../lib/utils'
 import { useFormMessages } from '../lib/messages'
 
@@ -33,6 +33,10 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
     'update:modelValue': [string | number | null]
     drop: [TreeDropEvent]
+}>()
+
+defineSlots<{
+    actions?: (props: { node: TreeNode }) => any
 }>()
 
 const expanded = ref<Set<string | number>>(new Set(props.expandedIds))
@@ -172,8 +176,8 @@ function indicatorClass(node: TreeNode): string {
                     @update:model-value="emit('update:modelValue', $event)"
                     @drop="emit('drop', $event)"
                 >
-                    <template #actions="slotProps">
-                        <slot name="actions" v-bind="slotProps" />
+                    <template #actions="{ node: child }">
+                        <slot name="actions" :node="child" />
                     </template>
                 </TreeView>
             </div>

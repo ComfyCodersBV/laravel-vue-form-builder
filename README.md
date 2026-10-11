@@ -46,7 +46,7 @@ so their imports resolve against your `node_modules`. Beyond what the Laravel Vu
 gives you:
 
 ```cli
-npm install reka-ui lucide-vue-next
+npm install reka-ui @lucide/vue
 ```
 
 A WYSIWYG editor is opt-in. The package imports no editor, so nothing is needed here unless you

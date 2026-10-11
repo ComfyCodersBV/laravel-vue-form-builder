@@ -5,7 +5,7 @@ import {Input} from '../ui/input'
 import {Button} from '../ui/button'
 import {computed, ref, watch} from 'vue'
 import {cn} from '../../lib/utils'
-import {ArrowDown, ArrowUp, Eye, EyeOff, Plus, Trash2} from 'lucide-vue-next'
+import {ArrowDown, ArrowUp, Eye, EyeOff, Plus, Trash2} from '@lucide/vue'
 import { useFormMessages } from '../../lib/messages'
 
 interface KeyValueProps extends Field {

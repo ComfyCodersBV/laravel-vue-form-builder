@@ -6,7 +6,7 @@ import { MultiSelect } from '../ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { ChevronsUpDown, X } from 'lucide-vue-next';
+import { ChevronsUpDown, X } from '@lucide/vue';
 import { computed, nextTick, ref, watch } from 'vue';
 import { useFormMessages } from '../../lib/messages'
 

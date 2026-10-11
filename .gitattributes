@@ -17,6 +17,7 @@
 /UPGRADING.md       export-ignore
 /.gitlab-ci.yml     export-ignore
 /vitest.config.mts  export-ignore
+/tsconfig.json      export-ignore
 
 # The npm manifest declares supported peer ranges and hosts frontend tooling for
 # CI. It resolves nothing for consumers, because Vite resolves imports against

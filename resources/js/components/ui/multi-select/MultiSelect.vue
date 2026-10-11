@@ -3,7 +3,7 @@ import { ref, computed, nextTick, watch, onMounted } from 'vue'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 import { Button } from '../button'
 import { Input } from '../input'
-import { X, ChevronsUpDown } from 'lucide-vue-next'
+import { X, ChevronsUpDown } from '@lucide/vue'
 import { cn } from '../../../lib/utils'
 import { useFormMessages } from '../../../lib/messages'
 
