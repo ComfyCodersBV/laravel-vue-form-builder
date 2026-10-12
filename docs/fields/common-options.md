@@ -24,6 +24,16 @@ Text::make('q')
 
 In a horizontal layout a field with a hidden label drops the label column.
 
+## Column span
+
+In a form or section with columns, `->columnSpan(n)` lets a field take `n` columns and `->columnSpanFull()` the whole
+row. See [Columns](../columns.md).
+
+```php
+Text::make('street')->columnSpan(2)
+Textarea::make('notes')->columnSpanFull()
+```
+
 ## Default value
 
 Sets the initial value when the form loads (before any `fill()` data):

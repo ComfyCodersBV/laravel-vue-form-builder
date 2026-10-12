@@ -2,6 +2,24 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.8.0 - 2026-10-12
+* Date fields and the standalone `DatePicker` take `disabledWeekdays` (`0` = Sunday … `6` = Saturday) and
+  `disabledDates` (`'Y-m-d'` strings and `{ from?, to? }` ranges). Those days are struck through and cannot be
+  clicked, and the "Today" button is disabled on such a day. The `DisabledDate` type is exported from the package root
+  and from `components/ui/date-picker`.
+* A section with `columns` (1 to 4) lays out its own fields in a responsive grid, and a field with `columnSpan` (a
+  number or `full`) takes that many columns. A nested section without `columns` inherits the nearest section's. The
+  `columns` prop of `Form` and `FormRenderer` now accepts `3` and `4` as well.
+* Fix `fullWidth` given through `field-overrides` being ignored by the two-column grid, although the docs show it that
+  way. `columnSpan` works there too.
+* A radio option link with a `target` other than `_self` renders as a plain anchor with that target and
+  `rel="noopener noreferrer"`, also for an internal link that would otherwise navigate through Inertia.
+* Docs: new [Columns](docs/columns.md) page, disabled dates, the `DatePicker` component, link targets, friendly
+  validation attribute names for translatable fields and money bound messages. Fix the date range docs, which named
+  the submitted keys `from` and `to` instead of `start` and `end`.
+* Supports schema version `1.6` of `tranquil-tools/laravel-form-builder` (`^1.5`), which adds `disabledWeekdays`,
+  `disabledDates`, `columns`, `columnSpan` and option `target`.
+
 ## 1.7.0 - 2026-10-11
 * **Icons now come from `@lucide/vue` instead of `lucide-vue-next`.** `@lucide/vue` is the maintained successor with
   the same icon names, and the one the current Laravel Vue starter kit installs, so most applications already have

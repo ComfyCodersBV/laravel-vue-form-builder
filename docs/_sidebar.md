@@ -5,6 +5,7 @@
     - [Vue Usage](vue-usage.md)
     - [Validation](validation.md)
     - [Filter Forms (GET)](filter-forms.md)
+    - [Columns](columns.md)
 - Fields
     - [Common Options](fields/common-options.md)
     - [Text Fields](fields/text-fields.md)

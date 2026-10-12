@@ -36,6 +36,11 @@ class ProductFormRequest extends FormRequest
     {
         return ProductForm::rules();
     }
+
+    public function attributes(): array
+    {
+        return ProductForm::attributes();
+    }
 }
 ```
 

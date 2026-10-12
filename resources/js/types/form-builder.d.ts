@@ -1,4 +1,6 @@
 import type { FormTheme } from '../lib/theme'
+import type { DisabledDate } from '../lib/dates'
+import type { FormColumns } from '../lib/layout'
 
 export type FieldValue =
     | string
@@ -16,6 +18,7 @@ export interface FieldOption {
     disabled?: boolean
     href?: string
     linkLabel?: string
+    target?: string
 }
 
 export interface LocaleOption {
@@ -63,6 +66,11 @@ export interface Field {
     requiredLocales?: string[]
     field?: Field
     display?: 'tabs' | 'stacked'
+    disabledWeekdays?: number[]
+    disabledDates?: DisabledDate[]
+    columns?: FormColumns
+    columnSpan?: number | 'full'
+    linkTarget?: string
 }
 
 export type TForm = Record<string, FieldValue>

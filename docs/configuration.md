@@ -36,6 +36,25 @@ See [Timezone](fields/date-time.md#timezone).
 
 ---
 
+## Money and translatable fields
+
+```php
+'money' => [
+    'currency' => 'EUR',
+],
+
+'translatable' => [
+    'locales' => null,          // ['nl', 'en']
+    'locale_names' => null,     // ['nl' => 'Vlaams'] for the validation attribute names
+],
+```
+
+The currency of a `Money` field without `->currency()`, the locales of a `Translatable` field without `->locales()`,
+and the locale names used in validation messages ("Title (Dutch)"). See [Money](fields/money.md) and
+[Translatable](fields/translatable.md#friendly-attribute-names).
+
+---
+
 ## WYSIWYG
 
 ### Default editor

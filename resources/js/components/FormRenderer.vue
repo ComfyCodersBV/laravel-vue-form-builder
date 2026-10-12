@@ -2,21 +2,38 @@
     import { useFormContext } from '@inertiajs/vue3'
     import FormField from './FormField.vue'
     import type { Field } from '../types/form-builder'
-    import { inject } from 'vue'
+    import { computed, inject } from 'vue'
     import { flattenFields, formFieldsKey } from '../lib/fields'
+    import { normalizeColumns, spanOf, type FormColumns } from '../lib/layout'
 
-    const { fields, form: propForm, onFieldChange, fieldOverrides, columns = 1 } = defineProps<{
+    const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1 } = defineProps<{
         fields: Field[]
         form?: any
         onFieldChange?: (field: string, value: any) => void
         fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
-        columns?: 1 | 2
+        columns?: FormColumns
     }>()
 
-    const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden', 'section']
+    const columns = computed((): FormColumns => normalizeColumns(requestedColumns))
 
-    function spansFullWidth(field: Field): boolean {
-        return field.fullWidth === true || FULL_WIDTH_TYPES.includes(field.type ?? '')
+    const GRID_CLASSES: Record<FormColumns, string> = {
+        1: '',
+        2: 'grid gap-x-6 gap-y-4 md:grid-cols-2',
+        3: 'grid gap-x-6 gap-y-4 md:grid-cols-3',
+        4: 'grid gap-x-6 gap-y-4 md:grid-cols-4',
+    }
+
+    const SPAN_CLASSES: Record<FormColumns, string> = {
+        1: '',
+        2: 'md:col-span-2',
+        3: 'md:col-span-3',
+        4: 'md:col-span-4',
+    }
+
+    function cellClass(field: Field): string {
+        const span = spanOf({ ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }, columns.value)
+
+        return SPAN_CLASSES[normalizeColumns(span)]
     }
 
     const form = propForm ?? useFormContext()
@@ -73,9 +90,9 @@
     </script>
 
     <template>
-        <div v-if="columns === 2" class="grid gap-x-6 gap-y-4 md:grid-cols-2">
+        <div v-if="columns > 1" :class="GRID_CLASSES[columns]">
             <template v-for="(field, i) in fields" :key="field.name ?? i">
-                <div v-if="isVisible(field)" :class="spansFullWidth(field) ? 'md:col-span-2' : ''">
+                <div v-if="isVisible(field)" :class="cellClass(field)">
                     <FormField
                         :field="field"
                         :form="form"

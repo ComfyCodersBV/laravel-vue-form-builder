@@ -109,11 +109,11 @@ defineProps<{ form: FormSchema }>();
 - `fields` — the array of field schemas from the form config
 - `form` (optional) — the current form state object (for conditional field visibility)
 - `onFieldChange` (optional) — same callback as on `Form.vue`
-- `columns` (optional) — `1` (default) or `2`, see below
+- `columns` (optional) — `1` (default) to `4`, see below
 
 ## Two columns
 
-Pass `columns="2"` to lay the fields out in a responsive two-column grid. Below the `md` breakpoint the form stays a single column.
+Pass `columns="2"` to lay the fields out in a responsive two-column grid (`3` and `4` work too, see [Columns](columns.md)). Below the `md` breakpoint the form stays a single column.
 
 ```vue
 <template>

@@ -3,6 +3,7 @@ import BaseField from './BaseField.vue'
 import type { Field } from '../../types/form-builder'
 import { DatePicker } from '../ui/date-picker'
 import { ref, watch, computed } from 'vue'
+import type { DisabledDate } from '../../lib/dates'
 
 interface DateFieldProps extends Field {
   enableTime?: boolean
@@ -12,6 +13,8 @@ interface DateFieldProps extends Field {
   weekStartsOn?: number
   timezone?: string
   serverTimezone?: string
+  disabledWeekdays?: number[]
+  disabledDates?: DisabledDate[]
 }
 
 const props = withDefaults(defineProps<DateFieldProps>(), {
@@ -24,6 +27,8 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   readonly: false,
   timezone: undefined,
   serverTimezone: undefined,
+  disabledWeekdays: () => [],
+  disabledDates: () => [],
 })
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -54,6 +59,8 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
       :readonly="!!props.readonly"
       :timezone="props.timezone"
       :server-timezone="props.serverTimezone"
+      :disabled-weekdays="props.disabledWeekdays"
+      :disabled-dates="props.disabledDates"
     />
 
     <template v-if="props.name && !props.range">

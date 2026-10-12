@@ -63,3 +63,58 @@ describe('form layout', () => {
         expect(wrapper.find('form > div').classes()).not.toContain('sm:flex');
     });
 });
+
+describe('section columns', () => {
+    const section = (extra: Record<string, unknown>, fields: Record<string, unknown>[]) => ({ type: 'section', ...extra, fields })
+
+    const gridOf = (wrapper: ReturnType<typeof mount>) => wrapper.find('[data-form-section] > .grid')
+
+    it('lays the fields of a section out in its own columns', () => {
+        const wrapper = mount(Form, {
+            props: {
+                schema: schemaWith([
+                    section({ columns: 3 }, [
+                        { name: 'street', type: 'text', columnSpan: 2 },
+                        { name: 'number', type: 'text' },
+                        { name: 'notes', type: 'text', columnSpan: 'full' },
+                        { name: 'wide', type: 'text', columnSpan: 9 },
+                    ]),
+                ]),
+            },
+        })
+
+        const cells = gridOf(wrapper).findAll(':scope > div')
+
+        expect(gridOf(wrapper).classes()).toContain('md:grid-cols-3')
+        expect(cells[0].classes()).toContain('md:col-span-2')
+        expect(cells[1].classes()).toEqual([])
+        expect(cells[2].classes()).toContain('md:col-span-3')
+        expect(cells[3].classes()).toContain('md:col-span-3')
+    })
+
+    it('passes its columns on to a nested section unless that one sets its own', () => {
+        const wrapper = mount(Form, {
+            props: {
+                schema: schemaWith([
+                    section({ columns: 4 }, [
+                        section({}, [textField]),
+                        section({ columns: 1 }, [{ name: 'city', type: 'text' }]),
+                    ]),
+                ]),
+            },
+        })
+
+        const nested = wrapper.findAll('[data-form-section] [data-form-section]')
+
+        expect(nested[0].find('.grid').classes()).toContain('md:grid-cols-4')
+        expect(nested[1].find('.grid').exists()).toBe(false)
+    })
+
+    it('lets a field override ask for the full width', () => {
+        const wrapper = mount(Form, {
+            props: { schema: schemaWith([textField]), columns: 2, fieldOverrides: { title: { fullWidth: true } } },
+        })
+
+        expect(wrapper.find('form > div > div').classes()).toContain('md:col-span-2')
+    })
+})

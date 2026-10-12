@@ -7,7 +7,7 @@ import { flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
 import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
-import { columnsKey, layoutKey, type FormLayout } from '../lib/layout'
+import { columnsKey, layoutKey, normalizeColumns, type FormColumns, type FormLayout } from '../lib/layout'
 import type { Field, FormSchema } from '../types/form-builder'
 import { carriesFiles, useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
 
@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
     submitter?: HttpFormSubmitter
     errorAdapter?: HttpFormErrorAdapter
     layout?: FormLayout
-    columns?: 1 | 2
+    columns?: FormColumns
     action?: string
     method?: FormMethod
     defaults?: Record<string, any>
@@ -45,7 +45,7 @@ const fields = flattenFields(props.schema.fields)
 provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, props.schema.theme)))
 provide(fieldSlotsKey, useSlots())
 provide(layoutKey, computed((): FormLayout => props.layout ?? 'stacked'))
-provide(columnsKey, computed((): 1 | 2 => props.columns ?? 1))
+provide(columnsKey, computed((): FormColumns => normalizeColumns(props.columns ?? 1)))
 provide(formFieldsKey, fields)
 provide(messagesKey, computed(() => {
     const locale = resolveLocale(props.locale, props.schema.locale)

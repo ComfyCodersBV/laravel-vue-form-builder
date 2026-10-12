@@ -60,7 +60,7 @@ Date::make('period')
     ->range()
 ```
 
-The field submits an array with `from` and `to` keys.
+The field submits an array with `start` and `end` keys.
 
 ### Enable time on a Date field
 
@@ -80,6 +80,47 @@ Date::make('appointment')
     ->minDate(now()->toDateString())
     ->maxDate(now()->addMonths(3)->toDateString())
 ```
+
+### Disabled weekdays and dates
+
+Grey out days that cannot be picked, next to (or instead of) `minDate` and `maxDate`. Weekdays count from `0` = Sunday
+to `6` = Saturday, like `weekStartsOn`. Dates are `Y-m-d` strings or date objects; a range takes `from` and `to`, and
+either end may be left out for an open-ended range:
+
+```php
+Date::make('arrival_on')
+    ->label('Arrival')
+    ->disabledWeekdays([0, 6])          // no weekends
+    ->disabledDates([
+        '2026-12-25',
+        now()->addDay(),
+        ['from' => '2026-07-20', 'to' => '2026-08-02'],
+        ['from' => '2027-06-01'],       // everything from June 2027
+    ])
+```
+
+A disabled day is shown struck through and cannot be clicked; the "Today" button is disabled on such a day. Calling
+`->disabledDates()` again adds to the list.
+
+The server rejects a disabled date as well: the field adds a `TranquilTools\FormBuilder\Rules\AvailableDate` rule to its
+rules, so `validate()` and a FormRequest using `Form::rules()` both refuse it ("The arrival cannot be on that date.",
+in English and Dutch). The rule reads the calendar date at the start of the value, so `2026-10-17`, `2026-10-17 10:00`
+and `2026-10-17T10:00:00+02:00` are all the 17th. For a range the start and the end are checked, not the days between.
+
+Use the rule on its own for a plain Laravel validator:
+
+```php
+use TranquilTools\FormBuilder\Rules\AvailableDate;
+
+$request->validate([
+    'arrival_on' => ['required', 'date', new AvailableDate([0, 6], ['2026-12-25'])],
+]);
+```
+
+The standalone `DatePicker` takes the same as `disabled-weekdays` and `disabled-dates` props, see
+[Standalone Components](../components.md#datepicker).
+
+Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer.
 
 ### Week start
 

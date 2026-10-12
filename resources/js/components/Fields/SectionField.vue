@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, provide } from 'vue'
 import type { Field } from '../../types/form-builder'
-import { columnsKey } from '../../lib/layout'
+import { columnsKey, normalizeColumns, type FormColumns } from '../../lib/layout'
 import FormRenderer from '../FormRenderer.vue'
 
 interface SectionFieldProps {
@@ -13,7 +13,13 @@ interface SectionFieldProps {
 
 const props = defineProps<SectionFieldProps>()
 
-const columns = inject(columnsKey, computed((): 1 | 2 => 1))
+const inherited = inject(columnsKey, computed((): FormColumns => 1))
+
+const columns = computed((): FormColumns => typeof props.field.columns === 'undefined'
+    ? inherited.value
+    : normalizeColumns(props.field.columns))
+
+provide(columnsKey, columns)
 
 const hasHeading = computed(() => Boolean(props.field.title || props.field.description))
 </script>

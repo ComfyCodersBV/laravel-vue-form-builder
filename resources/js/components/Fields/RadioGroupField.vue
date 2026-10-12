@@ -59,6 +59,16 @@ function linkOf(option: FieldOption): string | null {
   return option.linkLabel && isSafeHref(option.href) ? option.href.trim() : null
 }
 
+function targetOf(option: FieldOption): string | undefined {
+  const target = option.target?.trim()
+
+  return target && target !== '_self' ? target : undefined
+}
+
+function navigatesInPlace(option: FieldOption): boolean {
+  return !targetOf(option) && isInternalHref(linkOf(option)!)
+}
+
 function descriptionOf(option: FieldOption): string | undefined {
   return option.description ?? option.help
 }
@@ -85,7 +95,7 @@ function descriptionOf(option: FieldOption): string | undefined {
             <Label :for="`${props.name}-${String(opt.value)}`">{{ opt.label }}</Label>
             <template v-if="linkOf(opt)">
               <Link
-                v-if="isInternalHref(linkOf(opt)!)"
+                v-if="navigatesInPlace(opt)"
                 :href="linkOf(opt)!"
                 class="text-xs text-primary underline underline-offset-2"
                 data-option-link
@@ -93,6 +103,7 @@ function descriptionOf(option: FieldOption): string | undefined {
               <a
                 v-else
                 :href="linkOf(opt)!"
+                :target="targetOf(opt)"
                 rel="noopener noreferrer"
                 class="text-xs text-primary underline underline-offset-2"
                 data-option-link

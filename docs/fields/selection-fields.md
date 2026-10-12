@@ -191,9 +191,27 @@ Radio::make('plan')->options([
 
 Separate radios take `->description('...')` and `->link($href, $label)`.
 
+A link opens in the same tab. Give an option a `target` to open it elsewhere, pass one as the third argument of
+`->link()`, or open every link of the field in a new tab with `->openLinksInNewTab()` (an option with its own `target`
+keeps it):
+
+```php
+Radio::make('unit_id')
+    ->options([
+        ['value' => 1, 'label' => 'Main hall', 'href' => route('units.show', 1), 'linkLabel' => 'View', 'target' => '_blank'],
+    ])
+
+Radio::make('plan')->value('pro')->label('Pro')->link('/plans/pro', 'Terms', Radio::NEW_TAB)
+
+Radio::make('unit_id')->options($units)->openLinksInNewTab()
+```
+
+A link with a target other than `_self` renders as a plain anchor with `rel="noopener noreferrer"`, also when it starts
+with `/`. Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer.
+
 Descriptions and link labels are rendered as text, never as HTML. A link only renders for a relative URL or an
 `http`, `https`, `mailto` or `tel` URL; anything else (`javascript:`, `data:`, …) is dropped by the core and ignored by
-the renderer. A link starting with `/` navigates through Inertia.
+the renderer. A link starting with `/` navigates through Inertia, unless it has a target.
 
 `Radios` is an alias for `Radio` — both behave identically.
 

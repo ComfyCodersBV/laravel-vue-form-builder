@@ -1,6 +1,6 @@
 # Standalone Components
 
-Next to the form itself the package ships three components for the screens around a form: a tree, a sortable list and a tab bar. They know nothing about the schema, take plain props and are imported from the package root.
+Next to the form itself the package ships four components for the screens around a form: a tree, a sortable list and a tab bar. They know nothing about the schema, take plain props and are imported from the package root.
 
 ```ts
 import { SortableList, Tabs, TreeView } from '@form-builder';
@@ -108,3 +108,37 @@ const tabs: TabItem[] = [
 Each tab takes `key`, `label` and optionally `icon` (any component), `closable`, `dirty` and `disabled`. A `dirty` tab shows an amber dot. `variant="sub"` renders the lighter, second-level bar instead of the default `main`.
 
 Closing does not switch to the tab that was closed, and clicking the active tab emits nothing.
+
+## DatePicker
+
+The calendar behind the `date` field, for a date outside a form schema: a filter bar, a dialog, a table cell.
+
+```vue
+<script setup lang="ts">
+import { DatePicker, type DisabledDate } from '@form-builder/components/ui/date-picker';
+import { ref } from 'vue';
+
+const arrival = ref<string | null>(null);
+
+const closed: DisabledDate[] = ['2026-12-25', { from: '2026-07-20', to: '2026-08-02' }];
+</script>
+
+<template>
+    <DatePicker v-model="arrival" :week-starts-on="1" :disabled-weekdays="[0, 6]" :disabled-dates="closed" />
+</template>
+```
+
+| Prop | Purpose |
+| --- | --- |
+| `modelValue` | `Y-m-d` (or `Y-m-d H:i` with `enableTime`); `{ start, end }` with `range` |
+| `range`, `enableTime` | pick a period, pick a time as well |
+| `minDate`, `maxDate` | first and last selectable day |
+| `disabledWeekdays` | weekdays that cannot be picked, `0` = Sunday to `6` = Saturday |
+| `disabledDates` | days that cannot be picked: `'Y-m-d'` strings and `{ from?, to? }` ranges |
+| `weekStartsOn` | `0` Sunday (default) or `1` Monday |
+| `format`, `locale`, `placeholder` | display of the chosen value |
+| `timezone`, `serverTimezone` | see [Date & Time](fields/date-time.md#timezone) |
+| `disabled`, `readonly` | block the picker |
+
+Disabled days only stop the user from clicking them. Validate on the server as well, for example with the
+`AvailableDate` rule described in [Date & Time](fields/date-time.md#disabled-weekdays-and-dates).

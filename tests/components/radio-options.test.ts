@@ -62,3 +62,35 @@ describe('radio options with a description and a link', () => {
         expect(isSafeHref(href)).toBe(safe)
     })
 })
+
+describe('radio option links with a target', () => {
+    const wrapper = mount(Form, {
+        props: {
+            schema: schemaWith([{
+                name: 'unit',
+                type: 'radio',
+                options: [
+                    { value: 1, label: 'Hall', href: '/units/1', linkLabel: 'Open', target: '_blank' },
+                    { value: 2, label: 'Attic', href: 'https://example.com/attic', linkLabel: 'View', target: '_blank' },
+                    { value: 3, label: 'Cellar', href: '/units/3', linkLabel: 'Open', target: '_self' },
+                ],
+            }]),
+        },
+    })
+
+    it('opens an internal link in a new tab with a plain anchor', () => {
+        const link = wrapper.find('[data-option="1"] [data-option-link]')
+
+        expect(link.element.tagName).toBe('A')
+        expect(link.attributes('target')).toBe('_blank')
+        expect(link.attributes('rel')).toBe('noopener noreferrer')
+    })
+
+    it('opens an external link in a new tab', () => {
+        expect(wrapper.find('[data-option="2"] [data-option-link]').attributes('target')).toBe('_blank')
+    })
+
+    it('keeps an internal link with target _self on Inertia', () => {
+        expect(wrapper.find('[data-option="3"] [data-option-link]').attributes('target')).toBeUndefined()
+    })
+})

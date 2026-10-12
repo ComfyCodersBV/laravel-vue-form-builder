@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../popover/index'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from '@lucide/vue'
 import { useFormMessages } from '../../../lib/messages'
 import { dateOfWallClock, resolveTimezone, toDisplayWallClock, toZonedIso, wallClockOfDate } from '../../../lib/timezone'
+import { isUnavailableDate, type DisabledDate } from '../../../lib/dates'
 
 interface Props {
   modelValue?: any // string|null for single; { start: string|null, end: string|null } for range
@@ -20,6 +21,8 @@ interface Props {
   readonly?: boolean
   timezone?: string
   serverTimezone?: string
+  disabledWeekdays?: number[]
+  disabledDates?: DisabledDate[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,6 +39,8 @@ const props = withDefaults(defineProps<Props>(), {
   readonly: false,
   timezone: undefined,
   serverTimezone: undefined,
+  disabledWeekdays: () => [],
+  disabledDates: () => [],
 })
 
 const messageContext = useFormMessages()
@@ -156,6 +161,7 @@ watch(() => props.enableTime, () => {
 })
 
 function setSelected(d: Date) {
+  if (isDisabled(d)) return
   if (!props.range) {
     if (props.enableTime && selected.value) {
       d.setHours(selected.value.getHours(), selected.value.getMinutes())
@@ -230,6 +236,7 @@ function isBetween(d: Date, a: Date | null, b: Date | null) {
 }
 
 function isDisabled(d: Date) {
+  if (isUnavailableDate(d, props.disabledWeekdays, props.disabledDates)) return true
   if (!props.minDate && !props.maxDate) return false
   const md = props.minDate ? parseDate(props.minDate, props.enableTime) : null
   const xd = props.maxDate ? parseDate(props.maxDate, props.enableTime) : null
@@ -289,7 +296,7 @@ const minutes = computed({
         <Button variant="ghost" size="icon" @click="nextMonth" :aria-label="messages.nextMonth"><ChevronRight class="w-4 h-4" /></Button>
       </div>
       <div class="flex gap-2 mb-2">
-        <Button variant="outline" size="sm" @click="() => setSelected(new Date())">{{ messages.today }}</Button>
+        <Button variant="outline" size="sm" :disabled="isDisabled(new Date())" @click="() => setSelected(new Date())">{{ messages.today }}</Button>
         <Button v-if="props.range" variant="outline" size="sm" @click="() => { const e=new Date(); const s=new Date(); s.setDate(e.getDate()-6); selectedStart=s; selectedEnd=e; emit('update:modelValue', { start: formatISO(s, props.enableTime), end: formatISO(e, props.enableTime) }) }">{{ messages.lastSevenDays }}</Button>
         <Button v-if="props.range" variant="outline" size="sm" @click="() => { const a=new Date(viewYear, viewMonth, 1); const b=new Date(viewYear, viewMonth+1, 0); selectedStart=a; selectedEnd=b; emit('update:modelValue', { start: formatISO(a, props.enableTime), end: formatISO(b, props.enableTime) }) }">{{ messages.thisMonth }}</Button>
       </div>
@@ -303,13 +310,14 @@ const minutes = computed({
               type="button"
               class="h-8 w-8 rounded text-sm flex items-center justify-center transition-colors"
               :disabled="isDisabled(cell.date)"
+              :data-date="formatISO(cell.date, false)"
               :class="[
                 cell.inMonth ? 'text-foreground' : 'text-muted-foreground/50',
                 (!props.range && isSameDay(selected, cell.date)) ? 'bg-primary text-primary-foreground' : '',
                 (props.range && isBetween(cell.date, selectedStart, selectedEnd)) ? 'bg-accent text-foreground' : '',
                 (props.range && isSameDay(selectedStart, cell.date)) ? 'bg-primary text-primary-foreground' : '',
                 (props.range && isSameDay(selectedEnd, cell.date)) ? 'bg-primary text-primary-foreground' : '',
-                (!isDisabled(cell.date)) ? 'hover:bg-accent' : 'opacity-50 cursor-not-allowed'
+                (!isDisabled(cell.date)) ? 'hover:bg-accent' : 'opacity-50 cursor-not-allowed line-through'
               ]"
               @click="setSelected(new Date(cell.date))"
             >

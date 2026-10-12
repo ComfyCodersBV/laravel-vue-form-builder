@@ -30,6 +30,8 @@ Some fields have shorthand methods that both configure the UI and add the matchi
 | `Number` | `->minValue(0)` | `min:0` |
 | `File` | `->accept('image/jpeg', 'image/png')` | `mimetypes:image/jpeg,image/png` |
 | `KeyValue` | _(automatically)_ | `array` |
+| `Money` | `->minValue(0.5)` / `->maxValue(1000)` | `MoneyBounds` (message in major units with currency) |
+| `Date` | `->disabledWeekdays([0, 6])` / `->disabledDates([...])` | `AvailableDate` |
 
 ## Using rules in a Form Request
 
@@ -51,6 +53,16 @@ class ProductFormRequest extends FormRequest
     {
         return ProductForm::rules();
     }
+}
+```
+
+Return the form's attribute names from `attributes()` too, so errors on a translatable field read "Title (English)"
+instead of "title.en" (see [Translatable](fields/translatable.md#friendly-attribute-names)):
+
+```php
+public function attributes(): array
+{
+    return ProductForm::attributes();
 }
 ```
 

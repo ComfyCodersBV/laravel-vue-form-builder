@@ -33,8 +33,14 @@ $validated = ProductForm::make()->validate($request);
 $product->price_cents = $validated['price_cents']; // 123450
 ```
 
-Laravel's own messages for the bounds speak in minor units ("must not be greater than 100000"). Pass a message of
-your own when that shows: `->validate($request, ['price_cents.max' => 'At most € 1.000,00.'])`.
+The bounds are checked by a `TranquilTools\FormBuilder\Rules\MoneyBounds` rule whose message names the amount in major
+units with its currency, in the locale of the field (or the app locale): "The price must not be greater than
+€1,000.00." in English, "Prijs mag niet groter zijn dan € 1.000,00." in Dutch. The amount is formatted with PHP's
+`intl` extension when it is installed; without it the package formats `EUR`, `USD`, `GBP` and `JPY` itself and shows
+the ISO code for other currencies. Override the text through the package translations
+(`form-builder::validation.money-min` and `money-max`, with `:attribute` and `:amount`).
+
+Before 1.5 the bounds were plain `min:`/`max:` rules in minor units; `getRules()` now holds the rule object instead.
 
 `toMinorUnits()` and `toMajorUnits()` convert with the decimals of the field's currency, for a value you show elsewhere:
 
