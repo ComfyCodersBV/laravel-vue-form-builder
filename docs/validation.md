@@ -32,6 +32,7 @@ Some fields have shorthand methods that both configure the UI and add the matchi
 | `KeyValue` | _(automatically)_ | `array` |
 | `Money` | `->minValue(0.5)` / `->maxValue(1000)` | `MoneyBounds` (message in major units with currency) |
 | `Date` | `->disabledWeekdays([0, 6])` / `->disabledDates([...])` | `AvailableDate` |
+| `Date` | `->minDate(...)` / `->maxDate(...)` with `->validateBounds()` | `DateBounds` |
 
 ## Using rules in a Form Request
 
@@ -85,6 +86,29 @@ public function store(ProductFormRequest $request): RedirectResponse
     return redirect()->route('products.index');
 }
 ```
+
+## Labels in validation messages
+
+Laravel names a field by its key in a message: "The arrival on field is required." Name fields by their label instead
+("The Arrival field is required.") per form:
+
+```php
+public function configure(FormConfig $form): void
+{
+    $form->labelsAsAttributes();
+}
+```
+
+Or for every form with `'validation' => ['label_attributes' => true]` in `config/form-builder.php`;
+`->labelsAsAttributes(false)` opts a form out again. It is off by default, so existing messages stay as they are.
+
+The labels end up in the same attribute names as those of [translatable fields](fields/translatable.md#friendly-attribute-names):
+`$form->getAttributes()`, `ProductForm::attributes()` for a FormRequest, and `validate()`, which passes them on by
+itself. A field's own names (such as "Title (English)") win over its label, and attributes you pass to `validate()` win
+over both. A field without a label keeps its key, and a separate radio (`Radio::make('plan')->value('pro')->label('Pro')`)
+is skipped, because its label names the option rather than the field.
+
+Requires `tranquil-tools/laravel-form-builder` 1.6 or newer.
 
 ## Errors outside the fields
 

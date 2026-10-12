@@ -5,13 +5,26 @@ column below the `md` breakpoint.
 
 ## On the whole form
 
-The `columns` prop of `<Form>` (and `FormRenderer`) takes `1` (default) to `4`:
+Set the columns of the whole form in PHP with `FormConfig::columns(n)`, `1` to `4`; the schema carries them as
+`columns`:
+
+```php
+public function configure(FormConfig $form): void
+{
+    $form->columns(2);
+}
+```
+
+Or use the `columns` prop of `<Form>` (and `FormRenderer`), which wins over the schema:
 
 ```vue
 <template>
     <Form :schema="form" :columns="3" />
 </template>
 ```
+
+A schema without `columns` (the default) leaves the form at one column, as before. `FormConfig::columns()` requires
+`tranquil-tools/laravel-form-builder` 1.6 and `laravel-vue-form-builder` 1.9; an older renderer ignores it.
 
 ## On a section
 

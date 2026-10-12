@@ -27,12 +27,29 @@ renders around its control. See [Theming](theming.md).
 ```php
 'dates' => [
     'timezone' => null,
+    'validate_bounds' => false,
 ],
 ```
 
 The timezone date fields with a time show and send their value in. `null` keeps the wall-clock value without timezone;
 an IANA name such as `'Europe/Amsterdam'`, or `'browser'` for the user's own timezone, sends ISO 8601 with an offset.
 See [Timezone](fields/date-time.md#timezone).
+
+`validate_bounds` makes every date field validate its `minDate` and `maxDate` on the server too, see
+[Min and max date](fields/date-time.md#min-and-max-date).
+
+---
+
+## Validation
+
+```php
+'validation' => [
+    'label_attributes' => false,
+],
+```
+
+`true` names fields by their label in validation messages for every form, see
+[Labels in validation messages](validation.md#labels-in-validation-messages).
 
 ---
 

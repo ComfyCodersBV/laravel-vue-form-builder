@@ -136,9 +136,20 @@ const closed: DisabledDate[] = ['2026-12-25', { from: '2026-07-20', to: '2026-08
 | `disabledWeekdays` | weekdays that cannot be picked, `0` = Sunday to `6` = Saturday |
 | `disabledDates` | days that cannot be picked: `'Y-m-d'` strings and `{ from?, to? }` ranges |
 | `weekStartsOn` | `0` Sunday (default) or `1` Monday |
-| `format`, `locale`, `placeholder` | display of the chosen value |
+| `format`, `locale`, `placeholder` | display of the chosen value, `format` in [Day.js tokens](fields/date-time.md#date-format) |
 | `timezone`, `serverTimezone` | see [Date & Time](fields/date-time.md#timezone) |
 | `disabled`, `readonly` | block the picker |
 
 Disabled days only stop the user from clicking them. Validate on the server as well, for example with the
 `AvailableDate` rule described in [Date & Time](fields/date-time.md#disabled-weekdays-and-dates).
+
+The same check is available as a function, for a table cell or a custom calendar. A project that only maps
+`@form-builder/types/*` in its `tsconfig.json` imports it from there (see [Installation](installation.md#typescript)):
+
+```ts
+import { isUnavailableDate, type DisabledDate } from '@form-builder/types/dates';
+
+const closed: DisabledDate[] = ['2026-12-25'];
+
+isUnavailableDate(new Date(2026, 11, 25), [0, 6], closed); // true
+```

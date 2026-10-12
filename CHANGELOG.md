@@ -2,6 +2,26 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.9.0 - 2026-10-12
+* Date `format` now supports the common Day.js tokens: `YYYY`, `YY`, `M`, `MM`, `MMM`, `MMMM`, `D`, `DD`, `d`, `dd`,
+  `ddd`, `dddd`, `H`, `HH`, `h`, `hh`, `m`, `mm`, `s`, `ss`, `SSS`, `A`, `a` and `[escaped text]`. Month and day names
+  follow the picker's locale (`ddd D MMM YYYY` shows `Sun 4 Oct 2026`, `zo 4 okt 2026` in Dutch). Up to 1.8 only
+  `YYYY`, `MM`, `DD`, `HH` and `mm` were replaced, although the docs promised Day.js; those formats show exactly as
+  before, and a field with a time whose format shows no hour still gets ` HH:mm` appended. A value stored in the
+  field's own format (`04/10/2026` for `DD/MM/YYYY`) is now read instead of shown as empty. The submitted value is
+  unchanged. `formatDate()` and `parseFormattedDate()` are exported.
+* `<Form>` takes the form's columns from the schema (`FormConfig::columns()` in laravel-form-builder 1.6); the
+  `columns` prop still wins.
+* The public types and the date helpers can be imported from `@form-builder/types/...`, the only path the CrudBuilder
+  installer maps in `tsconfig.json`: `@form-builder/types/form-builder` re-exports `DisabledDate`, `FormColumns`,
+  `FormLayout`, `FormTheme`, `FieldSlotProps`, `FormMessages`, `FormMessagesConfig` and the `HttpForm*` types, and the
+  new `@form-builder/types/dates` exports `isUnavailableDate()`, `calendarDateOf()`, `formatDate()`, `formatHasTime()`,
+  `parseFormattedDate()` and `DisabledDate`. The package root exports `isUnavailableDate`, `formatDate`,
+  `parseFormattedDate` and `FormColumns` as well. Existing import paths keep working.
+* Docs: server-side validation of `minDate`/`maxDate`, labels in validation messages, the Day.js token table,
+  `FormConfig::columns()`, the order of translatable locale names and a TypeScript section in Installation.
+* Supports schema version `1.7` of `tranquil-tools/laravel-form-builder` (`^1.6`), which adds the form-level `columns`.
+
 ## 1.8.0 - 2026-10-12
 * Date fields and the standalone `DatePicker` take `disabledWeekdays` (`0` = Sunday … `6` = Saturday) and
   `disabledDates` (`'Y-m-d'` strings and `{ from?, to? }` ranges). Those days are struck through and cannot be

@@ -26,6 +26,18 @@ describe('form layout', () => {
         expect(wrapper.find('form > div').classes()).toContain('md:grid-cols-2');
     });
 
+    it('takes the columns from the schema', () => {
+        const wrapper = mount(Form, { props: { schema: { ...schemaWith([textField]), schemaVersion: '1.7', columns: 3 } } });
+
+        expect(wrapper.find('form > div').classes()).toContain('md:grid-cols-3');
+    });
+
+    it('lets the columns prop win over the schema', () => {
+        const wrapper = mount(Form, { props: { schema: { ...schemaWith([textField]), columns: 3 }, columns: 1 } });
+
+        expect(wrapper.find('form > div').classes()).not.toContain('md:grid-cols-3');
+    });
+
     it('lets a textarea span both columns', () => {
         const schema = schemaWith([textField, { name: 'body', type: 'textarea', label: 'Body' }]);
         const wrapper = mount(Form, { props: { schema, columns: 2 } });

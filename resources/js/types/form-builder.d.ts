@@ -2,6 +2,19 @@ import type { FormTheme } from '../lib/theme'
 import type { DisabledDate } from '../lib/dates'
 import type { FormColumns } from '../lib/layout'
 
+export type { DisabledDate } from '../lib/dates'
+export type { FormColumns, FormLayout } from '../lib/layout'
+export type { FormTheme } from '../lib/theme'
+export type { FieldSlotProps } from '../lib/field-slots'
+export type { FormMessages, FormMessagesConfig } from '../lib/messages'
+export type {
+    HttpFormErrorAdapter,
+    HttpFormMethod,
+    HttpFormOptions,
+    HttpFormRequest,
+    HttpFormSubmitter,
+} from '../composables/useHttpForm'
+
 export type FieldValue =
     | string
     | number
@@ -88,4 +101,5 @@ export interface FormSchema {
     locale?: string
     resetOnSuccess?: boolean
     submitOnChange?: boolean
+    columns?: FormColumns
 }

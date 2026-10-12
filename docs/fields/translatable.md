@@ -65,9 +65,10 @@ public function attributes(): array
 `make:form-request` generates that method from 1.5 on. `$form->getAttributes()` returns the same array, and attributes
 you pass to `validate()` win over it: `->validate($request, [], ['title.nl' => 'Dutch title'])`.
 
-Locale names come from `config('form-builder.translatable.locale_names')` (`['nl' => 'Vlaams']`) when set, then from
-the package translations (English and Dutch names of about twenty languages), then from PHP's `intl` extension, and
-finally the upper-cased code. Change the format through `form-builder::fields.translatable-attribute`
+Locale names come from the field's own `->localeLabels()` first, then from
+`config('form-builder.translatable.locale_names')` (`['nl' => 'Vlaams']`), then from the package translations (English
+and Dutch names of about twenty languages), then from PHP's `intl` extension, and finally the upper-cased code. Up to
+`laravel-form-builder` 1.5 `->localeLabels()` came last, after the translations and `intl`, so it hardly ever applied. Change the format through `form-builder::fields.translatable-attribute`
 (`:label (:locale)`). A field without a label uses its name.
 
 After validation the value holds exactly the configured locales (missing ones as `null`, unknown ones dropped), each

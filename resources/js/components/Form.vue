@@ -45,7 +45,7 @@ const fields = flattenFields(props.schema.fields)
 provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, props.schema.theme)))
 provide(fieldSlotsKey, useSlots())
 provide(layoutKey, computed((): FormLayout => props.layout ?? 'stacked'))
-provide(columnsKey, computed((): FormColumns => normalizeColumns(props.columns ?? 1)))
+provide(columnsKey, computed((): FormColumns => normalizeColumns(props.columns ?? props.schema.columns ?? 1)))
 provide(formFieldsKey, fields)
 provide(messagesKey, computed(() => {
     const locale = resolveLocale(props.locale, props.schema.locale)
@@ -300,7 +300,7 @@ defineExpose({ submit: submitForm, form, formErrors })
         </template>
 
         <FormRenderer
-            :columns="columns ?? 1"
+            :columns="columns ?? schema.columns ?? 1"
             :fields="schema.fields"
             :form="form"
             :on-field-change="onFieldChange || shouldSubmitOnChange ? handleFieldChange : undefined"

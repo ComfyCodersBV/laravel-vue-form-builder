@@ -81,6 +81,32 @@ Date::make('appointment')
     ->maxDate(now()->addMonths(3)->toDateString())
 ```
 
+The picker greys out the days outside the bounds; the server does not check them unless you ask. Add
+`->validateBounds()` to have the field add a `TranquilTools\FormBuilder\Rules\DateBounds` rule, or set
+`dates.validate_bounds` to `true` in `config/form-builder.php` for every date field (`->validateBounds(false)` opts one
+out again):
+
+```php
+Date::make('appointment')
+    ->minDate(now()->toDateString())
+    ->maxDate(now()->addMonths(3)->toDateString())
+    ->validateBounds()
+```
+
+A date outside the bounds is rejected with "The appointment must be on or after 2026-10-12." (or "on or before", in
+English and Dutch). For a range the start and the end are checked.
+
+| Field | Bound | Compares |
+|---|---|---|
+| without a time | `Y-m-d` | the calendar date at the start of the value, like the picker |
+| with a time | `Y-m-d` | the calendar date at the start of the value, so `2026-10-12T00:15:00+02:00` is the 12th |
+| with a time | `Y-m-d H:i` | the moment: a value with an offset as such, a value without one and the bound in the application timezone |
+
+Only bounds that start with a `Y-m-d` date are validated; anything else (such as `'today'`) is left to the browser,
+which ignores it as well. Use the rule on its own with `new DateBounds('2026-10-01', '2026-10-31')`.
+
+Requires `tranquil-tools/laravel-form-builder` 1.6 or newer.
+
 ### Disabled weekdays and dates
 
 Grey out days that cannot be picked, next to (or instead of) `minDate` and `maxDate`. Weekdays count from `0` = Sunday
@@ -133,12 +159,32 @@ Date::make('starts_on')
 
 ### Date format
 
-Control the display format shown in the input. Uses [Day.js format tokens](https://day.js.org/docs/en/display/format):
+Control the display format shown in the input with [Day.js format tokens](https://day.js.org/docs/en/display/format).
+Without a format the picker shows the date the way the browser does for its locale:
 
 ```php
 Date::make('expires_on')
     ->format('DD/MM/YYYY')
+
+DateTime::make('starts_at')
+    ->format('ddd D MMM YYYY, h:mm A')   // Sun 4 Oct 2026, 2:05 PM
 ```
+
+| Token | Output | Token | Output |
+|---|---|---|---|
+| `YYYY` | `2026` | `H` / `HH` | `9` / `09` (24-hour) |
+| `YY` | `26` | `h` / `hh` | `9` / `09` (12-hour) |
+| `M` / `MM` | `1` / `01` | `A` / `a` | `PM` / `pm` |
+| `MMM` / `MMMM` | `Oct` / `October` | `m` / `mm` | `5` / `05` |
+| `D` / `DD` | `4` / `04` | `s` / `ss` | `9` / `09` |
+| `d` | `0` (Sunday) to `6` | `SSS` | `000` |
+| `dd` / `ddd` / `dddd` | `Su` / `Sun` / `Sunday` | `[text]` | `text`, as is |
+
+Month and day names follow the field's `->locale()`, or the form's locale (`4 oktober` in Dutch). A field with a time
+whose format shows no hour gets ` HH:mm` appended. Only the display changes: the field still submits `Y-m-d` (or
+`Y-m-d H:i`), and it also reads a value stored in its own format, such as `04/10/2026` for `DD/MM/YYYY`.
+
+Up to `laravel-vue-form-builder` 1.8 only `YYYY`, `MM`, `DD`, `HH` and `mm` were replaced; those formats show exactly as before.
 
 ### Locale
 

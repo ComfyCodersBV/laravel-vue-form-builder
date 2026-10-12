@@ -68,6 +68,35 @@ export default defineConfig({
 });
 ```
 
+### TypeScript
+
+For type checking, map the same alias in `tsconfig.json`. The CrudBuilder installer adds the types path only, and that
+is enough for the public types and the date helpers:
+
+```json
+{
+    "compilerOptions": {
+        "paths": {
+            "@form-builder/types/*": ["./vendor/tranquil-tools/laravel-vue-form-builder/resources/js/types/*"]
+        }
+    }
+}
+```
+
+| Import | Holds |
+|---|---|
+| `@form-builder/types/form-builder` | `FormSchema`, `Field`, `FieldValue`, `DisabledDate`, `FormColumns`, `FormLayout`, `FormTheme`, `FieldSlotProps`, `FormMessages`, `FormMessagesConfig` and the `HttpForm*` types |
+| `@form-builder/types/dates` | `isUnavailableDate()`, `calendarDateOf()`, `formatDate()`, `formatHasTime()`, `parseFormattedDate()` and `DisabledDate` |
+
+```ts
+import type { DisabledDate, FormSchema } from '@form-builder/types/form-builder';
+import { isUnavailableDate } from '@form-builder/types/dates';
+```
+
+Importing components (`@form-builder/components/Form.vue`) or the package root (`@form-builder`) type-checks once
+you map those too, with `"@form-builder": [".../resources/js/index.ts"]` and `"@form-builder/*": [".../resources/js/*"]`.
+The old import paths keep working.
+
 ## 4. Add the Tailwind CSS source
 
 Add an `@source` directive to `resources/css/app.css` so Tailwind scans the package's Vue components:

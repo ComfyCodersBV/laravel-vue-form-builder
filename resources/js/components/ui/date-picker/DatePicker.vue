@@ -6,12 +6,13 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from '@luc
 import { useFormMessages } from '../../../lib/messages'
 import { dateOfWallClock, resolveTimezone, toDisplayWallClock, toZonedIso, wallClockOfDate } from '../../../lib/timezone'
 import { isUnavailableDate, type DisabledDate } from '../../../lib/dates'
+import { formatDate, formatHasTime, parseFormattedDate } from '../../../lib/date-format'
 
 interface Props {
   modelValue?: any // string|null for single; { start: string|null, end: string|null } for range
   placeholder?: string
   enableTime?: boolean
-  format?: string // 'locale' | custom pattern like 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm'
+  format?: string // 'locale' | Day.js pattern like 'YYYY-MM-DD', 'ddd D MMM YYYY' or 'DD/MM/YYYY h:mm A'
   range?: boolean
   minDate?: string
   maxDate?: string
@@ -81,16 +82,8 @@ function formatDisplay(d: Date | null, fmt: string, withTime: boolean, locale?: 
       : { year: 'numeric', month: '2-digit', day: '2-digit' }
     return d.toLocaleString(locale, opt)
   }
-  const tokens: Record<string,string> = {
-    'YYYY': String(d.getFullYear()),
-    'MM': pad(d.getMonth() + 1),
-    'DD': pad(d.getDate()),
-    'HH': pad(d.getHours()),
-    'mm': pad(d.getMinutes()),
-  }
-  let out = fmt
-  for (const [k, v] of Object.entries(tokens)) out = out.replace(k, v)
-  if (withTime) return fmt.includes('HH') ? out : `${out} ${tokens['HH']}:${tokens['mm']}`
+  const out = formatDate(d, fmt, calendarLocale.value)
+  if (withTime && !formatHasTime(fmt)) return `${out} ${pad(d.getHours())}:${pad(d.getMinutes())}`
   return out
 }
 function parseDate(s: string | null, withTime: boolean): Date | null {
@@ -109,8 +102,9 @@ function parseDate(s: string | null, withTime: boolean): Date | null {
 
   const [datePart, timePart] = s.split(' ')
   const segments = datePart.split('-')
-  if (segments.length !== 3) return null
-  if (!/^\d{4}$/.test(segments[0]) || !/^\d{1,2}$/.test(segments[1]) || !/^\d{1,2}$/.test(segments[2])) return null
+  if (segments.length !== 3 || !/^\d{4}$/.test(segments[0]) || !/^\d{1,2}$/.test(segments[1]) || !/^\d{1,2}$/.test(segments[2])) {
+    return props.format === 'locale' ? null : parseFormattedDate(s, props.format, calendarLocale.value)
+  }
   const [y, m, d] = segments.map(Number)
   if (m < 1 || m > 12 || d < 1 || d > 31) return null
   const dt = new Date(y, (m - 1), d)
