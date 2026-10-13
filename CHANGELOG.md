@@ -2,6 +2,23 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.10.0 - unreleased
+* Add a `tags` field built on reka-ui `TagsInput` and `Combobox`. A comma, semicolon, Enter, Tab or blur turns the typed
+  text into a chip, a pasted list is split on commas, semicolons and newlines, and Backspace and the arrow keys select
+  and remove chips. With `emails` a chip that is no e-mail address is marked; a server error on one entry (`to.1`)
+  marks that chip and shows its message. With `suggestionsUrl` the field fetches `GET {url}?q=` debounced and offers
+  `[{ value, label }]` in a keyboard-navigable list; the chip then shows the label. `max` stops adding chips. A string
+  default such as `"a@example.com, b@example.com"` is read as a list.
+* A file field with `currentFiles` lists them above the upload input with name, link and size, each with its own remove
+  toggle. The remove flag then holds the removed keys and posts them as `remove_<name>[]`.
+* Wysiwyg profiles: a field with `features` hands them to its adapter as the new optional `features` prop. Quill, Jodit
+  and HugeRTE map them to their own toolbar (Quill also to a `formats` whitelist) and leave out what they cannot do;
+  HugeRTE drops a feature whose plugin is not imported and warns during development. `config` is laid over the profile,
+  so explicit options win. The textarea ignores profiles. The features each adapter supports are listed in the WYSIWYG
+  docs.
+* New messages `currentFiles` and `invalidEmail`, in English and Dutch.
+* Supports schema version `1.8` of `tranquil-tools/laravel-form-builder` (`^1.7`).
+
 ## 1.9.0 - 2026-10-12
 * Date `format` now supports the common Day.js tokens: `YYYY`, `YY`, `M`, `MM`, `MMM`, `MMMM`, `D`, `DD`, `d`, `dd`,
   `ddd`, `dddd`, `H`, `HH`, `h`, `hh`, `m`, `mm`, `s`, `ss`, `SSS`, `A`, `a` and `[escaped text]`. Month and day names

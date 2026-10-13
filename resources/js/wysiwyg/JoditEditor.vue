@@ -3,6 +3,7 @@ import { Jodit } from 'jodit'
 import 'jodit/es2021/jodit.min.css'
 import { onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import type { WysiwygAdapterProps } from './types'
+import { joditProfileConfig } from './JoditEditor.profile'
 
 /**
  * Jodit — MIT core only. `jodit-pro` and the OEM builds are out of scope.
@@ -29,6 +30,7 @@ onMounted(() => {
 
     editor.value = Jodit.make(element.value, {
         placeholder: props.placeholder,
+        ...(Array.isArray(props.features) ? joditProfileConfig(props.features) : {}),
         ...props.config,
     })
 

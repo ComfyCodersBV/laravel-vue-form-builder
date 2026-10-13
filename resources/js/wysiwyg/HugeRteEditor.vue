@@ -9,6 +9,7 @@ import 'hugerte/skins/ui/oxide/skin.css'
 import contentStyle from 'hugerte/skins/content/default/content.css?inline'
 import { computed } from 'vue'
 import type { WysiwygAdapterProps } from './types'
+import { hugeRteProfileConfig, HUGE_RTE_FEATURE_PLUGINS, unavailableHugeRteFeatures } from './HugeRteEditor.profile'
 
 /**
  * HugeRTE — the MIT-licensed community fork of TinyMCE 6.
@@ -42,6 +43,22 @@ const model = computed({
  * engine requests them over HTTP, fails, and renders an editor with no toolbar
  * and unstyled content. Each remains overridable on purpose.
  */
+const hasPlugin = (name: string): boolean => Boolean((globalThis as any).hugerte?.PluginManager?.get(name))
+
+const profileConfig = computed(() => {
+    if (!Array.isArray(props.features)) {
+        return {}
+    }
+
+    if (import.meta.env.DEV) {
+        unavailableHugeRteFeatures(props.features, hasPlugin).forEach((feature) => {
+            console.warn(`[form-builder] The HugeRTE profile feature "${feature}" needs import 'hugerte/plugins/${HUGE_RTE_FEATURE_PLUGINS[feature]}' in your app entrypoint; it is left out of the toolbar.`)
+        })
+    }
+
+    return hugeRteProfileConfig(props.features, hasPlugin)
+})
+
 const init = computed(() => ({
     license_key: 'gpl',
     promotion: false,
@@ -50,6 +67,7 @@ const init = computed(() => ({
     content_css: false,
     content_style: contentStyle,
     placeholder: props.placeholder,
+    ...profileConfig.value,
     ...props.config,
 }))
 </script>

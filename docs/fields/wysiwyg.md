@@ -124,6 +124,57 @@ The default editor is controlled by `config('form-builder.wysiwyg.default-editor
 
 ---
 
+## Profiles
+
+A profile is a list of features rather than editor options, so a form keeps the same toolbar when you switch editor:
+
+```php
+Wysiwyg::make('body')
+    ->editor('hugerte')
+    ->profile('email')
+```
+
+Profiles live in `config('form-builder.wysiwyg.profiles')`. `email` ships with the package (`bold`, `italic`,
+`underline`, `link`, `list`, `blockquote`) and keeps working with a published config that predates profiles. An unknown
+profile throws an `InvalidArgumentException`.
+
+```php
+'wysiwyg' => [
+    'profiles' => [
+        'email' => ['bold', 'italic', 'underline', 'link', 'list', 'blockquote'],
+        'notes' => ['bold', 'italic', 'list', 'undo'],
+    ],
+],
+```
+
+A profile replaces the editor options from `editors.<editor>.options` in the config. `->options([...])` set on the field
+still wins, key by key: the adapter builds its config from the features first and lays your options over it.
+
+Each adapter leaves out what it cannot do. The textarea ignores profiles.
+
+| Feature | Quill | Jodit | HugeRTE |
+|---|---|---|---|
+| `bold`, `italic`, `underline`, `strike` | yes | yes | yes |
+| `link` | yes | yes | with `hugerte/plugins/link` |
+| `list` (bullets and numbers) | yes | yes | with `hugerte/plugins/lists` |
+| `blockquote` | yes | in the paragraph dropdown | yes |
+| `heading` (H1 to H3) | yes | in the paragraph dropdown | yes (`blocks`) |
+| `code-block` | yes | in the paragraph dropdown (`pre`) | with `hugerte/plugins/codesample` |
+| `align` | yes, as `ql-align-*` classes | yes | yes |
+| `indent` | yes, as `ql-indent-*` classes | yes | yes |
+| `color` (text and background) | yes | yes | yes |
+| `image` | yes | yes | with `hugerte/plugins/image` |
+| `clean` (remove formatting) | yes | yes | yes |
+| `undo` (undo and redo) | no, keyboard only | yes | yes |
+| `source` (HTML view) | yes, the source button | yes | with `hugerte/plugins/code` |
+
+Quill also gets a `formats` whitelist from the profile, so pasted text loses formatting the profile does not offer.
+HugeRTE plugins have to be imported in your app entrypoint; a feature whose plugin is missing is left out of the
+toolbar, with a console warning during development. Quill writes alignment and indentation as CSS classes, which mail
+clients drop, so keep `align` and `indent` out of a profile meant for e-mail.
+
+---
+
 ## Customizing Quill options
 
 Override the Quill configuration for a specific field:

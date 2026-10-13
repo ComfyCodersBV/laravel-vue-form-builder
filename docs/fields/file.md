@@ -90,6 +90,35 @@ if (File::make('avatar')->removable()->removalRequested($request)) {
 }
 ```
 
+### A list of current files
+
+`Files::current()` also takes a list of stored files. Each entry needs a `key` and a `name`; `size` (bytes) and `url`
+are optional. A missing `key` falls back to the position in the list, a missing `name` to the file name in the `url`.
+
+```php
+Files::make('attachments')
+    ->current([
+        ['key' => '0', 'name' => 'offerte.pdf', 'size' => 81234, 'url' => $url],
+        ['key' => '1', 'name' => 'voorwaarden.pdf'],
+    ])
+    ->removable()
+```
+
+The renderer lists the files above the upload input, each with its own remove toggle. With `removable()` the flag
+(`remove_attachments` by default) becomes a list of keys: it posts `remove_attachments[]`, validates with `nullable`,
+`array` and `in:` the listed keys, and is read back with `removedKeys()`:
+
+```php
+$field = Files::make('attachments')->current($files)->removable();
+
+foreach ($field->removedKeys($request) as $key) {
+    // delete the attachment stored under $key
+}
+```
+
+`removalRequested()` is `true` as soon as one key is posted. A single `File::current($url, $name)` keeps its boolean
+flag, and `removedKeys()` returns `[]` for it.
+
 ---
 
 ## Notes

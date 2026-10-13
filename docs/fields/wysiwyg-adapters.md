@@ -10,6 +10,7 @@ export interface WysiwygAdapterProps {
     disabled?: boolean;
     placeholder?: string;
     config?: Record<string, unknown>;
+    features?: string[];
     uploadUrl?: string;
 }
 ```
@@ -19,6 +20,10 @@ An adapter:
 - accepts those props and nothing engine-specific beyond them
 - emits `update:modelValue` with an **HTML string**
 - treats `config` as an opaque blob it may interpret however its engine requires
+
+`features` is only passed for a field with a [profile](wysiwyg#profiles): the semantic feature list. An adapter that
+supports profiles turns it into its own toolbar, drops the features it cannot honour, and lays `config` over the result
+so explicit options win. An adapter that ignores `features` simply keeps working with `config`.
 
 `config` is whatever `Wysiwyg::options()` was given on the PHP side. Nothing between the field definition and your adapter reads or validates it, because its shape belongs to the engine.
 

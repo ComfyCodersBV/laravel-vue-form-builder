@@ -22,6 +22,7 @@ import RepeaterField from './Fields/RepeaterField.vue'
 import SectionField from './Fields/SectionField.vue'
 import SelectField from './Fields/SelectField.vue'
 import SubmitButton from './Fields/SubmitButton.vue'
+import TagsField from './Fields/TagsField.vue'
 import TextField from './Fields/TextField.vue'
 import TextareaField from './Fields/TextareaField.vue'
 import TimeField from './Fields/TimeField.vue'
@@ -56,6 +57,7 @@ const fieldComponents: Record<string, any> = {
     repeater: RepeaterField,
     select: SelectField,
     submit: SubmitButton,
+    tags: TagsField,
     text: TextField,
     textarea: TextareaField,
     time: TimeField,
@@ -75,11 +77,25 @@ function extraProps(): Record<string, any> {
         return { form }
     }
 
+    if (field.type === 'tags') {
+        return { entryErrors: entryErrorsFor(field.name ?? '') }
+    }
+
     if (!field.removeFlag) {
         return {}
     }
 
     return { removeRequested: form[field.removeFlag] }
+}
+
+function entryErrorsFor(name: string): Record<string, string | string[]> {
+    const prefix = `${name}.`
+
+    return Object.fromEntries(
+        Object.entries(form.errors ?? {})
+            .filter(([key]) => key.startsWith(prefix))
+            .map(([key, message]) => [key.slice(prefix.length), message as string | string[]]),
+    )
 }
 
 function updateFormValue(name: string, value: any): void {

@@ -84,6 +84,18 @@ export interface Field {
     columns?: FormColumns
     columnSpan?: number | 'full'
     linkTarget?: string
+    currentFiles?: CurrentFile[]
+    emails?: boolean
+    suggestionsUrl?: string
+    profile?: string
+    features?: string[]
+}
+
+export interface CurrentFile {
+    key: string
+    name: string
+    size?: number
+    url?: string
 }
 
 export type TForm = Record<string, FieldValue>
