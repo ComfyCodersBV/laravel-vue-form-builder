@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
-## 1.10.0 - unreleased
+## 1.10.0 - 2026-10-13
 * Add a `tags` field built on reka-ui `TagsInput` and `Combobox`. A comma, semicolon, Enter, Tab or blur turns the typed
   text into a chip, a pasted list is split on commas, semicolons and newlines, and Backspace and the arrow keys select
   and remove chips. With `emails` a chip that is no e-mail address is marked; a server error on one entry (`to.1`)
