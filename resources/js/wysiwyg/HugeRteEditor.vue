@@ -10,6 +10,7 @@ import contentStyle from 'hugerte/skins/content/default/content.css?inline'
 import { computed } from 'vue'
 import type { WysiwygAdapterProps } from './types'
 import { hugeRteProfileConfig, HUGE_RTE_FEATURE_PLUGINS, unavailableHugeRteFeatures } from './HugeRteEditor.profile'
+import { mergeProfileConfig } from './profiles'
 
 /**
  * HugeRTE — the MIT-licensed community fork of TinyMCE 6.
@@ -67,8 +68,7 @@ const init = computed(() => ({
     content_css: false,
     content_style: contentStyle,
     placeholder: props.placeholder,
-    ...profileConfig.value,
-    ...props.config,
+    ...mergeProfileConfig(profileConfig.value, props.config),
 }))
 </script>
 

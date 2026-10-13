@@ -14,7 +14,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * Wysiwyg profiles: a field with `features` hands them to its adapter as the new optional `features` prop. Quill, Jodit
   and HugeRTE map them to their own toolbar (Quill also to a `formats` whitelist) and leave out what they cannot do;
   HugeRTE drops a feature whose plugin is not imported and warns during development. `config` is laid over the profile,
-  so explicit options win. The textarea ignores profiles. The features each adapter supports are listed in the WYSIWYG
+  so explicit options win: plain objects are merged key by key (`modules.clipboard` keeps the profile's
+  `modules.toolbar`) and arrays are replaced. The textarea ignores profiles. The features each adapter supports are listed in the WYSIWYG
   docs.
 * New messages `currentFiles` and `invalidEmail`, in English and Dutch.
 * Supports schema version `1.8` of `tranquil-tools/laravel-form-builder` (`^1.7`).
@@ -23,7 +24,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   `tsconfig.json` paths, so a third-party package adds its alias in two calls. `ViteConfigPatcher`,
   `TsConfigPatcher` and the `DetectsPagesDirectory` trait moved here from laravel-vue-crud-builder unchanged, which uses
   them from this release on. See [Installer Support](docs/installer.md).
-* Requires `illuminate/console` and `illuminate/support` (11, 12 or 13). The PHP tests run on Pest, next to the Node
+* Requires `tranquil-tools/laravel-form-builder` ^1.7 (schema `1.8`) and `illuminate/console` and `illuminate/support`
+  (11, 12 or 13). The PHP tests run on Pest, next to the Node
   and Vitest suites.
 
 ## 1.9.0 - 2026-10-12

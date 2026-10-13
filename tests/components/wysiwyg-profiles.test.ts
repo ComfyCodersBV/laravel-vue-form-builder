@@ -5,6 +5,7 @@ import Wysiwyg from '../../resources/js/components/Fields/Wysiwyg.vue'
 import { hugeRteProfileConfig } from '../../resources/js/wysiwyg/HugeRteEditor.profile'
 import { joditProfileConfig } from '../../resources/js/wysiwyg/JoditEditor.profile'
 import { quillProfileConfig } from '../../resources/js/wysiwyg/QuillEditor.profile'
+import { mergeProfileConfig } from '../../resources/js/wysiwyg/profiles'
 import { registerWysiwygEditor } from '../../resources/js/wysiwyg/registry'
 
 const EMAIL = ['bold', 'italic', 'underline', 'link', 'list', 'blockquote']
@@ -54,5 +55,26 @@ describe('wysiwyg profiles', () => {
 
         expect(received.features).toEqual(EMAIL)
         expect(received.config).toEqual({ theme: 'bubble' })
+    })
+
+    it('lays options over a profile without dropping the nested profile settings', () => {
+        const merged = mergeProfileConfig(quillProfileConfig(EMAIL), {
+            modules: { clipboard: { matchVisual: false } },
+            formats: ['bold'],
+        }) as any
+
+        expect(merged.modules.toolbar).toEqual((quillProfileConfig(EMAIL) as any).modules.toolbar)
+        expect(merged.modules.clipboard).toEqual({ matchVisual: false })
+        expect(merged.formats).toEqual(['bold'])
+        expect(merged.theme).toBe('snow')
+    })
+
+    it('replaces arrays and keeps the profile when the options are empty', () => {
+        const profile = joditProfileConfig(EMAIL)
+
+        expect((mergeProfileConfig(profile, { buttons: ['bold'] }) as any).buttons).toEqual(['bold'])
+        expect((mergeProfileConfig(profile, { controls: { paragraph: { list: { p: 'Normal' } } } }) as any).controls.paragraph.list)
+            .toEqual({ p: 'Normal', blockquote: 'Quote' })
+        expect(mergeProfileConfig(profile, [])).toEqual(profile)
     })
 })

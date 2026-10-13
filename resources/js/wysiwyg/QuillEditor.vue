@@ -5,6 +5,7 @@ import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import type { WysiwygAdapterProps } from './types'
 import { quillProfileConfig } from './QuillEditor.profile'
+import { mergeProfileConfig } from './profiles'
 
 const editor = shallowRef<InstanceType<typeof QuillyEditor>>()
 const quill = shallowRef<Quill | null>(null)
@@ -18,7 +19,7 @@ const props = withDefaults(defineProps<WysiwygAdapterProps>(), {
     config: () => ({}),
 })
 
-const quillOptions = shallowRef<Record<string, any>>(Array.isArray(props.features) ? { ...quillProfileConfig(props.features), ...props.config } : props.config)
+const quillOptions = shallowRef<Record<string, any>>(Array.isArray(props.features) ? mergeProfileConfig(quillProfileConfig(props.features), props.config) : props.config)
 
 function normalizeHtml(html: string) {
     const lines = html.split(/\n\n+/)

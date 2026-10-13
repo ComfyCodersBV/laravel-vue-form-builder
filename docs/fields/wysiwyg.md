@@ -148,7 +148,9 @@ profile throws an `InvalidArgumentException`.
 ```
 
 A profile replaces the editor options from `editors.<editor>.options` in the config. `->options([...])` set on the field
-still wins, key by key: the adapter builds its config from the features first and lays your options over it.
+still wins: the adapter builds its config from the features first and lays your options over it. Nested objects are
+merged key by key, so `['modules' => ['clipboard' => [...]]]` keeps the profile's Quill toolbar; arrays such as a
+toolbar list replace the profile's.
 
 Each adapter leaves out what it cannot do. The textarea ignores profiles.
 
