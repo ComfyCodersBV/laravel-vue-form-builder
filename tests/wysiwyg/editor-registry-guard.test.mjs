@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 /**
  * The Pest counterpart of this guard lived in tests/Wysiwyg until the PHP core
- * moved to tranquil-tools/laravel-form-builder. This package ships no PHP, so
+ * moved to tranquil-tools/laravel-form-builder. This package shipped no PHP then, so
  * the guard runs on Node instead. Behaviour is unchanged.
  */
 

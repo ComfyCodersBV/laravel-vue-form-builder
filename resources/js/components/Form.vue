@@ -6,6 +6,7 @@ import { fieldSlotsKey } from '../lib/field-slots'
 import { flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
+import { normalizeTags } from '../lib/tags'
 import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
 import { columnsKey, layoutKey, normalizeColumns, type FormColumns, type FormLayout } from '../lib/layout'
 import type { Field, FormSchema } from '../types/form-builder'
@@ -86,6 +87,10 @@ function initialValue(field: any, formData: Record<string, any>): any {
         return translatableValue(field, hasExplicit ? formData[field.name] : field.default)
     }
 
+    if (field.type === 'tags') {
+        return normalizeTags(hasExplicit ? formData[field.name] : field.default)
+    }
+
     if (hasExplicit) {
         return formData[field.name]
     }
@@ -113,6 +118,10 @@ function emptyFileValue(field: Field & { multiple?: boolean }): any {
     return field.multiple === true ? [] : ''
 }
 
+function emptyRemoveFlag(field: Field): boolean | string[] {
+    return Array.isArray(field.currentFiles) && field.currentFiles.length > 0 ? [] : false
+}
+
 function buildFormData(overrides: Record<string, any> = {}): Record<string, any> {
     const formData: Record<string, any> = { ...schemaDefaults(), ...overrides }
 
@@ -124,7 +133,7 @@ function buildFormData(overrides: Record<string, any> = {}): Record<string, any>
         formData[field.name] = field.type === 'file' ? emptyFileValue(field) : initialValue(field, formData)
 
         if (field.removeFlag) {
-            formData[field.removeFlag] = false
+            formData[field.removeFlag] = emptyRemoveFlag(field)
         }
     })
 
@@ -194,7 +203,7 @@ function clearFiles(): void {
         }
 
         if (field?.removeFlag) {
-            form[field.removeFlag] = false
+            form[field.removeFlag] = emptyRemoveFlag(field)
         }
     })
 }

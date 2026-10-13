@@ -9,6 +9,7 @@ interface Props extends Field {
     name: string
     editor: string
     options?: any
+    features?: string[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
     readonly: false,
     editor: '',
     options: {},
+    features: undefined,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
@@ -28,6 +30,8 @@ const model = computed<string>({
     get: () => (props.modelValue as any) ?? '',
     set: (v) => emit('update:modelValue', v),
 })
+
+const profileProps = computed(() => Array.isArray(props.features) ? { features: props.features } : {})
 
 const editorComponent = computed(() => resolveWysiwygEditor(props.editor))
 
@@ -63,6 +67,7 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
             :placeholder="props.placeholder"
             :disabled="props.disabled"
             :config="props.options"
+            v-bind="profileProps"
         />
 
         <template v-else>

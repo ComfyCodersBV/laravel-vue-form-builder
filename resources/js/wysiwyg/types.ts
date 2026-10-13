@@ -3,5 +3,6 @@ export interface WysiwygAdapterProps {
     disabled?: boolean;
     placeholder?: string;
     config?: Record<string, unknown>;
+    features?: string[];
     uploadUrl?: string;
 }

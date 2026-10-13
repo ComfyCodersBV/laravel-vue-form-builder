@@ -34,6 +34,8 @@ export interface FormMessages {
     collapse: string;
     currentFile: string;
     removeCurrentFile: string;
+    currentFiles: string;
+    invalidEmail: string;
     unknownFieldType: string;
     storedValue: string;
     removeStoredValue: string;
@@ -74,6 +76,8 @@ export const en: FormMessages = {
     collapse: 'Collapse',
     currentFile: 'Current file',
     removeCurrentFile: 'Remove current file',
+    currentFiles: 'Current files',
+    invalidEmail: 'Not a valid e-mail address',
     unknownFieldType: 'Unknown field type:',
     storedValue: 'A value is stored. Leave this empty to keep it.',
     removeStoredValue: 'Remove the stored value',
@@ -114,6 +118,8 @@ export const nl: FormMessages = {
     collapse: 'Inklappen',
     currentFile: 'Huidig bestand',
     removeCurrentFile: 'Huidig bestand verwijderen',
+    currentFiles: 'Huidige bestanden',
+    invalidEmail: 'Geen geldig e-mailadres',
     unknownFieldType: 'Onbekend veldtype:',
     storedValue: 'Er is een waarde opgeslagen. Laat dit leeg om die te houden.',
     removeStoredValue: 'Opgeslagen waarde verwijderen',

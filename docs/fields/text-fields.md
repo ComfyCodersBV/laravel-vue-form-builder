@@ -150,6 +150,35 @@ Pass `swatches` to show a row of preset colors under the input. Clicking one fil
 
 ---
 
+## Tags
+
+A list of short values as chips, such as labels or e-mail addresses. The value is an array of strings.
+
+```php
+use TranquilTools\FormBuilder\Fields\Tags;
+
+Tags::make('to')
+    ->label('To')
+    ->emails()
+    ->suggestions(route('mailbox.addresses'))
+    ->max(10)
+    ->required()
+```
+
+- Typing a comma or semicolon, pressing Enter or Tab, or leaving the field turns the text into a chip. A pasted list
+  is split on commas, semicolons and newlines. Backspace and the arrow keys select and remove chips.
+- `->emails()` marks chips that are no e-mail address in the browser and validates every entry with `email:rfc`
+  (rule `to.*`). Without it any text is accepted.
+- `->suggestions($url)` fetches `GET {url}?q=...` while typing (debounced) and expects `[{ "value": "...", "label": "..." }]`.
+  The arrow keys move through the list and Enter picks the highlighted suggestion. The field works without it.
+- `->max(int)` limits the number of chips and adds a `max:` rule.
+- The field is `nullable` and `array` unless `->required()`. `FormConfig::validate()` and `normalizeValues()` also accept
+  a comma, semicolon or newline separated string, so values stored by a former `Text` field keep working; `fill()` with
+  such a string shows it as chips. A FormRequest using `rules()` gets the array rules and needs an array.
+- Each entry is named after the label in validation messages: "The To field must be a valid email address."
+
+---
+
 ## Shared options: prepend, append, tooltip, autocomplete
 
 Text, Email, Password, Number, and Color fields support these additional options via the `HasTextfieldOptions` trait.
