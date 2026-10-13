@@ -5,10 +5,9 @@ stages:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_COMMIT_BRANCH == "main"
 
-# This package ships no PHP, so its tests run on Node: the editor registry guard
-# on node:test, and the component tests on Vitest. Both read or mount sources
-# rather than building them, which is why the fixture builds below still earn
-# their place.
+# The editor registry guard runs on node:test and the component tests on Vitest.
+# Both read or mount sources rather than building them, which is why the fixture
+# builds below still earn their place.
 test:node:
   stage: test
   image: node:22
@@ -116,4 +115,40 @@ build:quill-app:
         - tests/fixtures/quill-app/package-lock.json
     paths:
       - tests/fixtures/quill-app/node_modules/
+  rules: *default_rules
+
+pest:
+  stage: test
+  image: php:8.5-cli
+  before_script:
+    - apt-get update && apt-get install -y git unzip libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer install --no-interaction --prefer-dist --no-progress
+  script:
+    - vendor/bin/pest --compact
+  cache:
+    key:
+      files:
+        - composer.json
+    paths:
+      - vendor/
+  rules: *default_rules
+
+phpstan:
+  stage: test
+  image: php:8.5-cli
+  before_script:
+    - apt-get update && apt-get install -y git unzip libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer install --no-interaction --prefer-dist --no-progress
+  script:
+    - vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+  cache:
+    key:
+      files:
+        - composer.json
+    paths:
+      - vendor/
   rules: *default_rules

@@ -18,6 +18,13 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   docs.
 * New messages `currentFiles` and `invalidEmail`, in English and Dutch.
 * Supports schema version `1.8` of `tranquil-tools/laravel-form-builder` (`^1.7`).
+* The package now ships PHP for installers: `TranquilTools\VueFormBuilder\Support\Installer\InstallsFrontendAliases`
+  gives an install command `installAliases([...])` for the Vite aliases and `installTsPaths([...])` for the
+  `tsconfig.json` paths, so a third-party package adds its alias in two calls. `ViteConfigPatcher`,
+  `TsConfigPatcher` and the `DetectsPagesDirectory` trait moved here from laravel-vue-crud-builder unchanged, which uses
+  them from this release on. See [Installer Support](docs/installer.md).
+* Requires `illuminate/console` and `illuminate/support` (11, 12 or 13). The PHP tests run on Pest, next to the Node
+  and Vitest suites.
 
 ## 1.9.0 - 2026-10-12
 * Date `format` now supports the common Day.js tokens: `YYYY`, `YY`, `M`, `MM`, `MMM`, `MMMM`, `D`, `DD`, `d`, `dd`,

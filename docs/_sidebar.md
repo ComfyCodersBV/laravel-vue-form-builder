@@ -25,4 +25,5 @@
 - [Theming](theming.md)
 - [Configuration](configuration.md)
 - [Artisan Commands](artisan-commands.md)
+- [Installer Support](installer.md)
 - [CrudBuilder](crud-builder.md)
