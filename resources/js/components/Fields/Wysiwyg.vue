@@ -60,15 +60,16 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
     <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <input type="hidden" :name="props.name" :value="model" />
 
-        <component
-            :is="editorComponent"
-            v-if="editorComponent"
-            v-model:model-value="model"
-            :placeholder="props.placeholder"
-            :disabled="props.disabled"
-            :config="props.options"
-            v-bind="profileProps"
-        />
+        <div v-if="editorComponent" :data-testid="props.name ? `field-${props.name}` : undefined">
+            <component
+                :is="editorComponent"
+                v-model:model-value="model"
+                :placeholder="props.placeholder"
+                :disabled="props.disabled"
+                :config="props.options"
+                v-bind="profileProps"
+            />
+        </div>
 
         <template v-else>
             <TextareaEditor

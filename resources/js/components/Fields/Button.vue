@@ -16,6 +16,7 @@ import {
 
 interface Props {
     className?: string
+    name?: string
     label?: string
     labelHtml?: string
     ariaLabel?: string
@@ -29,6 +30,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     className: undefined,
+    name: undefined,
     label: '',
     labelHtml: undefined,
     ariaLabel: undefined,
@@ -39,6 +41,8 @@ const props = withDefaults(defineProps<Props>(), {
     variant: 'default',
     type: 'button',
 })
+
+const testId = computed(() => props.name ? `field-${props.name}` : undefined)
 
 const emit = defineEmits<{
     confirm: []
@@ -80,6 +84,7 @@ function handleConfirmAction() {
                 <Button
                     :variant="variant"
                     type="button"
+                    :data-testid="testId"
                     :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
                     :aria-label="ariaLabel"
                 >
@@ -103,6 +108,7 @@ function handleConfirmAction() {
                     <Button
                         :variant="variant"
                         type="button"
+                        :data-testid="testId ? `${testId}-confirm` : undefined"
                         @click="handleConfirmAction"
                     >
                         {{ label || ariaLabel }}
@@ -115,6 +121,7 @@ function handleConfirmAction() {
         <Button
             :variant="variant"
             :type="type"
+            :data-testid="testId"
             :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
             :aria-label="ariaLabel"
         >

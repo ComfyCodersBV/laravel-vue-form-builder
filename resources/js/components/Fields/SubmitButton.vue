@@ -4,6 +4,7 @@ import ButtonField from './Button.vue';
 import { cn } from '../../lib/utils';
 
 interface Props {
+    name?: string
     label?: string
     labelHtml?: string
     ariaLabel?: string
@@ -20,6 +21,7 @@ const mergedClassName = computed(() => cn('w-fit', props.className));
 
 <template>
     <ButtonField
+        :name="name"
         :label="label"
         :label-html="labelHtml"
         :aria-label="ariaLabel"

@@ -200,7 +200,13 @@ function moveDown(idx: number) {
             </p>
 
             <div>
-                <Button v-if="canAdd" type="button" variant="outline" @click="addRow">
+                <Button
+                    v-if="canAdd"
+                    type="button"
+                    variant="outline"
+                    :data-testid="props.name ? `field-${props.name}-add` : undefined"
+                    @click="addRow"
+                >
                     <Plus class="size-4"/>
                     <span>{{ addActionLabel ?? messages.addItem }}</span>
                 </Button>

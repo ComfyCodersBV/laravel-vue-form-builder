@@ -72,7 +72,12 @@ function select(tab: TabItem): void {
             :aria-selected="tab.key === modelValue"
             :class="tabClass(tab)"
         >
-            <button type="button" class="flex cursor-pointer items-center gap-1.5" @click="select(tab)">
+            <button
+                type="button"
+                class="flex cursor-pointer items-center gap-1.5"
+                :data-testid="`${variant}-tab-${tab.key}`"
+                @click="select(tab)"
+            >
                 <component :is="tab.icon" v-if="tab.icon" class="size-4" />
                 <span class="max-w-40 truncate">{{ tab.label }}</span>
                 <span v-if="tab.dirty" class="size-1.5 rounded-full bg-amber-500" :aria-label="messageContext.messages.unsavedChanges" />
@@ -83,6 +88,7 @@ function select(tab: TabItem): void {
                 type="button"
                 class="cursor-pointer rounded text-muted-foreground hover:text-foreground"
                 :aria-label="`Close ${tab.label}`"
+                :data-testid="`${variant}-tab-${tab.key}-close`"
                 @click.stop="emit('close', tab)"
             >
                 <X class="size-3.5" />
