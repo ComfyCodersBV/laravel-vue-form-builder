@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## Unreleased
+* Test hooks for browser recordings: a named button, submit or delete field renders `data-testid="field-<name>"`
+  (its confirm button `field-<name>-confirm`), a wysiwyg field wraps its editor in `field-<name>`, a repeater's add
+  button is `field-<name>-add`, and every tab and its close button carry `<variant>-tab-<key>` and
+  `<variant>-tab-<key>-close`. A date field's picker button gets the field name as `id`, like the other inputs.
+
 ## 1.10.1 - 2026-10-14
 * A `tags` field that reaches its `max` keeps its input, read-only and narrow, instead of hiding it, so the keyboard
   focus stays in the field and Backspace still removes the last chip.

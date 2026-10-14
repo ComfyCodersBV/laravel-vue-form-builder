@@ -9,6 +9,7 @@ import { isUnavailableDate, type DisabledDate } from '../../../lib/dates'
 import { formatDate, formatHasTime, parseFormattedDate } from '../../../lib/date-format'
 
 interface Props {
+  id?: string
   modelValue?: any // string|null for single; { start: string|null, end: string|null } for range
   placeholder?: string
   enableTime?: boolean
@@ -267,7 +268,7 @@ const minutes = computed({
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button variant="outline" type="button" class="w-full justify-start text-left font-normal" :disabled="props.disabled || props.readonly">
+      <Button :id="props.id" variant="outline" type="button" class="w-full justify-start text-left font-normal" :disabled="props.disabled || props.readonly">
         <CalendarIcon class="mr-2 h-4 w-4" />
         <template v-if="!props.range">
           <span v-if="selected">{{ formatDisplay(selected, props.format, props.enableTime, props.locale) }}</span>

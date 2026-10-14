@@ -46,6 +46,7 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
 <template>
   <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="(props as any).className" :theme="props.theme">
     <DatePicker
+      :id="props.name"
       v-model="internal"
       :enable-time="props.enableTime"
       :placeholder="props.placeholder || undefined"

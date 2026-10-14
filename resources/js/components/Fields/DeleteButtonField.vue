@@ -2,6 +2,7 @@
 import ButtonField from './Button.vue';
 
 interface Props {
+    name?: string
     label?: string;
     labelHtml?: string;
     ariaLabel?: string;
@@ -17,6 +18,7 @@ defineProps<Props>();
 
 <template>
     <ButtonField
+        :name="name"
         :label="label"
         :label-html="labelHtml"
         :aria-label="ariaLabel"
