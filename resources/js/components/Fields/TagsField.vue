@@ -27,6 +27,7 @@ import {
     isEmailAddress,
     isTagSuggestion,
     normalizeTags,
+    showsSuggestionValue,
     splitTags,
     suggestionsRequestUrl,
     type TagSuggestion,
@@ -254,11 +255,14 @@ onBeforeUnmount(() => controller?.abort())
 
                     <ComboboxInput v-model="query" as-child>
                         <TagsInputInput
-                            v-show="!isFull"
                             :id="name"
+                            :readonly="isFull"
                             :placeholder="tags.length === 0 ? placeholder : undefined"
                             :aria-invalid="fieldError ? true : undefined"
-                            class="min-w-24 flex-1 bg-transparent px-1 py-0.5 outline-none placeholder:text-muted-foreground"
+                            :class="cn(
+                                'bg-transparent px-1 py-0.5 outline-none placeholder:text-muted-foreground',
+                                isFull ? 'w-1 min-w-0 flex-none caret-transparent' : 'min-w-24 flex-1',
+                            )"
                             @paste="handlePaste"
                         />
                     </ComboboxInput>
@@ -284,7 +288,7 @@ onBeforeUnmount(() => controller?.abort())
                             @select.prevent="choose(suggestion)"
                         >
                             <span>{{ suggestion.label }}</span>
-                            <span v-if="suggestion.label !== suggestion.value" class="text-xs text-muted-foreground">{{ suggestion.value }}</span>
+                            <span v-if="showsSuggestionValue(suggestion)" class="text-xs text-muted-foreground">{{ suggestion.value }}</span>
                         </ComboboxItem>
                     </ComboboxViewport>
                 </ComboboxContent>

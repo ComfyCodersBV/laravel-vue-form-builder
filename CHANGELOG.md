@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.10.1 - 2026-10-14
+* A `tags` field that reaches its `max` keeps its input, read-only and narrow, instead of hiding it, so the keyboard
+  focus stays in the field and Backspace still removes the last chip.
+* A tag suggestion shows its value under the label only when the label does not already contain it, so
+  `Jane Doe <jane@example.com>` no longer repeats the address.
+* The Jodit adapter restores list bullets, numbers and the blockquote indent that the Tailwind preflight removes.
+
 ## 1.10.0 - 2026-10-13
 * Add a `tags` field built on reka-ui `TagsInput` and `Combobox`. A comma, semicolon, Enter, Tab or blur turns the typed
   text into a chip, a pasted list is split on commas, semicolons and newlines, and Backspace and the arrow keys select

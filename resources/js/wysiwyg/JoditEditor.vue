@@ -80,3 +80,21 @@ function applyDisabled(disabled: boolean): void {
 <template>
     <textarea ref="element"></textarea>
 </template>
+
+<style>
+.jodit-wysiwyg ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+}
+
+.jodit-wysiwyg ol {
+    list-style-type: decimal;
+    padding-left: 1.5em;
+}
+
+.jodit-wysiwyg blockquote {
+    border-left: 3px solid #d1d5db;
+    margin: 0 0 0 0.25em;
+    padding-left: 0.75em;
+}
+</style>

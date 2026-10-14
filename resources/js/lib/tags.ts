@@ -50,6 +50,13 @@ export function isTagSuggestion(value: unknown): value is TagSuggestion {
         && (typeof candidate.label === 'string' || typeof candidate.label === 'undefined')
 }
 
+export function showsSuggestionValue(suggestion: TagSuggestion): boolean {
+    const label = suggestion.label.toLowerCase()
+    const value = String(suggestion.value).toLowerCase()
+
+    return label !== value && !label.includes(`<${value}>`)
+}
+
 export function suggestionsRequestUrl(url: string, query: string, base?: string): string {
     const resolved = new URL(url, base ?? (typeof window === 'undefined' ? 'http://localhost' : window.location.href))
 

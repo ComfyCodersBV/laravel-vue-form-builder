@@ -2,7 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import Form from '../../resources/js/components/Form.vue'
-import { normalizeTags, splitTags, suggestionsRequestUrl } from '../../resources/js/lib/tags'
+import { normalizeTags, showsSuggestionValue, splitTags, suggestionsRequestUrl } from '../../resources/js/lib/tags'
 
 const schemaWith = (field: Record<string, unknown>, defaults: Record<string, unknown> = {}) => ({
     schemaVersion: '1.8',
@@ -34,6 +34,13 @@ describe('tags helpers', () => {
         expect(splitTags('a@x.nl, b@x.nl;\n c@x.nl\r\n;;')).toEqual(['a@x.nl', 'b@x.nl', 'c@x.nl'])
         expect(normalizeTags([' a ', 'a', '', 'b'])).toEqual(['a', 'b'])
         expect(normalizeTags(null)).toEqual([])
+    })
+
+    it('shows the value of a suggestion only when its label does not contain it', () => {
+        expect(showsSuggestionValue({ value: 'jane@example.com', label: 'Jane Doe' })).toBe(true)
+        expect(showsSuggestionValue({ value: 'jane@example.com', label: 'Jane Doe <jane@example.com>' })).toBe(false)
+        expect(showsSuggestionValue({ value: 'Jane@Example.com', label: 'jane@example.com' })).toBe(false)
+        expect(showsSuggestionValue({ value: '12', label: 'Invoice 12 (paid)' })).toBe(true)
     })
 
     it('adds the search term to the suggestions url', () => {
@@ -79,6 +86,20 @@ describe('tags field', () => {
         await nextTick()
 
         expect(formOf(wrapper).to).toEqual(['a', 'b'])
+    })
+
+    it('keeps the input focusable but read-only once the maximum is reached', async () => {
+        const wrapper = mount(Form, { props: { schema: schemaWith({ max: 2 }, { to: ['a', 'b'] }) } })
+
+        const input = wrapper.find('input[id="to"]')
+
+        expect((input.element as HTMLInputElement).style.display).not.toBe('none')
+        expect(input.attributes()).toHaveProperty('readonly')
+
+        await wrapper.findAll('[data-tag] button')[1].trigger('click')
+
+        expect(formOf(wrapper).to).toEqual(['a'])
+        expect(wrapper.find('input[id="to"]').attributes()).not.toHaveProperty('readonly')
     })
 
     it('marks an entry that is no e-mail address in email mode', () => {
