@@ -3,6 +3,9 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## Unreleased
+* A one-column form spaces its fields `space-y-4` apart, the same vertical gap as the multi-column grid, so a form
+  no longer needs a spacing class of its own to keep its inputs from touching. The fields now sit in one `div`
+  inside the `form`, so a `space-y-*` class on the form itself no longer changes the gap between them.
 * Test hooks for browser recordings: a named button, submit or delete field renders `data-testid="field-<name>"`
   (its confirm button `field-<name>-confirm`), a wysiwyg field wraps its editor in `field-<name>`, a repeater's add
   button is `field-<name>-add`, and every tab and its close button carry `<variant>-tab-<key>` and
