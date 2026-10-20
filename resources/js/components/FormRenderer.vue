@@ -103,7 +103,7 @@
             </template>
         </div>
 
-        <template v-else>
+        <div v-else class="space-y-4">
             <template v-for="(field, i) in fields" :key="field.name ?? i">
                 <FormField
                     v-if="isVisible(field)"
@@ -113,5 +113,5 @@
                     :field-overrides="fieldOverrides"
                 />
             </template>
-        </template>
+        </div>
     </template>

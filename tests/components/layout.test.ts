@@ -14,10 +14,11 @@ const schemaWith = (fields: Record<string, unknown>[]) => ({
 const textField = { name: 'title', type: 'text', label: 'Title' };
 
 describe('form layout', () => {
-    it('renders a single column without wrapping the fields in a container', () => {
+    it('spaces the fields of a single column apart like the rows of a grid', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith([textField]) } });
 
-        expect(wrapper.find('form > div').classes()).toContain('space-y-1');
+        expect(wrapper.find('form > div').classes()).toContain('space-y-4');
+        expect(wrapper.find('form > div > div').classes()).toContain('space-y-1');
     });
 
     it('puts a two column form in a grid', () => {
@@ -58,21 +59,21 @@ describe('form layout', () => {
     it('leaves the field markup alone in a stacked layout', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith([textField]) } });
 
-        expect(wrapper.find('form > div').classes()).not.toContain('sm:flex');
+        expect(wrapper.find('form > div > div').classes()).not.toContain('sm:flex');
     });
 
     it('lines a horizontal field up next to its label', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith([textField]), layout: 'horizontal' } });
 
-        expect(wrapper.find('form > div').classes()).toContain('sm:flex');
-        expect(wrapper.find('form > div > label').classes()).toContain('sm:w-40');
+        expect(wrapper.find('form > div > div').classes()).toContain('sm:flex');
+        expect(wrapper.find('form > div > div > label').classes()).toContain('sm:w-40');
     });
 
     it('keeps a label-less field stacked even in a horizontal form', () => {
         const schema = schemaWith([{ name: 'title', type: 'text' }]);
         const wrapper = mount(Form, { props: { schema, layout: 'horizontal' } });
 
-        expect(wrapper.find('form > div').classes()).not.toContain('sm:flex');
+        expect(wrapper.find('form > div > div').classes()).not.toContain('sm:flex');
     });
 });
 

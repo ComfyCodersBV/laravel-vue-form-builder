@@ -22,7 +22,7 @@ const schemaWith = (extra: Record<string, unknown> = {}, field: Record<string, u
 });
 
 const wrapperOf = (schema: Record<string, unknown>) =>
-    mount(Form, { props: { schema } }).find('form > div');
+    mount(Form, { props: { schema } }).find('form > div > div');
 
 describe('theme', () => {
     it('falls back to the renderer defaults when the schema carries no theme', () => {
