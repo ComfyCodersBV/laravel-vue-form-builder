@@ -47,6 +47,9 @@ function move(event: { dragged: TreeNode; target: TreeNode | null; position: 'be
 
 `@drop` fires with the dragged node, the node it was dropped on and whether it landed `before`, `after` or `inside` it. Reordering is up to you: the component reports the intent and does not touch `nodes`.
 
+A node can be dragged to any level of the tree, but never into its own subtree. Give a node `draggable: false` to keep it
+in place while it still accepts drops, as the fixed roots of a menu do.
+
 > `expandedIds` seeds the expanded state once. Expanding and collapsing afterwards is the component's own state, and a subtree that gets collapsed forgets how its children were expanded.
 
 ## SortableList

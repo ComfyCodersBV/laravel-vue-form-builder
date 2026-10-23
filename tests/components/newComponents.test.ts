@@ -125,3 +125,47 @@ describe('DateField', () => {
         expect(wrapper.text()).toContain('20-12-2026')
     })
 })
+
+describe('TreeView dragging', () => {
+    const nodes = [
+        {id: 'main', label: 'main', draggable: false, children: [{id: 'shop', label: 'Shop', children: [{id: 'chairs', label: 'Chairs'}]}]},
+        {id: 'footer', label: 'footer', draggable: false},
+    ]
+
+    function dataTransfer(): DataTransfer {
+        return {setData: () => {}} as unknown as DataTransfer
+    }
+
+    async function dragOnto(wrapper: ReturnType<typeof mount>, from: string, to: string): Promise<void> {
+        const source = wrapper.get(`[data-tree-node="${from}"]`)
+        const target = wrapper.get(`[data-tree-node="${to}"]`)
+
+        target.element.getBoundingClientRect = () => ({top: 0, height: 20} as DOMRect)
+
+        await source.trigger('dragstart', {dataTransfer: dataTransfer()})
+        await target.trigger('dragover', {clientY: 10})
+        await target.trigger('drop')
+    }
+
+    it('drops a nested node onto a node of another level', async () => {
+        const wrapper = mount(TreeView, {props: {nodes, draggable: true, expandedIds: ['main', 'shop']}})
+
+        await dragOnto(wrapper, 'chairs', 'footer')
+
+        expect(wrapper.emitted('drop')?.[0][0]).toMatchObject({dragged: {id: 'chairs'}, target: {id: 'footer'}, position: 'inside'})
+    })
+
+    it('keeps a node that is not draggable in place', () => {
+        const wrapper = mount(TreeView, {props: {nodes, draggable: true}})
+
+        expect(wrapper.get('[data-tree-node="main"]').attributes('draggable')).toBe('false')
+    })
+
+    it('refuses to drop a node into its own descendant', async () => {
+        const wrapper = mount(TreeView, {props: {nodes, draggable: true, expandedIds: ['main', 'shop']}})
+
+        await dragOnto(wrapper, 'shop', 'chairs')
+
+        expect(wrapper.emitted('drop')).toBeUndefined()
+    })
+})

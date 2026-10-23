@@ -40,6 +40,8 @@ export interface FormMessages {
     storedValue: string;
     removeStoredValue: string;
     containsErrors: string;
+    typeToSearch: string;
+    searching: string;
 }
 
 export const en: FormMessages = {
@@ -82,6 +84,8 @@ export const en: FormMessages = {
     storedValue: 'A value is stored. Leave this empty to keep it.',
     removeStoredValue: 'Remove the stored value',
     containsErrors: 'Contains errors',
+    typeToSearch: 'Type to search',
+    searching: 'Searching...',
 };
 
 export const nl: FormMessages = {
@@ -124,6 +128,8 @@ export const nl: FormMessages = {
     storedValue: 'Er is een waarde opgeslagen. Laat dit leeg om die te houden.',
     removeStoredValue: 'Opgeslagen waarde verwijderen',
     containsErrors: 'Bevat fouten',
+    typeToSearch: 'Typ om te zoeken',
+    searching: 'Zoeken...',
 };
 
 export const DEFAULT_LOCALE = 'en';

@@ -7,11 +7,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { ChevronsUpDown, X } from '@lucide/vue';
+import { useDebounceFn } from '@vueuse/core';
 import { computed, nextTick, ref, watch } from 'vue';
 import { useFormMessages } from '../../lib/messages'
 
 interface Option { value: string | number; label: string }
 type Options = Record<string, string> | Array<Option> | Array<string | number>;
+type OptionSearch = (query: string) => Promise<Array<any>> | Array<any>;
+
+const SEARCH_DELAY = 250;
 
 interface SelectProps extends Field {
     options?: Options;
@@ -25,6 +29,9 @@ interface SelectProps extends Field {
     choosePlaceholder?: string;
     clearable?: boolean;
     clearLabel?: string;
+    search?: OptionSearch;
+    minSearchLength?: number;
+    selectedLabel?: string;
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
@@ -45,6 +52,9 @@ const props = withDefaults(defineProps<SelectProps>(), {
     searchPlaceholder: undefined,
     noResultsLabel: undefined,
     choosePlaceholder: undefined,
+    search: undefined,
+    minSearchLength: 1,
+    selectedLabel: undefined,
 });
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>();
@@ -71,8 +81,12 @@ function getProp(obj: any, key: string): any {
     return undefined;
 }
 
-const optionsList = computed<Option[]>(() => {
-    const optionsValue = props.options;
+const isRemote = computed(() => typeof props.search === 'function');
+const remoteResults = ref<Array<any>>([]);
+const remoteSelected = ref<Option | null>(null);
+const isSearching = ref(false);
+
+function toOptions(optionsValue: Options | undefined): Option[] {
     if (! optionsValue) {
         return [];
     }
@@ -96,7 +110,9 @@ const optionsList = computed<Option[]>(() => {
     return Object.entries(optionsValue as Record<string, string>).map(
         ([value, label]) => ({ value, label })
     );
-});
+}
+
+const optionsList = computed<Option[]>(() => toOptions(isRemote.value ? remoteResults.value : props.options));
 
 const selectedOptionLabel = computed(() => {
     if (!internalKey.value) return '';
@@ -105,7 +121,19 @@ const selectedOptionLabel = computed(() => {
         option => String(option.value) === String(internalKey.value)
     );
 
-    return found ? found.label : String(internalKey.value);
+    if (found) {
+        return found.label;
+    }
+
+    if (isRemote.value && remoteSelected.value && String(remoteSelected.value.value) === internalKey.value) {
+        return remoteSelected.value.label;
+    }
+
+    if (isRemote.value && props.selectedLabel) {
+        return props.selectedLabel;
+    }
+
+    return String(internalKey.value);
 });
 
 const internalKey = ref<string>('');
@@ -128,6 +156,10 @@ watch(
 )
 
 watch(optionsList, (opts) => {
+    if (isRemote.value) {
+        return
+    }
+
     const allowed = new Set(opts.map(o => String(o.value)))
 
     if (props.multiple) {
@@ -154,6 +186,7 @@ function onUpdateInternal(value: unknown) {
     const key = value == null ? '' : String(value);
     internalKey.value = key;
     const found = optionsList.value.find(o => String(o.value) === key);
+    remoteSelected.value = isRemote.value && found ? found : null;
     emit('update:modelValue', (found ? found.value : key) as any);
 }
 
@@ -169,7 +202,47 @@ watch(comboboxOpen, (open) => {
     nextTick(() => requestAnimationFrame(() => comboboxSearchWrapper.value?.querySelector('input')?.focus()));
 });
 
+async function runSearch(query: string) {
+    if (!props.search || query.trim().length < props.minSearchLength!) {
+        remoteResults.value = [];
+        isSearching.value = false;
+
+        return;
+    }
+
+    try {
+        const results = await props.search(query.trim());
+
+        if (query === comboboxQuery.value) {
+            remoteResults.value = Array.isArray(results) ? results : [];
+        }
+    } catch {
+        remoteResults.value = [];
+    } finally {
+        if (query === comboboxQuery.value) {
+            isSearching.value = false;
+        }
+    }
+}
+
+const debouncedSearch = useDebounceFn(runSearch, SEARCH_DELAY);
+
+watch(comboboxQuery, (query) => {
+    if (!isRemote.value) {
+        return;
+    }
+
+    isSearching.value = query.trim().length >= props.minSearchLength!;
+    debouncedSearch(query);
+});
+
+const isBelowMinimum = computed(() => isRemote.value && comboboxQuery.value.trim().length < props.minSearchLength!);
+
 const comboboxFilteredOptions = computed(() => {
+    if (isRemote.value) {
+        return isBelowMinimum.value ? [] : optionsList.value;
+    }
+
     if (!comboboxQuery.value) {
         return optionsList.value;
     }
@@ -197,7 +270,7 @@ function clearValue() {
 
 <template>
     <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
-        <template v-if="!props.multiple && props.searchable">
+        <template v-if="!props.multiple && (props.searchable || isRemote)">
             <div class="flex items-center gap-1">
                 <Popover v-model:open="comboboxOpen">
                     <PopoverTrigger as-child>
@@ -232,7 +305,13 @@ function clearValue() {
                             >
                                 <span class="truncate" v-html="option.label"></span>
                             </button>
-                            <div v-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
+                            <div v-if="isBelowMinimum" class="px-2 py-3 text-xs text-muted-foreground" data-select-hint>
+                                {{ messages.typeToSearch }}
+                            </div>
+                            <div v-else-if="isSearching" class="px-2 py-3 text-xs text-muted-foreground" data-select-hint>
+                                {{ messages.searching }}
+                            </div>
+                            <div v-else-if="!comboboxFilteredOptions.length" class="px-2 py-3 text-xs text-muted-foreground">
                                 {{ props.noResultsLabel ?? messages.noResults }}
                             </div>
                         </div>

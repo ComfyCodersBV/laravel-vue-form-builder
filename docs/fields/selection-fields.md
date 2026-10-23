@@ -63,6 +63,30 @@ Select::make('country')
 
 The search placeholder and "no results" text are translatable, see [Translations](#translations).
 
+### Remote search
+
+When the options are too many to ship with the schema, hand the field a `search` function through `fieldOverrides`. The
+field then renders the searchable combobox, calls `search(query)` 250 ms after the user stops typing and lists what it
+returns, read through `optionLabel` / `optionValue` like static options. A function cannot travel in a PHP schema, so
+the caller supplies it and keeps control over the request: authentication, base URL and response shape.
+
+`minSearchLength` (default `1`) sets how many characters are needed before the first call. A stored value that is not
+among the results is kept; pass its text as `selectedLabel` so the closed field shows a readable label instead of the
+raw value.
+
+```vue
+<Form
+    :schema="form"
+    :field-overrides="{
+        brand_id: {
+            search: (query) => api.searchBrands(query),
+            minSearchLength: 2,
+            selectedLabel: record.brand?.name,
+        },
+    }"
+/>
+```
+
 ### Clearable
 
 A single select keeps its value once something is picked, because a native select has no empty state to go back to. Pass `clearable` to add a button next to the dropdown that empties the field again. It works on a plain and on a searchable select, and is hidden while the field is empty, disabled or readonly.
