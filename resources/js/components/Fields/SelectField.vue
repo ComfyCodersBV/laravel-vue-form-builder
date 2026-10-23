@@ -209,6 +209,14 @@ watch(comboboxOpen, (open) => {
     nextTick(() => requestAnimationFrame(() => comboboxSearchWrapper.value?.querySelector('input')?.focus()));
 });
 
+function rememberSelected() {
+    const found = optionsList.value.find(option => String(option.value) === internalKey.value);
+
+    if (found) {
+        remoteSelected.value = found;
+    }
+}
+
 async function runSearch(query: string) {
     if (!props.search || query.trim().length < props.minSearchLength!) {
         remoteResults.value = [];
@@ -223,6 +231,7 @@ async function runSearch(query: string) {
         if (query === comboboxQuery.value) {
             remoteResults.value = Array.isArray(results) ? results : [];
             searchFailed.value = false;
+            rememberSelected();
         }
     } catch {
         if (query === comboboxQuery.value) {
@@ -243,6 +252,7 @@ watch(comboboxQuery, (query) => {
         return;
     }
 
+    searchFailed.value = false;
     isSearching.value = query.trim().length >= props.minSearchLength!;
     debouncedSearch(query);
 });

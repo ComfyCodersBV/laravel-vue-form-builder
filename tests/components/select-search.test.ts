@@ -122,4 +122,22 @@ describe('select with a remote search', () => {
 
         expect(document.body.querySelector('[data-select-hint]')?.textContent).toContain('Searching failed')
     })
+
+    it('keeps the name of a stored value once a search has found it', async () => {
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: {
+                schema: schemaWith({ brand_id: 'b9' }),
+                fieldOverrides: { brand_id: { search: vi.fn().mockResolvedValue([{ id: 'b9', name: 'Acme' }]) } },
+            },
+        })
+
+        await type(await open(wrapper), 'acme')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+        await wrapper.find('button[id="brand_id"]').trigger('click')
+        await flushPromises()
+
+        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Acme')
+    })
 })
