@@ -3,6 +3,8 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## Unreleased
+* A `clearable` select shrinks its trigger to make room for the clear button, so the button no longer sticks out past
+  the field when the select fills its column.
 * A remote-search `select` renders its option labels as text instead of HTML, because they come from user data.
   Closing the dropdown forgets the typed term and the results, so it never offers results that were fetched for an
   earlier context. A failing search says "Zoeken is mislukt" instead of "Geen resultaten".
