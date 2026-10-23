@@ -191,3 +191,40 @@ describe('TreeView inside another tree', () => {
         expect(wrapper.findComponent(inner).findComponent(TreeView).emitted('drop')).toBeUndefined()
     })
 })
+
+describe('TreeView external drops', () => {
+    const nodes = [{id: 'root', label: 'Root', draggable: false, children: [{id: 'chairs', label: 'Chairs'}]}]
+
+    function externalTransfer(type: string, payload: string): DataTransfer {
+        return {types: [type], getData: (asked: string) => (asked === type ? payload : '')} as unknown as DataTransfer
+    }
+
+    async function dropOn(wrapper: ReturnType<typeof mount>, id: string, dataTransfer: DataTransfer): Promise<void> {
+        const target = wrapper.get(`[data-tree-node="${id}"]`)
+
+        target.element.getBoundingClientRect = () => ({top: 0, height: 20} as DOMRect)
+
+        await target.trigger('dragover', {clientY: 10, dataTransfer})
+        await target.trigger('drop', {dataTransfer})
+    }
+
+    it('accepts an item of the external type dropped on a nested node', async () => {
+        const wrapper = mount(TreeView, {props: {nodes, draggable: true, expandedIds: ['root'], externalType: 'application/x-category'}})
+
+        await dropOn(wrapper, 'chairs', externalTransfer('application/x-category', '{"id":"c9","label":"Tables"}'))
+
+        expect(wrapper.emitted('external-drop')?.[0][0]).toEqual({data: {id: 'c9', label: 'Tables'}, target: expect.objectContaining({id: 'chairs'}), position: 'inside'})
+        expect(wrapper.emitted('drop')).toBeUndefined()
+    })
+
+    it('ignores other drags and trees without an external type', async () => {
+        const typed = mount(TreeView, {props: {nodes, draggable: true, expandedIds: ['root'], externalType: 'application/x-category'}})
+        const untyped = mount(TreeView, {props: {nodes, draggable: true, expandedIds: ['root']}})
+
+        await dropOn(typed, 'root', externalTransfer('text/plain', 'hello'))
+        await dropOn(untyped, 'root', externalTransfer('application/x-category', '{"id":"c9"}'))
+
+        expect(typed.emitted('external-drop')).toBeUndefined()
+        expect(untyped.emitted('external-drop')).toBeUndefined()
+    })
+})
