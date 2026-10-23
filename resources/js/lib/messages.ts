@@ -42,6 +42,7 @@ export interface FormMessages {
     containsErrors: string;
     typeToSearch: string;
     searching: string;
+    searchFailed: string;
 }
 
 export const en: FormMessages = {
@@ -86,6 +87,7 @@ export const en: FormMessages = {
     containsErrors: 'Contains errors',
     typeToSearch: 'Type to search',
     searching: 'Searching...',
+    searchFailed: 'Searching failed, try again',
 };
 
 export const nl: FormMessages = {
@@ -130,6 +132,7 @@ export const nl: FormMessages = {
     containsErrors: 'Bevat fouten',
     typeToSearch: 'Typ om te zoeken',
     searching: 'Zoeken...',
+    searchFailed: 'Zoeken is mislukt, probeer het opnieuw',
 };
 
 export const DEFAULT_LOCALE = 'en';

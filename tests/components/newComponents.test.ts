@@ -1,4 +1,5 @@
 import {describe, expect, it} from 'vitest'
+import {defineComponent, h} from 'vue'
 import {mount} from '@vue/test-utils'
 import ColorField from '../../resources/js/components/Fields/ColorField.vue'
 import SortableList from '../../resources/js/components/SortableList.vue'
@@ -167,5 +168,26 @@ describe('TreeView dragging', () => {
         await dragOnto(wrapper, 'shop', 'chairs')
 
         expect(wrapper.emitted('drop')).toBeUndefined()
+    })
+})
+
+describe('TreeView inside another tree', () => {
+    it('keeps its own drag state when it is rendered in the actions slot of an outer tree', async () => {
+        const inner = defineComponent({
+            setup: () => () => h(TreeView, {nodes: [{id: 'x', label: 'X'}, {id: 'y', label: 'Y'}], draggable: true}),
+        })
+        const wrapper = mount(TreeView, {
+            props: {nodes: [{id: 'outer', label: 'Outer'}], draggable: true},
+            slots: {actions: () => h(inner)},
+        })
+
+        await wrapper.get('[data-tree-node="outer"]').trigger('dragstart', {dataTransfer: {setData: () => {}}})
+
+        const target = wrapper.get('[data-tree-node="y"]')
+        target.element.getBoundingClientRect = () => ({top: 0, height: 20} as DOMRect)
+        await target.trigger('dragover', {clientY: 10})
+        await target.trigger('drop')
+
+        expect(wrapper.findComponent(inner).findComponent(TreeView).emitted('drop')).toBeUndefined()
     })
 })

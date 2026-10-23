@@ -85,6 +85,7 @@ const isRemote = computed(() => typeof props.search === 'function');
 const remoteResults = ref<Array<any>>([]);
 const remoteSelected = ref<Option | null>(null);
 const isSearching = ref(false);
+const searchFailed = ref(false);
 
 function toOptions(optionsValue: Options | undefined): Option[] {
     if (! optionsValue) {
@@ -196,6 +197,12 @@ const comboboxSearchWrapper = ref<HTMLElement | null>(null);
 
 watch(comboboxOpen, (open) => {
     if (!open) {
+        if (isRemote.value) {
+            comboboxQuery.value = '';
+            remoteResults.value = [];
+            searchFailed.value = false;
+        }
+
         return;
     }
 
@@ -215,9 +222,13 @@ async function runSearch(query: string) {
 
         if (query === comboboxQuery.value) {
             remoteResults.value = Array.isArray(results) ? results : [];
+            searchFailed.value = false;
         }
     } catch {
-        remoteResults.value = [];
+        if (query === comboboxQuery.value) {
+            remoteResults.value = [];
+            searchFailed.value = true;
+        }
     } finally {
         if (query === comboboxQuery.value) {
             isSearching.value = false;
@@ -282,7 +293,8 @@ function clearValue() {
                             class="w-full justify-between font-normal"
                         >
                             <span class="truncate">
-                                <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
+                                <span v-if="selectedOptionLabel && isRemote">{{ selectedOptionLabel }}</span>
+                                <span v-else-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                                 <span v-else class="text-muted-foreground">
                                     {{ props.placeholder ?? props.choosePlaceholder ?? messages.chooseOption }}
                                 </span>
@@ -303,10 +315,14 @@ function clearValue() {
                                 :class="String(option.value) === internalKey ? 'bg-accent' : ''"
                                 @click="selectComboboxOption(option)"
                             >
-                                <span class="truncate" v-html="option.label"></span>
+                                <span v-if="isRemote" class="truncate">{{ option.label }}</span>
+                                <span v-else class="truncate" v-html="option.label"></span>
                             </button>
                             <div v-if="isBelowMinimum" class="px-2 py-3 text-xs text-muted-foreground" data-select-hint>
                                 {{ messages.typeToSearch }}
+                            </div>
+                            <div v-else-if="searchFailed" class="px-2 py-3 text-xs text-destructive" data-select-hint>
+                                {{ messages.searchFailed }}
                             </div>
                             <div v-else-if="isSearching" class="px-2 py-3 text-xs text-muted-foreground" data-select-hint>
                                 {{ messages.searching }}
