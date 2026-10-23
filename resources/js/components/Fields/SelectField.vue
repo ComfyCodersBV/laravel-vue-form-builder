@@ -300,7 +300,7 @@ function clearValue() {
                             variant="outline"
                             :id="props.name"
                             :disabled="props.disabled || props.readonly"
-                            class="w-full justify-between font-normal"
+                            class="w-full min-w-0 flex-1 justify-between font-normal"
                         >
                             <span class="truncate">
                                 <span v-if="selectedOptionLabel && isRemote">{{ selectedOptionLabel }}</span>
@@ -366,7 +366,7 @@ function clearValue() {
                     :disabled="props.disabled || props.readonly"
                     @update:model-value="onUpdateInternal"
                 >
-                    <SelectTrigger :id="props.name" class="w-full justify-between">
+                    <SelectTrigger :id="props.name" class="w-full min-w-0 flex-1 justify-between">
                         <span class="truncate">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
