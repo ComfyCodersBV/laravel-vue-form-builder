@@ -88,4 +88,56 @@ describe('select with a remote search', () => {
         expect(formOf(wrapper).brand_id).toBe('b9')
         expect(wrapper.find('button[id="brand_id"]').text()).toContain('99 - Stored')
     })
+
+    it('renders remote labels as text and forgets the results once the dropdown closes', async () => {
+        const search = vi.fn().mockResolvedValue([{ id: 'p1', name: '<img src=x onerror="window.hacked=1">Lamp' }])
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: { schema: schemaWith(), fieldOverrides: { brand_id: { search } } },
+        })
+
+        await type(await open(wrapper), 'lamp')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+
+        expect(document.body.querySelector('.max-h-64 img')).toBeNull()
+        expect(optionButtons()[0].textContent).toContain('<img')
+
+        await wrapper.find('button[id="brand_id"]').trigger('click')
+        await flushPromises()
+        await open(wrapper)
+
+        expect(optionButtons()).toHaveLength(0)
+    })
+
+    it('says the search failed instead of reporting no results', async () => {
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: { schema: schemaWith(), fieldOverrides: { brand_id: { search: vi.fn().mockRejectedValue(new Error('500')) } } },
+        })
+
+        await type(await open(wrapper), 'lamp')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+
+        expect(document.body.querySelector('[data-select-hint]')?.textContent).toContain('Searching failed')
+    })
+
+    it('keeps the name of a stored value once a search has found it', async () => {
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: {
+                schema: schemaWith({ brand_id: 'b9' }),
+                fieldOverrides: { brand_id: { search: vi.fn().mockResolvedValue([{ id: 'b9', name: 'Acme' }]) } },
+            },
+        })
+
+        await type(await open(wrapper), 'acme')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+        await wrapper.find('button[id="brand_id"]').trigger('click')
+        await flushPromises()
+
+        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Acme')
+    })
 })

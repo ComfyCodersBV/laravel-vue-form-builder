@@ -3,6 +3,11 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## Unreleased
+* A remote-search `select` renders its option labels as text instead of HTML, because they come from user data.
+  Closing the dropdown forgets the typed term and the results, so it never offers results that were fetched for an
+  earlier context. A failing search says "Zoeken is mislukt" instead of "Geen resultaten".
+* A nested `TreeView` receives its parent's drag state as a prop instead of through provide/inject, so a tree
+  rendered inside another tree's `actions` slot keeps a drag state of its own.
 * A draggable `TreeView` shares its drag state with its nested levels, so a node can be dropped on a node of another
   level; before, only drops within the same list arrived. A node is never dropped into its own subtree, and a node with
   `draggable: false` stays in place but still accepts drops.

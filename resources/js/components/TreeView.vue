@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, provide, ref, type InjectionKey, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { ChevronDown, ChevronRight, GripVertical } from '@lucide/vue'
 import { cn } from '../lib/utils'
 import { useFormMessages } from '../lib/messages'
@@ -19,15 +19,22 @@ export interface TreeDropEvent {
     position: 'before' | 'after' | 'inside'
 }
 
+export interface TreeDragState {
+    dragged: Ref<TreeNode | null>
+    dropTarget: Ref<{ id: string | number; position: TreeDropEvent['position'] } | null>
+}
+
 const props = withDefaults(defineProps<{
     nodes: TreeNode[]
     modelValue?: string | number | null
     draggable?: boolean
     expandedIds?: (string | number)[]
+    parentDragState?: TreeDragState | null
 }>(), {
     modelValue: null,
     draggable: false,
     expandedIds: () => [],
+    parentDragState: null,
 })
 
 const emit = defineEmits<{
@@ -39,21 +46,9 @@ defineSlots<{
     actions?: (props: { node: TreeNode }) => any
 }>()
 
-interface DragState {
-    dragged: Ref<TreeNode | null>
-    dropTarget: Ref<{ id: string | number; position: TreeDropEvent['position'] } | null>
-}
-
-const dragStateKey: InjectionKey<DragState> = Symbol.for('form-builder-tree-drag')
-
-const inherited = inject(dragStateKey, null)
-const dragState: DragState = inherited ?? {
+const dragState: TreeDragState = props.parentDragState ?? {
     dragged: ref<TreeNode | null>(null),
     dropTarget: ref<{ id: string | number; position: TreeDropEvent['position'] } | null>(null),
-}
-
-if (!inherited) {
-    provide(dragStateKey, dragState)
 }
 
 const expanded = ref<Set<string | number>>(new Set(props.expandedIds))
@@ -212,6 +207,7 @@ function indicatorClass(node: TreeNode): string {
                     :model-value="modelValue"
                     :draggable="draggable"
                     :expanded-ids="[...expanded]"
+                    :parent-drag-state="dragState"
                     @update:model-value="emit('update:modelValue', $event)"
                     @drop="emit('drop', $event)"
                 >
