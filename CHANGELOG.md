@@ -3,6 +3,12 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## Unreleased
+* A draggable `TreeView` shares its drag state with its nested levels, so a node can be dropped on a node of another
+  level; before, only drops within the same list arrived. A node is never dropped into its own subtree, and a node with
+  `draggable: false` stays in place but still accepts drops.
+* A `select` field takes a `search` function (through `fieldOverrides`) and then fetches its options while the user
+  types, debounced 250 ms, from `minSearchLength` characters on. A stored value outside the results is kept and shown
+  with `selectedLabel`. The combobox says "Typ om te zoeken" below the minimum and "Zoeken..." while a call runs.
 * A one-column form spaces its fields `space-y-4` apart, the same vertical gap as the multi-column grid, so a form
   no longer needs a spacing class of its own to keep its inputs from touching. The fields now sit in one `div`
   inside the `form`, so a `space-y-*` class on the form itself no longer changes the gap between them.

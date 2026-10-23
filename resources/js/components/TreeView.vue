@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, inject, provide, ref, type InjectionKey, type Ref } from 'vue'
 import { ChevronDown, ChevronRight, GripVertical } from '@lucide/vue'
 import { cn } from '../lib/utils'
 import { useFormMessages } from '../lib/messages'
@@ -39,9 +39,26 @@ defineSlots<{
     actions?: (props: { node: TreeNode }) => any
 }>()
 
+interface DragState {
+    dragged: Ref<TreeNode | null>
+    dropTarget: Ref<{ id: string | number; position: TreeDropEvent['position'] } | null>
+}
+
+const dragStateKey: InjectionKey<DragState> = Symbol.for('form-builder-tree-drag')
+
+const inherited = inject(dragStateKey, null)
+const dragState: DragState = inherited ?? {
+    dragged: ref<TreeNode | null>(null),
+    dropTarget: ref<{ id: string | number; position: TreeDropEvent['position'] } | null>(null),
+}
+
+if (!inherited) {
+    provide(dragStateKey, dragState)
+}
+
 const expanded = ref<Set<string | number>>(new Set(props.expandedIds))
-const dragged = ref<TreeNode | null>(null)
-const dropTarget = ref<{ id: string | number; position: TreeDropEvent['position'] } | null>(null)
+const dragged = dragState.dragged
+const dropTarget = dragState.dropTarget
 
 const selectedId = computed(() => props.modelValue)
 
@@ -69,7 +86,17 @@ function hasChildren(node: TreeNode): boolean {
     return Array.isArray(node.children) && node.children.length > 0
 }
 
+function canDrag(node: TreeNode): boolean {
+    return props.draggable && node.draggable !== false
+}
+
 function startDrag(node: TreeNode, event: DragEvent): void {
+    if (!canDrag(node)) {
+        event.preventDefault()
+
+        return
+    }
+
     dragged.value = node
     event.dataTransfer?.setData('text/plain', String(node.id))
 }
@@ -90,12 +117,22 @@ function positionFor(event: DragEvent, element: HTMLElement): TreeDropEvent['pos
 }
 
 function dragOver(node: TreeNode, event: DragEvent): void {
-    if (!props.draggable || !dragged.value || dragged.value.id === node.id) {
+    if (!props.draggable || !dragged.value || dragged.value.id === node.id || contains(dragged.value, node.id)) {
         return
     }
 
     event.preventDefault()
     dropTarget.value = { id: node.id, position: positionFor(event, event.currentTarget as HTMLElement) }
+}
+
+function contains(parent: TreeNode, id: string | number): boolean {
+    return (parent.children ?? []).some((child) => child.id === id || contains(child, id))
+}
+
+function leave(node: TreeNode): void {
+    if (dropTarget.value?.id === node.id) {
+        dropTarget.value = null
+    }
 }
 
 function drop(node: TreeNode): void {
@@ -139,14 +176,16 @@ function indicatorClass(node: TreeNode): string {
                     selectedId === node.id ? 'bg-accent font-medium' : 'hover:bg-muted/60',
                     indicatorClass(node),
                 )"
-                :draggable="draggable"
+                :draggable="canDrag(node)"
+                :data-tree-node="node.id"
                 @dragstart="startDrag(node, $event)"
                 @dragover="dragOver(node, $event)"
-                @dragleave="dropTarget = null"
+                @dragleave="leave(node)"
                 @drop.prevent="drop(node)"
                 @dragend="reset"
             >
-                <GripVertical v-if="draggable" class="size-3.5 shrink-0 cursor-grab text-muted-foreground" />
+                <GripVertical v-if="canDrag(node)" class="size-3.5 shrink-0 cursor-grab text-muted-foreground" />
+                <span v-else-if="draggable" class="size-3.5 shrink-0" />
 
                 <button
                     v-if="hasChildren(node)"
