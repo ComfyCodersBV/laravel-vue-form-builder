@@ -7,7 +7,7 @@ export { default as TreeView } from "./components/TreeView.vue"
 export { default as SortableList } from "./components/SortableList.vue"
 export { default as Tabs } from "./components/Tabs.vue"
 export { useHttpForm } from "./composables/useHttpForm"
-export type { TreeNode, TreeDropEvent } from "./components/TreeView.vue"
+export type { TreeNode, TreeDropEvent, TreeExternalDropEvent } from "./components/TreeView.vue"
 export type { TabItem } from "./components/Tabs.vue"
 export type {
     HttpFormMethod,

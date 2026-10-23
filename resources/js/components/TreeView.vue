@@ -19,6 +19,12 @@ export interface TreeDropEvent {
     position: 'before' | 'after' | 'inside'
 }
 
+export interface TreeExternalDropEvent {
+    data: unknown
+    target: TreeNode
+    position: 'before' | 'after' | 'inside'
+}
+
 export interface TreeDragState {
     dragged: Ref<TreeNode | null>
     dropTarget: Ref<{ id: string | number; position: TreeDropEvent['position'] } | null>
@@ -30,16 +36,19 @@ const props = withDefaults(defineProps<{
     draggable?: boolean
     expandedIds?: (string | number)[]
     parentDragState?: TreeDragState | null
+    externalType?: string | null
 }>(), {
     modelValue: null,
     draggable: false,
     expandedIds: () => [],
     parentDragState: null,
+    externalType: null,
 })
 
 const emit = defineEmits<{
     'update:modelValue': [string | number | null]
     drop: [TreeDropEvent]
+    'external-drop': [TreeExternalDropEvent]
 }>()
 
 defineSlots<{
@@ -111,7 +120,28 @@ function positionFor(event: DragEvent, element: HTMLElement): TreeDropEvent['pos
     return 'inside'
 }
 
+function carriesExternal(event: DragEvent): boolean {
+    return Boolean(props.externalType) && Array.from(event.dataTransfer?.types ?? []).includes(props.externalType!)
+}
+
+function readExternal(event: DragEvent): unknown {
+    const raw = event.dataTransfer?.getData(props.externalType!) ?? ''
+
+    try {
+        return JSON.parse(raw)
+    } catch {
+        return raw
+    }
+}
+
 function dragOver(node: TreeNode, event: DragEvent): void {
+    if (!dragged.value && carriesExternal(event)) {
+        event.preventDefault()
+        dropTarget.value = { id: node.id, position: positionFor(event, event.currentTarget as HTMLElement) }
+
+        return
+    }
+
     if (!props.draggable || !dragged.value || dragged.value.id === node.id || contains(dragged.value, node.id)) {
         return
     }
@@ -130,7 +160,13 @@ function leave(node: TreeNode): void {
     }
 }
 
-function drop(node: TreeNode): void {
+function drop(node: TreeNode, event: DragEvent): void {
+    if (!dragged.value && dropTarget.value && carriesExternal(event)) {
+        emit('external-drop', { data: readExternal(event), target: node, position: dropTarget.value.position })
+
+        return reset()
+    }
+
     if (!dragged.value || !dropTarget.value || dragged.value.id === node.id) {
         return reset()
     }
@@ -176,7 +212,7 @@ function indicatorClass(node: TreeNode): string {
                 @dragstart="startDrag(node, $event)"
                 @dragover="dragOver(node, $event)"
                 @dragleave="leave(node)"
-                @drop.prevent="drop(node)"
+                @drop.prevent="drop(node, $event)"
                 @dragend="reset"
             >
                 <GripVertical v-if="canDrag(node)" class="size-3.5 shrink-0 cursor-grab text-muted-foreground" />
@@ -208,8 +244,10 @@ function indicatorClass(node: TreeNode): string {
                     :draggable="draggable"
                     :expanded-ids="[...expanded]"
                     :parent-drag-state="dragState"
+                    :external-type="externalType"
                     @update:model-value="emit('update:modelValue', $event)"
                     @drop="emit('drop', $event)"
+                    @external-drop="emit('external-drop', $event)"
                 >
                     <template #actions="{ node: child }">
                         <slot name="actions" :node="child" />

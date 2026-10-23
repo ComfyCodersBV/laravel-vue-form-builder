@@ -3,6 +3,8 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## Unreleased
+* A `TreeView` with an `externalType` accepts drops from outside the tree, such as a list beside it, and emits
+  `external-drop` with the parsed drag data, the target node and the position. Other drags are ignored.
 * A `clearable` select shrinks its trigger to make room for the clear button, so the button no longer sticks out past
   the field when the select fills its column.
 * A remote-search `select` renders its option labels as text instead of HTML, because they come from user data.

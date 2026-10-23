@@ -44,11 +44,22 @@ function move(event: { dragged: TreeNode; target: TreeNode | null; position: 'be
 | `modelValue` | the selected node id |
 | `draggable` | enables dragging, off by default |
 | `expandedIds` | node ids that start out expanded |
+| `externalType` | drag data type the tree accepts from outside, emitted as `@external-drop` |
 
 `@drop` fires with the dragged node, the node it was dropped on and whether it landed `before`, `after` or `inside` it. Reordering is up to you: the component reports the intent and does not touch `nodes`.
 
 A node can be dragged to any level of the tree, but never into its own subtree. Give a node `draggable: false` to keep it
 in place while it still accepts drops, as the fixed roots of a menu do.
+
+Items from outside the tree, such as a list next to it, can be dropped on a node too. Give the tree an `externalType`
+and let the source put its data under that type on drag start; the tree then emits `@external-drop` with the parsed
+data, the node it landed on and the position. Drags of any other type are ignored.
+
+```vue
+<li draggable="true" @dragstart="$event.dataTransfer.setData('application/x-category', JSON.stringify(category))">…</li>
+
+<TreeView :nodes="nodes" external-type="application/x-category" @external-drop="link" />
+```
 
 > `expandedIds` seeds the expanded state once. Expanding and collapsing afterwards is the component's own state, and a subtree that gets collapsed forgets how its children were expanded.
 
