@@ -141,3 +141,116 @@ describe('select with a remote search', () => {
         expect(wrapper.find('button[id="brand_id"]').text()).toContain('Acme')
     })
 })
+
+describe('select with a search url', () => {
+    const urlSchema = (field: Record<string, unknown> = {}, defaults: Record<string, unknown> = {}) => ({
+        schemaVersion: '1.9',
+        id: 'remote-url',
+        action: '/',
+        method: 'post',
+        defaults,
+        fields: [{ name: 'brand_id', type: 'select', label: 'Brand', searchUrl: '/brands/search?scope=active', ...field }],
+    })
+
+    function respondWith(body: unknown, ok = true) {
+        return vi.fn().mockResolvedValue({ ok, json: () => Promise.resolve(body) })
+    }
+
+    beforeEach(() => {
+        vi.useFakeTimers()
+        vi.stubGlobal('ResizeObserver', class {
+            observe(): void {}
+            unobserve(): void {}
+            disconnect(): void {}
+        })
+    })
+
+    afterEach(() => {
+        vi.useRealTimers()
+        vi.unstubAllGlobals()
+        document.body.innerHTML = ''
+    })
+
+    it('fetches the matches from the url once the minimum length is typed and lists their labels', async () => {
+        const fetch = respondWith([{ value: 7, label: 'Acme' }, { value: 'x', label: 'Acme Labs' }, { label: 'no value' }])
+        vi.stubGlobal('fetch', fetch)
+        const wrapper = mount(Form, { attachTo: document.body, props: { schema: urlSchema({ minSearchLength: 2 }) } })
+
+        const input = await open(wrapper)
+
+        await type(input, 'a')
+        await vi.advanceTimersByTimeAsync(300)
+        expect(fetch).not.toHaveBeenCalled()
+
+        await type(input, 'ac ')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+
+        expect(fetch).toHaveBeenCalledTimes(1)
+        const url = new URL(fetch.mock.calls[0][0])
+        expect(url.pathname).toBe('/brands/search')
+        expect(url.searchParams.get('scope')).toBe('active')
+        expect(url.searchParams.get('q')).toBe('ac')
+        expect(fetch.mock.calls[0][1].headers.Accept).toBe('application/json')
+        expect(optionButtons().map((button) => button.textContent?.trim())).toEqual(['Acme', 'Acme Labs'])
+
+        optionButtons()[0].click()
+        await flushPromises()
+
+        expect(formOf(wrapper).brand_id).toBe(7)
+        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Acme')
+    })
+
+    it('shows the label of the selected value without searching', async () => {
+        const fetch = respondWith([])
+        vi.stubGlobal('fetch', fetch)
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: { schema: urlSchema({ selected: { value: 9, label: 'Stored brand' } }, { brand_id: 9 }) },
+        })
+
+        await flushPromises()
+
+        expect(formOf(wrapper).brand_id).toBe(9)
+        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Stored brand')
+        expect(fetch).not.toHaveBeenCalled()
+    })
+
+    it('does not show the selected label once another value is chosen', async () => {
+        vi.stubGlobal('fetch', respondWith([{ value: 3, label: 'Other brand' }]))
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: { schema: urlSchema({ selected: { value: 9, label: 'Stored brand' } }, { brand_id: 9 }) },
+        })
+
+        await type(await open(wrapper), 'other')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+        optionButtons()[0].click()
+        await flushPromises()
+
+        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Other brand')
+        expect(wrapper.find('button[id="brand_id"]').text()).not.toContain('Stored brand')
+    })
+
+    it('says the search failed when the url answers with an error', async () => {
+        vi.stubGlobal('fetch', respondWith({ message: 'Server Error' }, false))
+        const wrapper = mount(Form, { attachTo: document.body, props: { schema: urlSchema() } })
+
+        await type(await open(wrapper), 'lamp')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+
+        expect(document.body.querySelector('[data-select-hint]')?.textContent).toContain('Searching failed')
+    })
+
+    it('names the search input and announces the search state politely', async () => {
+        vi.stubGlobal('fetch', respondWith([]))
+        const wrapper = mount(Form, { attachTo: document.body, props: { schema: urlSchema({ searchPlaceholder: 'Find a brand' }) } })
+
+        const input = await open(wrapper)
+
+        expect(input.getAttribute('aria-label')).toBe('Find a brand')
+        expect(document.body.querySelector('[role="status"][aria-live="polite"] [data-select-hint]')?.textContent).toContain('Type to search')
+    })
+})
