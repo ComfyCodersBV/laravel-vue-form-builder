@@ -84,17 +84,18 @@ Select::make('accessor')
 
 - A select with a search url never sends its `options`, also when `->options()` was called.
 - `->selected($value, $label)` sends the stored value with its label as `selected: {value, label}`, so an edit form
-  shows the label without searching. Without a label the value itself is shown. `null` sends nothing.
+  shows the label without searching. Without a label the value itself is shown. `null` sends nothing. It only names
+  the value: the field value itself still comes from the form defaults, as for any other field.
 - The field adds no rule of its own, because the options are not known up front. Validate the value on the server with
   an `exists`-style rule.
 - The request carries the session cookie and `Accept: application/json`, so a normal web route behind `auth` works.
   Check in that route that the user may see what it returns.
-- Labels are rendered as text, never as HTML. A failing request shows "Searching failed, try again"; below the minimum
-  the list says "Type to search". The search input is named after its placeholder and the search state is announced
-  through a polite live region.
+- Labels are rendered as text, never as HTML. A failing request shows "Searching failed, try again" ("Zoeken is mislukt,
+  probeer het opnieuw"); below the minimum the list says "Type to search". The search input is named after its
+  placeholder and the search state is announced through a polite live region.
 - Not available combined with `->multiple()`: that throws a `LogicException`.
 
-Requires `tranquil-tools/laravel-form-builder` 1.8 and `laravel-vue-form-builder` 1.11 or newer.
+Requires `tranquil-tools/laravel-form-builder` 1.8 and `laravel-vue-form-builder` 1.13 or newer.
 
 ### Remote search
 
