@@ -63,9 +63,42 @@ Select::make('country')
 
 The search placeholder and "no results" text are translatable, see [Translations](#translations).
 
+### Server-side search
+
+When the list is too long or too private to send to the browser, give the select a search url instead of options. The
+field renders the searchable combobox and fetches `GET {url}?q=<term>` 250 ms after the user stops typing, from
+`minSearchLength` characters on (default `1`). The url answers with the matches only:
+
+```json
+[{"value": 5, "label": "Jane Doe"}, {"value": "group:2", "label": "Sales"}]
+```
+
+```php
+Select::make('accessor')
+    ->label('User or group')
+    ->searchUrl(route('mailbox.settings.accessors', $mailbox))
+    ->minSearchLength(2)
+    ->selected($access?->accessor, $access?->accessor_name)
+    ->rules('required', new ExistingAccessor)
+```
+
+- A select with a search url never sends its `options`, also when `->options()` was called.
+- `->selected($value, $label)` sends the stored value with its label as `selected: {value, label}`, so an edit form
+  shows the label without searching. Without a label the value itself is shown. `null` sends nothing.
+- The field adds no rule of its own, because the options are not known up front. Validate the value on the server with
+  an `exists`-style rule.
+- The request carries the session cookie and `Accept: application/json`, so a normal web route behind `auth` works.
+  Check in that route that the user may see what it returns.
+- Labels are rendered as text, never as HTML. A failing request shows "Searching failed, try again"; below the minimum
+  the list says "Type to search". The search input is named after its placeholder and the search state is announced
+  through a polite live region.
+- Not available combined with `->multiple()`: that throws a `LogicException`.
+
+Requires `tranquil-tools/laravel-form-builder` 1.8 and `laravel-vue-form-builder` 1.11 or newer.
+
 ### Remote search
 
-When the options are too many to ship with the schema, hand the field a `search` function through `fieldOverrides`. The
+When the search needs more control than a url, hand the field a `search` function through `fieldOverrides`. The
 field then renders the searchable combobox, calls `search(query)` 250 ms after the user stops typing and lists what it
 returns, read through `optionLabel` / `optionValue` like static options. A function cannot travel in a PHP schema, so
 the caller supplies it and keeps control over the request: authentication, base URL and response shape.

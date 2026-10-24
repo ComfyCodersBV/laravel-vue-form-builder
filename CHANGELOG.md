@@ -3,6 +3,14 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## Unreleased
+* A `select` with a `searchUrl` (from `Select::searchUrl()` in laravel-form-builder) searches its options on the server:
+  it fetches `GET {url}?q=<term>` debounced 250 ms from `minSearchLength` characters on, with the session cookie and
+  `Accept: application/json`, and lists the `[{value, label}]` it gets back as text. A non-OK answer shows "Zoeken is
+  mislukt". The stored value shows the label from `selected: {value, label}` without a search. A `search` function in
+  `fieldOverrides` still takes precedence over the url.
+* The search input of a searchable select is named after its placeholder, and its hints ("Typ om te zoeken",
+  "Zoeken...", no results, failure) sit in a polite live region so screen readers announce them.
+* `SUPPORTED_SCHEMA_VERSION` is now `1.9`, the version laravel-form-builder emits with `searchUrl`.
 * A `TreeView` with an `externalType` accepts drops from outside the tree, such as a list beside it, and emits
   `external-drop` with the parsed drag data, the target node and the position. Other drags are ignored.
 * A `clearable` select shrinks its trigger to make room for the clear button, so the button no longer sticks out past

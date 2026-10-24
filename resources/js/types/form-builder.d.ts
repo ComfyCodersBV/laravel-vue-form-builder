@@ -87,6 +87,9 @@ export interface Field {
     currentFiles?: CurrentFile[]
     emails?: boolean
     suggestionsUrl?: string
+    searchUrl?: string
+    minSearchLength?: number
+    selected?: { value: string | number; label: string } | null
     profile?: string
     features?: string[]
 }
