@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
-## Unreleased
+## 1.13.0 - 2026-10-24
 * A `select` with a `searchUrl` (from `Select::searchUrl()` in laravel-form-builder) searches its options on the server:
   it fetches `GET {url}?q=<term>` debounced 250 ms from `minSearchLength` characters on, with the session cookie and
   `Accept: application/json`, and lists the `[{value, label}]` it gets back as text. A non-OK answer shows "Zoeken is
@@ -11,24 +11,36 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * The search input of a searchable select is named after its placeholder, and its hints ("Typ om te zoeken",
   "Zoeken...", no results, failure) sit in a polite live region so screen readers announce them.
 * `SUPPORTED_SCHEMA_VERSION` is now `1.9`, the version laravel-form-builder emits with `searchUrl`.
+
+## 1.12.3 - 2026-10-23
 * A `TreeView` with an `externalType` accepts drops from outside the tree, such as a list beside it, and emits
   `external-drop` with the parsed drag data, the target node and the position. Other drags are ignored.
+
+## 1.12.2 - 2026-10-23
 * A `clearable` select shrinks its trigger to make room for the clear button, so the button no longer sticks out past
   the field when the select fills its column.
+
+## 1.12.1 - 2026-10-23
 * A remote-search `select` renders its option labels as text instead of HTML, because they come from user data.
   Closing the dropdown forgets the typed term and the results, so it never offers results that were fetched for an
   earlier context. A failing search says "Zoeken is mislukt" instead of "Geen resultaten".
 * A nested `TreeView` receives its parent's drag state as a prop instead of through provide/inject, so a tree
   rendered inside another tree's `actions` slot keeps a drag state of its own.
+
+## 1.12.0 - 2026-10-23
 * A draggable `TreeView` shares its drag state with its nested levels, so a node can be dropped on a node of another
   level; before, only drops within the same list arrived. A node is never dropped into its own subtree, and a node with
   `draggable: false` stays in place but still accepts drops.
 * A `select` field takes a `search` function (through `fieldOverrides`) and then fetches its options while the user
   types, debounced 250 ms, from `minSearchLength` characters on. A stored value outside the results is kept and shown
   with `selectedLabel`. The combobox says "Typ om te zoeken" below the minimum and "Zoeken..." while a call runs.
+
+## 1.11.0 - 2026-10-20
 * A one-column form spaces its fields `space-y-4` apart, the same vertical gap as the multi-column grid, so a form
   no longer needs a spacing class of its own to keep its inputs from touching. The fields now sit in one `div`
   inside the `form`, so a `space-y-*` class on the form itself no longer changes the gap between them.
+
+## 1.10.2 - 2026-10-14
 * Test hooks for browser recordings: a named button, submit or delete field renders `data-testid="field-<name>"`
   (its confirm button `field-<name>-confirm`), a wysiwyg field wraps its editor in `field-<name>`, a repeater's add
   button is `field-<name>-add`, and every tab and its close button carry `<variant>-tab-<key>` and
