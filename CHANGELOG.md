@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.13.1 - 2026-10-26
+* Updates the development dependencies in the lockfile for security advisories: undici 7.30.1 (denial of service via
+  excessive content-encodings) and vite 8.3.5 (launch-editor path checks on Windows). The published package is unchanged.
+
 ## 1.13.0 - 2026-10-24
 * A `select` with a `searchUrl` (from `Select::searchUrl()` in laravel-form-builder) searches its options on the server:
   it fetches `GET {url}?q=<term>` debounced 250 ms from `minSearchLength` characters on, with the session cookie and
