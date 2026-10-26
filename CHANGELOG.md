@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.13.2 - 2026-10-26
+* The clear button of a `clearable` select sits inside the field, before its arrow, instead of as a separate button
+  next to it. A long label is cut off before the cross.
+
 ## 1.13.1 - 2026-10-26
 * Updates the development dependencies in the lockfile for security advisories: undici 7.30.1 (denial of service via
   excessive content-encodings) and vite 8.3.5 (launch-editor path checks on Windows). The published package is unchanged.

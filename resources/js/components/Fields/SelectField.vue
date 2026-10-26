@@ -348,7 +348,7 @@ function clearValue() {
 <template>
     <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <template v-if="!props.multiple && (props.searchable || isRemote)">
-            <div class="flex items-center gap-1">
+            <div class="relative">
                 <Popover v-model:open="comboboxOpen">
                     <PopoverTrigger as-child>
                         <Button
@@ -356,9 +356,9 @@ function clearValue() {
                             variant="outline"
                             :id="props.name"
                             :disabled="props.disabled || props.readonly"
-                            class="w-full min-w-0 flex-1 justify-between font-normal"
+                            class="w-full min-w-0 justify-between font-normal"
                         >
-                            <span class="truncate">
+                            <span class="truncate" :class="{ 'mr-8': isClearable }">
                                 <span v-if="selectedOptionLabel && isRemote">{{ selectedOptionLabel }}</span>
                                 <span v-else-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                                 <span v-else class="text-muted-foreground">
@@ -410,7 +410,7 @@ function clearValue() {
                 <button
                     v-if="isClearable"
                     type="button"
-                    class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
+                    class="absolute top-1/2 right-8 -translate-y-1/2 cursor-pointer rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
                     :title="props.clearLabel ?? messages.clear"
                     :aria-label="props.clearLabel ?? messages.clear"
                     @click="clearValue"
@@ -423,14 +423,14 @@ function clearValue() {
         </template>
 
         <template v-else-if="!props.multiple">
-            <div class="flex items-center gap-1">
+            <div class="relative">
                 <Select
                     v-model="internalKey"
                     :disabled="props.disabled || props.readonly"
                     @update:model-value="onUpdateInternal"
                 >
-                    <SelectTrigger :id="props.name" class="w-full min-w-0 flex-1 justify-between">
-                        <span class="truncate">
+                    <SelectTrigger :id="props.name" class="w-full min-w-0 justify-between">
+                        <span class="truncate" :class="{ 'mr-8': isClearable }">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
                                 {{ props.placeholder ?? props.choosePlaceholder ?? messages.chooseOption }}
@@ -452,7 +452,7 @@ function clearValue() {
                 <button
                     v-if="isClearable"
                     type="button"
-                    class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
+                    class="absolute top-1/2 right-8 -translate-y-1/2 cursor-pointer rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
                     :title="props.clearLabel ?? messages.clear"
                     :aria-label="props.clearLabel ?? messages.clear"
                     @click="clearValue"
