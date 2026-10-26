@@ -125,6 +125,16 @@ raw value.
 
 A single select keeps its value once something is picked, because a native select has no empty state to go back to. Pass `clearable` to add a cross inside the dropdown, before its arrow, that empties the field again. It works on a plain and on a searchable select, and is hidden while the field is empty, disabled or readonly.
 
+From laravel-form-builder 1.9.0 the form class sets it with `->clearable()`. The cross then gets the translated "Clear field" label unless `clearLabel` is set:
+
+```php
+Select::make('country_id')
+    ->options($countries)
+    ->clearable();
+```
+
+Without that method, or to set it per page, pass it through `fieldOverrides`:
+
 ```vue
 <template>
     <Form
