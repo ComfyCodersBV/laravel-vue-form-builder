@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.13.3 - 2026-10-27
+* The Artisan Commands page documents both generators in full: the options of `make:form` and `make:form-request`,
+  how `make:form-request` finds the form class, the generated request, and how to override the stubs from `stubs/`.
+* The CrudBuilder page explains what `make:crud` generates on the form side, with an example form class and edit
+  action, and when to use the CrudBuilder instead of FormBuilder alone.
+
 ## 1.13.2 - 2026-10-26
 * The clear button of a `clearable` select sits inside the field, before its arrow, instead of as a separate button
   next to it. A long label is cut off before the cross.
