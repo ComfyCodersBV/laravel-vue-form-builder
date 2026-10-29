@@ -6,12 +6,13 @@
     import { flattenFields, formFieldsKey } from '../lib/fields'
     import { normalizeColumns, spanOf, type FormColumns } from '../lib/layout'
 
-    const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1 } = defineProps<{
+    const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1, layoutFromForm = false } = defineProps<{
         fields: Field[]
         form?: any
         onFieldChange?: (field: string, value: any) => void
         fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
         columns?: FormColumns
+        layoutFromForm?: boolean
     }>()
 
     const columns = computed((): FormColumns => normalizeColumns(requestedColumns))
@@ -103,7 +104,7 @@
             </template>
         </div>
 
-        <div v-else class="space-y-4">
+        <div v-else :class="layoutFromForm ? 'contents' : 'space-y-4'">
             <template v-for="(field, i) in fields" :key="field.name ?? i">
                 <FormField
                     v-if="isVisible(field)"

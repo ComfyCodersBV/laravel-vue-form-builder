@@ -310,6 +310,7 @@ defineExpose({ submit: submitForm, form, formErrors })
 
         <FormRenderer
             :columns="columns ?? schema.columns ?? 1"
+            :layout-from-form="[schema.formClass].flat().filter(Boolean).length > 0"
             :fields="schema.fields"
             :form="form"
             :on-field-change="onFieldChange || shouldSubmitOnChange ? handleFieldChange : undefined"

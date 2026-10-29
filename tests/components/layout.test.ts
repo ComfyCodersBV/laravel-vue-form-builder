@@ -21,6 +21,22 @@ describe('form layout', () => {
         expect(wrapper.find('form > div > div').classes()).toContain('space-y-1');
     });
 
+    it('lets a single column form with its own class lay out the fields itself', () => {
+        const wrapper = mount(Form, {
+            props: { schema: { ...schemaWith([textField]), formClass: 'grid grid-cols-5 gap-4' } },
+        });
+
+        expect(wrapper.find('form').classes()).toContain('grid-cols-5');
+        expect(wrapper.find('form > div').classes()).toContain('contents');
+        expect(wrapper.find('form > div').classes()).not.toContain('space-y-4');
+    });
+
+    it('keeps the spacing when the form class is an empty list', () => {
+        const wrapper = mount(Form, { props: { schema: { ...schemaWith([textField]), formClass: [] } } });
+
+        expect(wrapper.find('form > div').classes()).toContain('space-y-4');
+    });
+
     it('puts a two column form in a grid', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith([textField]), columns: 2 } });
 

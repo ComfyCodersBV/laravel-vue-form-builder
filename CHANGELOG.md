@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.13.4 - 2026-10-29
+* Fix a one-column form with its own `FormConfig::class()` (for example `grid grid-cols-5` with `col-span-5` fields)
+  squeezing all fields into one narrow grid cell. Since 1.11.0 the fields sat in a `space-y-4` wrapper inside the
+  form, which became a single cell of the form's grid. That wrapper is now `contents` when the form has a class of
+  its own, so the form's classes lay out the fields again, `space-y-*` included. A form without a class keeps the
+  `space-y-4` spacing. See `docs/columns.md`.
+
 ## 1.13.3 - 2026-10-27
 * The Artisan Commands page documents both generators in full: the options of `make:form` and `make:form-request`,
   how `make:form-request` finds the form class, the generated request, and how to override the stubs from `stubs/`.

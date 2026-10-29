@@ -26,6 +26,11 @@ Or use the `columns` prop of `<Form>` (and `FormRenderer`), which wins over the 
 A schema without `columns` (the default) leaves the form at one column, as before. `FormConfig::columns()` requires
 `tranquil-tools/laravel-form-builder` 1.6 and `laravel-vue-form-builder` 1.9; an older renderer ignores it.
 
+A one-column form spaces its fields `space-y-4` apart. A one-column form with its own `FormConfig::class()` lays out
+its fields itself instead: the fields then sit directly in the form's layout, so a class such as
+`['grid', 'grid-cols-5', 'gap-4']` with `->class('col-span-5')` on the fields, or `space-y-6`, works on them.
+A section in such a form is one cell of that layout too, so give it a `->class('col-span-5')` as well.
+
 ## On a section
 
 `Section::make()->columns(n)` lays out the fields of that section only, whatever the form does:
