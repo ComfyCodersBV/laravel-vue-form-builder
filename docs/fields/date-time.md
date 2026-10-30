@@ -242,7 +242,7 @@ Time::make('starts_at')
 
 ### Clearable
 
-A time field that is not required shows a button to empty it. Override that with `->clearable(bool)`:
+A time field that is not required shows a cross inside the field, on the right, that empties it. It is hidden while the field is empty, disabled or readonly. Override that with `->clearable(bool)`:
 
 ```php
 Time::make('starts_at')

@@ -190,51 +190,51 @@ function clear(): void {
     text.value = ''
     invalid.value = false
     emitValue(null)
+    closeList()
 }
 </script>
 
 <template>
     <BaseField v-bind="{ label, name, error, className, help, theme }">
         <Popover :open="open" @update:open="(value: boolean) => { open = value }">
-            <div class="flex items-center gap-1">
-                <PopoverAnchor as-child>
-                    <div ref="anchor" class="relative w-full">
-                        <Clock class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            :id="name"
-                            :name="name"
-                            :model-value="text"
-                            :disabled="!!disabled"
-                            :readonly="!!readonly"
-                            :placeholder="placeholder ?? 'HH:MM'"
-                            :aria-invalid="invalid || undefined"
-                            :aria-expanded="open"
-                            :aria-controls="listId"
-                            role="combobox"
-                            aria-autocomplete="none"
-                            autocomplete="off"
-                            inputmode="numeric"
-                            class="pl-9 dark:text-neutral-100"
-                            @update:model-value="onInput"
-                            @focus="openList"
-                            @click="openList"
-                            @blur="onBlur"
-                            @keydown="onKeydown"
-                        />
-                    </div>
-                </PopoverAnchor>
+            <PopoverAnchor as-child>
+                <div ref="anchor" class="relative w-full">
+                    <Clock class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        :id="name"
+                        :name="name"
+                        :model-value="text"
+                        :disabled="!!disabled"
+                        :readonly="!!readonly"
+                        :placeholder="placeholder ?? 'HH:MM'"
+                        :aria-invalid="invalid || undefined"
+                        :aria-expanded="open"
+                        :aria-controls="listId"
+                        role="combobox"
+                        aria-autocomplete="none"
+                        autocomplete="off"
+                        inputmode="numeric"
+                        class="pl-9 dark:text-neutral-100"
+                        :class="{ 'pr-9': isClearable }"
+                        @update:model-value="onInput"
+                        @focus="openList"
+                        @click="openList"
+                        @blur="onBlur"
+                        @keydown="onKeydown"
+                    />
 
-                <button
-                    v-if="isClearable"
-                    type="button"
-                    class="shrink-0 cursor-pointer rounded-md border border-input p-2 text-muted-foreground hover:text-foreground"
-                    :title="clearLabel ?? messages.clear"
-                    :aria-label="clearLabel ?? messages.clear"
-                    @click="clear"
-                >
-                    <X class="size-4" />
-                </button>
-            </div>
+                    <button
+                        v-if="isClearable"
+                        type="button"
+                        class="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                        :title="clearLabel ?? messages.clear"
+                        :aria-label="clearLabel ?? messages.clear"
+                        @click="clear"
+                    >
+                        <X class="size-4" />
+                    </button>
+                </div>
+            </PopoverAnchor>
 
             <PopoverContent
                 align="start"

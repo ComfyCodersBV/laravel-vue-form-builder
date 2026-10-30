@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.13.5 - 2026-10-30
+* The clear button of a `clearable` time field sits inside the field, on the right, instead of as a separate button
+  next to it, the same as on a clearable select. The time gets room on the right so it never runs under the cross.
+
 ## 1.13.4 - 2026-10-29
 * Fix a one-column form with its own `FormConfig::class()` (for example `grid grid-cols-5` with `col-span-5` fields)
   squeezing all fields into one narrow grid cell. Since 1.11.0 the fields sat in a `space-y-4` wrapper inside the
