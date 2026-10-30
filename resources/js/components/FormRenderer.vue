@@ -104,7 +104,19 @@
             </template>
         </div>
 
-        <div v-else :class="layoutFromForm ? 'contents' : 'space-y-4'">
+        <template v-else-if="layoutFromForm">
+            <template v-for="(field, i) in fields" :key="field.name ?? i">
+                <FormField
+                    v-if="isVisible(field)"
+                    :field="field"
+                    :form="form"
+                    :on-field-change="onFieldChange"
+                    :field-overrides="fieldOverrides"
+                />
+            </template>
+        </template>
+
+        <div v-else class="space-y-4">
             <template v-for="(field, i) in fields" :key="field.name ?? i">
                 <FormField
                     v-if="isVisible(field)"

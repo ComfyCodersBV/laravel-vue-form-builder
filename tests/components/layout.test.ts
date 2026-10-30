@@ -27,8 +27,22 @@ describe('form layout', () => {
         });
 
         expect(wrapper.find('form').classes()).toContain('grid-cols-5');
-        expect(wrapper.find('form > div').classes()).toContain('contents');
+        expect(wrapper.find('form > div').classes()).toContain('space-y-1');
         expect(wrapper.find('form > div').classes()).not.toContain('space-y-4');
+    });
+
+    it('puts the fields directly in a form with its own class, so space-y on the form spaces them', () => {
+        const wrapper = mount(Form, {
+            props: {
+                schema: {
+                    ...schemaWith([textField, { name: 'body', type: 'text', label: 'Body' }]),
+                    formClass: 'space-y-6',
+                },
+            },
+        });
+
+        expect(wrapper.findAll('form > div')).toHaveLength(2);
+        expect(wrapper.findAll('form > div').every((field) => field.classes().includes('space-y-1'))).toBe(true);
     });
 
     it('keeps the spacing when the form class is an empty list', () => {

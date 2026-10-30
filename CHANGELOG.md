@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.13.6 - 2026-10-30
+* Fix `space-y-*` on a one-column form with its own `FormConfig::class()` no longer spacing the fields apart. Since
+  1.13.4 the fields sat in a `contents` wrapper, so `space-y-*` on the form only reached that wrapper and the fields
+  stuck together. The fields of such a form are now direct children of the form again, so `space-y-*` and
+  `grid gap-*` both work on them. See `docs/columns.md`.
+
 ## 1.13.5 - 2026-10-30
 * The clear button of a `clearable` time field sits inside the field, on the right, instead of as a separate button
   next to it, the same as on a clearable select. The time gets room on the right so it never runs under the cross.
