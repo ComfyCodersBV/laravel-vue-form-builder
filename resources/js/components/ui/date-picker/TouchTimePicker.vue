@@ -112,6 +112,7 @@ const isLocked = computed(() => props.disabled || props.readonly)
 const canClear = computed(() => props.clearable && !isLocked.value && selected.value !== null)
 const valueLabel = computed(() => selected.value ? format(selected.value.hour, selected.value.minute) : '')
 const actionClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-base')
+const triggerIconClass = computed(() => anchored.value ? 'size-4' : 'size-5')
 
 function hourDisabled(hour: number): boolean {
   return minutes.value.every((minute) => unavailable(hour, minute))
@@ -172,13 +173,13 @@ function clear(): void {
           :id="props.id"
           variant="outline"
           type="button"
-          class="h-12 w-full justify-start text-base font-normal tabular-nums"
+          :class="['w-full justify-start font-normal tabular-nums', actionClass]"
           :disabled="isLocked"
           :aria-label="`${valueLabel || (props.placeholder ?? messages.pickTime)}${props.label ? `, ${props.label}` : ''}`"
           aria-haspopup="dialog"
           data-touch-time
         >
-          <Clock class="size-5 shrink-0" />
+          <Clock :class="['shrink-0', triggerIconClass]" />
           <span v-if="valueLabel">{{ valueLabel }}</span>
           <span v-else class="text-muted-foreground">{{ props.placeholder ?? messages.pickTime }}</span>
         </Button>

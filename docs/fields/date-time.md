@@ -155,7 +155,7 @@ The field shows a large date button and, with time enabled, a separate time butt
 button opens a sheet from the bottom of the screen with day buttons of 48 px, today ringed and "Today" and "Done"
 buttons. The time button opens a sheet with the hour buttons on the left and, after a divider, a column of minute-step
 buttons on the right. On a desktop (at least 640 px wide with a mouse or trackpad) both buttons open a compact popover
-right under the button instead. Tablets and other touch screens keep the sheet, shown as a centred dialog from 640 px.
+right under the button instead, and the buttons themselves have the height of a regular input. Tablets and other touch screens keep the sheet, shown as a centred dialog from 640 px.
 Nothing is typed, so no keyboard or scroll wheel opens on iOS.
 
 ```php

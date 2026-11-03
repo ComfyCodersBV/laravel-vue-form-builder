@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.15.1 - 2026-11-03
+* On a desktop, where the touch picker opens as a popover, its date and time buttons have the height and text size of a
+  regular input (`h-9`, small text) instead of the 48 px phone size. Phones and touch screens keep the large buttons.
+
 ## 1.15.0 - 2026-11-03
 * The touch picker (`touchPicker()`) opens as a compact popover under its button on a desktop (at least 640 px wide
   with a mouse or trackpad) instead of a large centred dialog. Phones and other touch screens keep the bottom sheet.

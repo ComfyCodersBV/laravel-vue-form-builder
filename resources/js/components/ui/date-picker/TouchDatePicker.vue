@@ -267,6 +267,7 @@ const dayClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-lg')
 const actionClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-base')
 const navClass = computed(() => anchored.value ? 'size-9' : 'size-12')
 const navIconClass = computed(() => anchored.value ? 'size-4' : 'size-6')
+const triggerIconClass = computed(() => anchored.value ? 'size-4' : 'size-5')
 </script>
 
 <template>
@@ -277,12 +278,12 @@ const navIconClass = computed(() => anchored.value ? 'size-4' : 'size-6')
           :id="props.id"
           variant="outline"
           type="button"
-          class="h-12 min-w-0 flex-1 justify-start text-left text-base font-normal"
+          :class="['min-w-0 flex-1 justify-start text-left font-normal', actionClass]"
           :disabled="isLocked"
           aria-haspopup="dialog"
           data-touch-date
         >
-          <CalendarIcon class="size-5 shrink-0" />
+          <CalendarIcon :class="['shrink-0', triggerIconClass]" />
           <span v-if="day" class="truncate">{{ dateLabel }}</span>
           <span v-else class="truncate text-muted-foreground">{{ props.placeholder ?? messages.pickDate }}</span>
         </Button>
@@ -348,13 +349,13 @@ const navIconClass = computed(() => anchored.value ? 'size-4' : 'size-6')
         <Button
           variant="outline"
           type="button"
-          class="h-12 w-32 shrink-0 justify-start text-base font-normal tabular-nums"
+          :class="['shrink-0 justify-start font-normal tabular-nums', actionClass, anchored ? 'w-24' : 'w-32']"
           :disabled="isLocked"
           :aria-label="`${messages.pickTime}${timeLabel ? `: ${timeLabel}` : ''}`"
           aria-haspopup="dialog"
           data-touch-time
         >
-          <Clock class="size-5 shrink-0" />
+          <Clock :class="['shrink-0', triggerIconClass]" />
           <span v-if="timeLabel">{{ timeLabel }}</span>
           <span v-else class="text-muted-foreground">{{ messages.pickTime }}</span>
         </Button>
