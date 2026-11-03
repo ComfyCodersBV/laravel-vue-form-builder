@@ -44,6 +44,8 @@ public function fields(): array
 - Pressing Enter in a field moves to the next step instead of submitting the form.
 - When the submit fails with validation errors, the form jumps back to the first step that has one, and that step is
   marked red in the indicator.
+- The step indicator gives every visible step the same width. A long title wraps to two lines and is then cut off.
+  On a phone (below 640 px) it shows only the numbered circles, and the current step's title is the heading below.
 - Earlier steps can be reopened with **Back** or by tapping their number. Later steps are only reached with **Next**.
 
 ## Validating each step on the server

@@ -119,6 +119,19 @@ describe('form with steps', () => {
         expect(currentStep(wrapper)).toBe('details')
     })
 
+    it('gives every visible step an equal column in the indicator', async () => {
+        const { wrapper } = wizardForm(schemaWith())
+        const columns = () => (wrapper.find('nav ol').element as HTMLElement).style.gridTemplateColumns
+
+        expect(columns()).toBe('repeat(3, minmax(0, 1fr))')
+        expect(wrapper.findAll('[data-step-title]').map((title) => title.text())).toEqual(['When', 'Who', 'Details'])
+
+        formOf(wrapper).type = 'internal'
+        await nextTick()
+
+        expect(columns()).toBe('repeat(2, minmax(0, 1fr))')
+    })
+
     it('goes back to an earlier step without validating', async () => {
         const fetch = vi.fn()
         vi.stubGlobal('fetch', fetch)

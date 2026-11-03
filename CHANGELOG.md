@@ -8,6 +8,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   primary background when selected, a focus ring on keyboard focus and a dimmed card when disabled. The cards sit in
   one column on a phone and in up to three columns from 640 px. The arrow keys move the choice as in any radio group.
   `SUPPORTED_SCHEMA_VERSION` is now `1.11`. See `docs/fields/selection-fields.md`.
+* Every step in the step indicator gets the same width, whatever the length of its title. A long title wraps to a
+  second line and is cut off with an ellipsis after that. On a phone the indicator shows only the numbered circles;
+  the title of the current step is the heading below it.
 * On a desktop, where the touch picker opens as a popover, its date and time buttons have the height and text size of a
   regular input (`h-9`, small text) instead of the 48 px phone size. Phones and touch screens keep the large buttons.
 

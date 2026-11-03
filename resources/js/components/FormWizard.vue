@@ -152,12 +152,12 @@ defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex })
     <div class="space-y-6" data-form-wizard>
         <nav :aria-label="progressLabel" class="space-y-2">
             <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400" data-step-progress>{{ progressLabel }}</p>
-            <ol class="flex items-center gap-2">
+            <ol class="grid gap-2" :style="{ gridTemplateColumns: `repeat(${visibleSteps.length}, minmax(0, 1fr))` }">
                 <li
                     v-for="(step, index) in visibleSteps"
                     :key="step.name ?? index"
-                    class="flex min-w-0 items-center gap-2"
-                    :class="index === currentIndex ? 'flex-1' : 'shrink-0'"
+                    class="flex min-w-0 items-center justify-center gap-2 sm:justify-start"
+                    :data-step-item="step.name"
                 >
                     <button
                         type="button"
@@ -177,11 +177,15 @@ defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex })
                         <Check v-if="index < currentIndex && !hasErrors(step)" class="size-5" />
                         <span v-else>{{ index + 1 }}</span>
                     </button>
-                    <span
-                        class="truncate text-sm"
-                        :class="index === currentIndex ? 'font-semibold text-neutral-900 dark:text-neutral-100' : 'hidden text-neutral-500 sm:inline dark:text-neutral-400'"
-                    >
-                        {{ step.title }}
+                    <span class="hidden min-w-0 sm:block" aria-hidden="true">
+                        <span
+                            class="line-clamp-2 text-sm leading-tight break-words"
+                            :class="index === currentIndex ? 'font-semibold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400'"
+                            :title="step.title"
+                            data-step-title
+                        >
+                            {{ step.title }}
+                        </span>
                     </span>
                 </li>
             </ol>
