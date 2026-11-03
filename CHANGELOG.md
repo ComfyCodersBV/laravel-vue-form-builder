@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.15.0 - 2026-11-03
+* The touch picker (`touchPicker()`) opens as a compact popover under its button on a desktop (at least 640 px wide
+  with a mouse or trackpad) instead of a large centred dialog. Phones and other touch screens keep the bottom sheet.
+* New `TouchTimePicker` component: one time button that opens the hour and minute buttons of the touch picker, with
+  `times` or `hour-from`/`hour-to`/`minute-step`, `disabled-times`, `is-disabled` and `clearable`. A minute is
+  disabled when its time is, an hour when all its minutes are. See `docs/fields/date-time.md`.
+* The hours and the minutes of the touch picker sit side by side: an hour grid, a divider and a column of minute
+  buttons of the same size, under the headings "Uur" and "Minuut". New form message `minute`, in English and Dutch.
+* `DialogContent` passes attributes such as `data-*` on to the dialog element instead of dropping them.
+
 ## 1.14.0 - 2026-11-03
 * Forms with `Step` fields (from laravel-form-builder 1.10) show one step at a time, with a step indicator ("Stap 1
   van 3"), large Back and Next buttons and the submit button on the last step. Steps whose fields are all hidden are

@@ -154,6 +154,9 @@ const closed: DisabledDate[] = ['2026-12-25', { from: '2026-07-20', to: '2026-08
 | `timezone`, `serverTimezone` | see [Date & Time](fields/date-time.md#timezone) |
 | `disabled`, `readonly` | block the picker |
 
+For phones, `TouchDatePicker` (the picker behind `touchPicker()`) and `TouchTimePicker` (a time on its own, with
+disabled times) are exported from the same module. See [Date & Time](fields/date-time.md#touchtimepicker-component).
+
 Disabled days only stop the user from clicking them. Validate on the server as well, for example with the
 `AvailableDate` rule described in [Date & Time](fields/date-time.md#disabled-weekdays-and-dates).
 

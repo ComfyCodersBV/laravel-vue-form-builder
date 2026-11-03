@@ -151,10 +151,12 @@ Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder
 ### Touch picker
 
 `->touchPicker()` swaps the small popover for a picker made for phones and for people who find small controls hard.
-The field shows a large date button and, with time enabled, a separate time button next to it. The date button opens
-a sheet from the bottom of the screen (a centered dialog on wider screens) with day buttons of 48 px, today ringed and
-"Today" and "Done" buttons. The time button opens a sheet with one button per hour and one per minute step. Nothing is
-typed, so no keyboard or scroll wheel opens on iOS.
+The field shows a large date button and, with time enabled, a separate time button next to it. On a phone the date
+button opens a sheet from the bottom of the screen with day buttons of 48 px, today ringed and "Today" and "Done"
+buttons. The time button opens a sheet with the hour buttons on the left and, after a divider, a column of minute-step
+buttons on the right. On a desktop (at least 640 px wide with a mouse or trackpad) both buttons open a compact popover
+right under the button instead. Tablets and other touch screens keep the sheet, shown as a centred dialog from 640 px.
+Nothing is typed, so no keyboard or scroll wheel opens on iOS.
 
 ```php
 DateTime::make('starts_at')
@@ -178,7 +180,36 @@ DateTime::make('starts_at')
   does not apply to it.
 - `range()` fields ignore `touchPicker()` and keep the regular picker.
 
-Requires `tranquil-tools/laravel-form-builder` 1.10 and `laravel-vue-form-builder` 1.14 or newer.
+Requires `tranquil-tools/laravel-form-builder` 1.10 and `laravel-vue-form-builder` 1.14 or newer. The desktop popover
+needs `laravel-vue-form-builder` 1.15.
+
+#### TouchTimePicker component
+
+`TouchTimePicker` is the time half of the touch picker as a standalone component for a time on its own, for example
+a start and an end time next to a separate date. It shows one time button ("Pick a time" until a time is chosen) that
+opens the same hour and minute buttons, as a sheet on a phone and a popover on a desktop. The value is `HH:mm`.
+
+```vue
+<script setup lang="ts">
+import { TouchTimePicker } from '@form-builder/components/ui/date-picker'
+</script>
+
+<template>
+    <TouchTimePicker v-model="startsAt" label="From" :hour-from="7" :hour-to="23" :minute-step="30" :disabled-times="['19:00', '19:30']" />
+    <TouchTimePicker v-model="endsAt" label="To" :times="['20:00', '20:30', '24:00']" :is-disabled="(time) => isTaken(time)" clearable />
+</template>
+```
+
+- `hour-from`, `hour-to` and `minute-step` build the times to choose from (default 00:00 to 23:45 per 15 minutes).
+  `times` replaces them with your own list, which may end on `24:00` for the end of the day.
+- `disabled-times` and `is-disabled` disable single times. A minute button is disabled when its time in the chosen
+  hour is disabled, an hour button when all its minutes are.
+- Picking an hour keeps the chosen minute when that time is free and otherwise takes the first free minute, so the
+  value is always a time that can be chosen. Picking a minute before an hour takes the first hour where it is free.
+- `clearable` adds a "Clear" button that empties the value to `''`. `label` titles the sheet, `placeholder` replaces
+  "Pick a time", and `disabled` and `readonly` lock the button.
+
+Requires `laravel-vue-form-builder` 1.15 or newer.
 
 ### Week start
 

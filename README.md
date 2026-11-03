@@ -14,7 +14,7 @@ Topics covered:
 - [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage)
 - [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/validation)
 - [Steps (multi-step forms)](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/steps)
-- [Date & Time, including the touch picker](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/date-time)
+- [Date & Time, including the touch picker and `TouchTimePicker`](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/date-time)
 - [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/configuration)
 
 ## CrudBuilder

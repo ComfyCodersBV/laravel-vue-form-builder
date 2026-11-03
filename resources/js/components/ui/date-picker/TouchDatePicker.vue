@@ -2,8 +2,10 @@
 import { computed, ref, watch } from 'vue'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from '@lucide/vue'
 import { Button } from '../button/index'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../dialog/index'
+import TouchPickerSurface from './TouchPickerSurface.vue'
+import TouchTimeChoices from './TouchTimeChoices.vue'
 import { useFormMessages } from '../../../lib/messages'
+import { padTime as pad, useAnchoredPicker } from '../../../lib/touch-picker'
 import { resolveTimezone, toDisplayWallClock, toZonedIso, wallClockAt, wallClockOfDate, type WallClock } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
 import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
@@ -66,6 +68,7 @@ const context = computed((): DateValueContext => ({
   format: props.format,
   locale: calendarLocale.value,
 }))
+const anchored = useAnchoredPicker()
 const isLocked = computed(() => props.disabled || props.readonly)
 const canClear = computed(() => props.clearable && !isLocked.value && day.value !== null)
 
@@ -125,10 +128,6 @@ watch(() => props.modelValue, (value) => {
 
   showMonthOf(day.value ?? today())
 }, { immediate: true })
-
-function pad(value: number): string {
-  return value < 10 ? `0${value}` : String(value)
-}
 
 function composedValue(): string {
   if (!day.value) {
@@ -264,147 +263,125 @@ function pickMinute(value: number): void {
   publish()
 }
 
-const dialogClass = 'top-auto bottom-0 max-h-[92dvh] translate-y-0 gap-3 overflow-y-auto rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] data-[state=closed]:slide-out-to-top-[100%] data-[state=open]:slide-in-from-top-[100%] sm:top-1/2 sm:bottom-auto sm:max-w-md sm:-translate-y-1/2 sm:rounded-lg dark:text-neutral-100'
-const choiceClass = 'flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border text-base tabular-nums transition-colors'
+const dayClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-lg')
+const actionClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-base')
+const navClass = computed(() => anchored.value ? 'size-9' : 'size-12')
+const navIconClass = computed(() => anchored.value ? 'size-4' : 'size-6')
 </script>
 
 <template>
   <div class="flex w-full gap-2" data-touch-picker>
-    <Button
-      :id="props.id"
-      variant="outline"
-      type="button"
-      class="h-12 min-w-0 flex-1 justify-start text-left text-base font-normal"
-      :disabled="isLocked"
-      aria-haspopup="dialog"
-      data-touch-date
-      @click="dateOpen = true"
-    >
-      <CalendarIcon class="size-5 shrink-0" />
-      <span v-if="day" class="truncate">{{ dateLabel }}</span>
-      <span v-else class="truncate text-muted-foreground">{{ props.placeholder ?? messages.pickDate }}</span>
-    </Button>
+    <TouchPickerSurface v-model:open="dateOpen" :anchored="anchored" :description="messages.pickDate" data-touch-calendar>
+      <template #trigger>
+        <Button
+          :id="props.id"
+          variant="outline"
+          type="button"
+          class="h-12 min-w-0 flex-1 justify-start text-left text-base font-normal"
+          :disabled="isLocked"
+          aria-haspopup="dialog"
+          data-touch-date
+        >
+          <CalendarIcon class="size-5 shrink-0" />
+          <span v-if="day" class="truncate">{{ dateLabel }}</span>
+          <span v-else class="truncate text-muted-foreground">{{ props.placeholder ?? messages.pickDate }}</span>
+        </Button>
+      </template>
 
-    <Button
-      v-if="props.enableTime"
-      variant="outline"
-      type="button"
-      class="h-12 w-32 shrink-0 justify-start text-base font-normal tabular-nums"
-      :disabled="isLocked"
-      :aria-label="`${messages.pickTime}${timeLabel ? `: ${timeLabel}` : ''}`"
-      aria-haspopup="dialog"
-      data-touch-time
-      @click="timeOpen = true"
-    >
-      <Clock class="size-5 shrink-0" />
-      <span v-if="timeLabel">{{ timeLabel }}</span>
-      <span v-else class="text-muted-foreground">{{ messages.pickTime }}</span>
-    </Button>
+      <template #title>{{ props.label ?? messages.pickDate }}</template>
 
-    <Dialog v-model:open="dateOpen">
-      <DialogContent :class="dialogClass" data-touch-calendar>
-        <DialogTitle class="text-lg">{{ props.label ?? messages.pickDate }}</DialogTitle>
-        <DialogDescription class="sr-only">{{ messages.pickDate }}</DialogDescription>
+      <div class="flex items-center justify-between">
+        <Button variant="outline" type="button" :class="navClass" :aria-label="messages.previousMonth" @click="previousMonth">
+          <ChevronLeft :class="navIconClass" />
+        </Button>
+        <div class="font-semibold capitalize" :class="anchored ? 'text-sm' : 'text-lg'">{{ monthLabel }}</div>
+        <Button variant="outline" type="button" :class="navClass" :aria-label="messages.nextMonth" @click="nextMonth">
+          <ChevronRight :class="navIconClass" />
+        </Button>
+      </div>
 
-        <div class="flex items-center justify-between">
-          <Button variant="outline" type="button" class="size-12" :aria-label="messages.previousMonth" @click="previousMonth">
-            <ChevronLeft class="size-6" />
-          </Button>
-          <div class="text-lg font-semibold capitalize">{{ monthLabel }}</div>
-          <Button variant="outline" type="button" class="size-12" :aria-label="messages.nextMonth" @click="nextMonth">
-            <ChevronRight class="size-6" />
-          </Button>
-        </div>
+      <div class="grid grid-cols-7 gap-1 text-center font-medium text-muted-foreground" :class="anchored ? 'text-xs' : 'text-sm'">
+        <span v-for="weekday in weekdays" :key="weekday">{{ weekday }}</span>
+      </div>
 
-        <div class="grid grid-cols-7 gap-1 text-center text-sm font-medium text-muted-foreground">
-          <span v-for="weekday in weekdays" :key="weekday">{{ weekday }}</span>
-        </div>
-
-        <div class="grid grid-cols-7 gap-1">
-          <template v-for="(row, i) in weeks" :key="`row-${i}`">
-            <button
-              v-for="cell in row"
-              :key="cell.date.toISOString()"
-              type="button"
-              class="flex h-12 w-full items-center justify-center rounded-lg text-lg tabular-nums transition-colors"
-              :disabled="isDisabled(cell.date)"
-              :data-date="formatDateValue(cell.date, false, null)"
-              :aria-current="isSameDay(today(), cell.date) ? 'date' : undefined"
-              :aria-label="longDate(cell.date)"
-              :aria-pressed="isSameDay(day, cell.date)"
-              :class="[
-                cell.inMonth ? 'text-foreground' : 'text-muted-foreground/60',
-                isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : '',
-                isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : '',
-                isDisabled(cell.date) ? 'cursor-not-allowed line-through opacity-40' : 'cursor-pointer hover:bg-accent',
-              ]"
-              @click="pickDay(cell.date)"
-            >
-              {{ cell.date.getDate() }}
-            </button>
-          </template>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <Button variant="outline" type="button" class="h-12 text-base" :disabled="isDisabled(today())" @click="pickToday">
-            {{ messages.today }}
-          </Button>
-          <Button v-if="canClear" variant="outline" type="button" class="col-span-2 row-start-2 h-12 text-base" data-touch-clear @click="clear">
-            {{ messages.clearAll }}
-          </Button>
-          <Button variant="secondary" type="button" class="h-12 text-base" @click="dateOpen = false">
-            {{ messages.done }}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-
-    <Dialog v-if="props.enableTime" v-model:open="timeOpen">
-      <DialogContent :class="dialogClass" data-touch-clock>
-        <DialogTitle class="text-lg">
-          {{ props.label ?? messages.pickTime }}<span v-if="timeLabel" class="ml-2 tabular-nums">{{ timeLabel }}</span>
-        </DialogTitle>
-        <DialogDescription class="sr-only">{{ messages.pickTime }}</DialogDescription>
-
-        <div class="text-sm font-medium text-muted-foreground">{{ messages.hour }}</div>
-        <div class="grid grid-cols-4 gap-2 sm:grid-cols-6">
+      <div class="grid grid-cols-7 gap-1">
+        <template v-for="(row, i) in weeks" :key="`row-${i}`">
           <button
-            v-for="option in hourOptions"
-            :key="`h-${option}`"
+            v-for="cell in row"
+            :key="cell.date.toISOString()"
             type="button"
-            :class="[choiceClass, option === hour ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent']"
-            :aria-pressed="option === hour"
-            :data-hour="option"
-            @click="pickHour(option)"
+            class="flex w-full items-center justify-center rounded-lg tabular-nums transition-colors"
+            :disabled="isDisabled(cell.date)"
+            :data-date="formatDateValue(cell.date, false, null)"
+            :aria-current="isSameDay(today(), cell.date) ? 'date' : undefined"
+            :aria-label="longDate(cell.date)"
+            :aria-pressed="isSameDay(day, cell.date)"
+            :class="[
+              dayClass,
+              cell.inMonth ? 'text-foreground' : 'text-muted-foreground/60',
+              isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : '',
+              isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : '',
+              isDisabled(cell.date) ? 'cursor-not-allowed line-through opacity-40' : 'cursor-pointer hover:bg-accent',
+            ]"
+            @click="pickDay(cell.date)"
           >
-            {{ pad(option) }}
+            {{ cell.date.getDate() }}
           </button>
-        </div>
+        </template>
+      </div>
 
-        <div class="text-sm font-medium text-muted-foreground">{{ messages.minutes }}</div>
-        <div class="grid grid-cols-4 gap-2">
-          <button
-            v-for="option in minuteOptions"
-            :key="`m-${option}`"
-            type="button"
-            :class="[choiceClass, option === minute ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent']"
-            :aria-pressed="option === minute"
-            :data-minute="option"
-            @click="pickMinute(option)"
-          >
-            :{{ pad(option) }}
-          </button>
-        </div>
+      <div class="grid grid-cols-2 gap-2">
+        <Button variant="outline" type="button" :class="actionClass" :disabled="isDisabled(today())" @click="pickToday">
+          {{ messages.today }}
+        </Button>
+        <Button v-if="canClear" variant="outline" type="button" class="col-span-2 row-start-2" :class="actionClass" data-touch-clear @click="clear">
+          {{ messages.clearAll }}
+        </Button>
+        <Button variant="secondary" type="button" :class="actionClass" @click="dateOpen = false">
+          {{ messages.done }}
+        </Button>
+      </div>
+    </TouchPickerSurface>
 
-        <div class="grid gap-2" :class="canClear ? 'grid-cols-2' : 'grid-cols-1'">
-          <Button v-if="canClear" variant="outline" type="button" class="h-12 text-base" data-touch-clear @click="clear">
-            {{ messages.clearAll }}
-          </Button>
-          <Button type="button" class="h-12 text-base" @click="timeOpen = false">
-            {{ messages.done }}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <TouchPickerSurface v-if="props.enableTime" v-model:open="timeOpen" :anchored="anchored" :description="messages.pickTime" data-touch-clock>
+      <template #trigger>
+        <Button
+          variant="outline"
+          type="button"
+          class="h-12 w-32 shrink-0 justify-start text-base font-normal tabular-nums"
+          :disabled="isLocked"
+          :aria-label="`${messages.pickTime}${timeLabel ? `: ${timeLabel}` : ''}`"
+          aria-haspopup="dialog"
+          data-touch-time
+        >
+          <Clock class="size-5 shrink-0" />
+          <span v-if="timeLabel">{{ timeLabel }}</span>
+          <span v-else class="text-muted-foreground">{{ messages.pickTime }}</span>
+        </Button>
+      </template>
+
+      <template #title>
+        {{ props.label ?? messages.pickTime }}<span v-if="timeLabel" class="ml-2 tabular-nums">{{ timeLabel }}</span>
+      </template>
+
+      <TouchTimeChoices
+        :hours="hourOptions"
+        :minutes="minuteOptions"
+        :hour="hour"
+        :minute="minute"
+        :compact="anchored"
+        @hour="pickHour"
+        @minute="pickMinute"
+      />
+
+      <div class="grid gap-2" :class="canClear ? 'grid-cols-2' : 'grid-cols-1'">
+        <Button v-if="canClear" variant="outline" type="button" :class="actionClass" data-touch-clear @click="clear">
+          {{ messages.clearAll }}
+        </Button>
+        <Button type="button" :class="actionClass" @click="timeOpen = false">
+          {{ messages.done }}
+        </Button>
+      </div>
+    </TouchPickerSurface>
   </div>
 </template>

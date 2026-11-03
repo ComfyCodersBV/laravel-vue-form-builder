@@ -45,6 +45,7 @@ export interface FormMessages {
     searchFailed: string;
     pickTime: string;
     hour: string;
+    minute: string;
     done: string;
     step: string;
     stepOf: string;
@@ -100,6 +101,7 @@ export const en: FormMessages = {
     searchFailed: 'Searching failed, try again',
     pickTime: 'Pick a time',
     hour: 'Hour',
+    minute: 'Minute',
     done: 'Done',
     step: 'Step',
     stepOf: 'Step :current of :total',
@@ -155,6 +157,7 @@ export const nl: FormMessages = {
     searchFailed: 'Zoeken is mislukt, probeer het opnieuw',
     pickTime: 'Kies tijd',
     hour: 'Uur',
+    minute: 'Minuut',
     done: 'Klaar',
     step: 'Stap',
     stepOf: 'Stap :current van :total',
