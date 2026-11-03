@@ -166,8 +166,13 @@ DateTime::make('starts_at')
 
 - `minDate`, `maxDate`, `disabledWeekdays`, `disabledDates`, `weekStartsOn`, `locale` and `timezone` work as on the
   regular picker. The value that is submitted is the same as well.
-- Picking a day while no time is chosen yet opens the time sheet right after. Until an hour is picked, a date-time
-  field submits an empty value, so a `required` rule catches a forgotten time.
+- Picking a day while no time is chosen yet fills in the first hour button (`00:00`, or the start of `hours()`) and
+  opens the time sheet right after, so the value always matches what the buttons show.
+- A field without a `required` rule gets a **Wissen** ("Clear") button in both sheets that empties it. Set it
+  yourself with `->clearable()` or `->clearable(false)`.
+- The value is built from the picked wall clock in the field's timezone, so a time in a daylight saving gap is not
+  shifted by the browser.
+- Each day button has its full date as label for screen readers, and both buttons announce that they open a dialog.
 - A stored time outside `hours()` or between the minute steps (for example `06:10`) is still shown and selected.
 - The date button shows the day as `di 12 november 2026` (short weekday, long month) in the form locale; `format()`
   does not apply to it.

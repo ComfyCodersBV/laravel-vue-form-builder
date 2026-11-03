@@ -19,6 +19,7 @@ interface DateFieldProps extends Field {
   minuteStep?: number
   hourFrom?: number
   hourTo?: number
+  clearable?: boolean
 }
 
 const props = withDefaults(defineProps<DateFieldProps>(), {
@@ -37,6 +38,7 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   minuteStep: 15,
   hourFrom: 0,
   hourTo: 23,
+  clearable: false,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -74,6 +76,7 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
       :hour-from="props.hourFrom"
       :hour-to="props.hourTo"
       :label="props.label"
+      :clearable="props.clearable"
     />
     <DatePicker
       v-else

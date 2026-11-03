@@ -4,7 +4,7 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from '@luc
 import { Button } from '../button/index'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../dialog/index'
 import { useFormMessages } from '../../../lib/messages'
-import { resolveTimezone } from '../../../lib/timezone'
+import { resolveTimezone, toDisplayWallClock, toZonedIso, wallClockAt, wallClockOfDate, type WallClock } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
 import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
 
@@ -28,6 +28,7 @@ interface Props {
   hourFrom?: number
   hourTo?: number
   label?: string
+  clearable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -50,6 +51,7 @@ const props = withDefaults(defineProps<Props>(), {
   hourFrom: 0,
   hourTo: 23,
   label: undefined,
+  clearable: false,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [string | null] }>()
@@ -65,15 +67,28 @@ const context = computed((): DateValueContext => ({
   locale: calendarLocale.value,
 }))
 const isLocked = computed(() => props.disabled || props.readonly)
+const canClear = computed(() => props.clearable && !isLocked.value && day.value !== null)
 
 const day = ref<Date | null>(null)
 const hour = ref<number | null>(null)
 const minute = ref<number | null>(null)
 const lastEmitted = ref<string | null | undefined>(undefined)
 
-const today = new Date()
-const viewYear = ref(today.getFullYear())
-const viewMonth = ref(today.getMonth())
+function today(): Date {
+  const now = new Date()
+
+  if (!zone.value) {
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  }
+
+  const wall = wallClockAt(now, zone.value)
+
+  return new Date(wall.year, wall.month - 1, wall.day)
+}
+
+const initial = today()
+const viewYear = ref(initial.getFullYear())
+const viewMonth = ref(initial.getMonth())
 
 const dateOpen = ref(false)
 const timeOpen = ref(false)
@@ -83,49 +98,72 @@ function showMonthOf(date: Date): void {
   viewMonth.value = date.getMonth()
 }
 
+function wallOf(value: string | null): WallClock | null {
+  if (!value) {
+    return null
+  }
+
+  if (props.enableTime && zone.value) {
+    return toDisplayWallClock(value, zone.value, props.serverTimezone)
+  }
+
+  const parsed = parseDateValue(value, props.enableTime, context.value)
+
+  return parsed ? wallClockOfDate(parsed) : null
+}
+
 watch(() => props.modelValue, (value) => {
   if (value === lastEmitted.value) {
     return
   }
 
-  const parsed = parseDateValue(value ?? null, props.enableTime, context.value)
+  const wall = wallOf(value ?? null)
 
-  day.value = parsed
-  hour.value = parsed && props.enableTime ? parsed.getHours() : null
-  minute.value = parsed && props.enableTime ? parsed.getMinutes() : null
+  day.value = wall ? new Date(wall.year, wall.month - 1, wall.day) : null
+  hour.value = wall && props.enableTime ? wall.hour : null
+  minute.value = wall && props.enableTime ? wall.minute : null
 
-  showMonthOf(parsed ?? today)
+  showMonthOf(day.value ?? today())
 }, { immediate: true })
 
-function composed(): Date | null {
+function pad(value: number): string {
+  return value < 10 ? `0${value}` : String(value)
+}
+
+function composedValue(): string {
   if (!day.value) {
-    return null
+    return ''
   }
 
-  const result = new Date(day.value.getFullYear(), day.value.getMonth(), day.value.getDate())
+  const wall: WallClock = {
+    year: day.value.getFullYear(),
+    month: day.value.getMonth() + 1,
+    day: day.value.getDate(),
+    hour: hour.value ?? 0,
+    minute: minute.value ?? 0,
+  }
+  const date = `${wall.year}-${pad(wall.month)}-${pad(wall.day)}`
 
   if (!props.enableTime) {
-    return result
+    return date
   }
 
-  if (hour.value === null) {
-    return null
+  if (zone.value) {
+    return toZonedIso(wall, zone.value)
   }
 
-  result.setHours(hour.value, minute.value ?? 0)
-
-  return result
+  return `${date} ${pad(wall.hour)}:${pad(wall.minute)}`
 }
 
 function publish(): void {
-  const value = formatDateValue(composed(), props.enableTime, zone.value) ?? ''
+  const value = composedValue()
+
+  lastEmitted.value = value
 
   if (value === (props.modelValue ?? '')) {
-    lastEmitted.value = value
     return
   }
 
-  lastEmitted.value = value
   emit('update:modelValue', value)
 }
 
@@ -136,10 +174,6 @@ const monthLabel = computed(() => new Date(viewYear.value, viewMonth.value, 1).t
 const dateLabel = computed(() => day.value
   ? day.value.toLocaleDateString(calendarLocale.value, { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
   : '')
-
-function pad(value: number): string {
-  return value < 10 ? `0${value}` : String(value)
-}
 
 const timeLabel = computed(() => hour.value === null ? '' : `${pad(hour.value)}:${pad(minute.value ?? 0)}`)
 
@@ -181,18 +215,41 @@ function pickDay(date: Date): void {
     return
   }
 
+  const needsTime = props.enableTime && hour.value === null
+
   day.value = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+
+  if (needsTime) {
+    hour.value = hourOptions.value[0] ?? 0
+    minute.value = 0
+  }
+
   dateOpen.value = false
   publish()
 
-  if (props.enableTime && hour.value === null) {
+  if (needsTime) {
     timeOpen.value = true
   }
 }
 
 function pickToday(): void {
-  showMonthOf(today)
-  pickDay(today)
+  const current = today()
+
+  showMonthOf(current)
+  pickDay(current)
+}
+
+function clear(): void {
+  day.value = null
+  hour.value = null
+  minute.value = null
+  dateOpen.value = false
+  timeOpen.value = false
+  publish()
+}
+
+function longDate(date: Date): string {
+  return date.toLocaleDateString(calendarLocale.value, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function pickHour(value: number): void {
@@ -219,6 +276,7 @@ const choiceClass = 'flex h-12 w-full cursor-pointer items-center justify-center
       type="button"
       class="h-12 min-w-0 flex-1 justify-start text-left text-base font-normal"
       :disabled="isLocked"
+      aria-haspopup="dialog"
       data-touch-date
       @click="dateOpen = true"
     >
@@ -234,6 +292,7 @@ const choiceClass = 'flex h-12 w-full cursor-pointer items-center justify-center
       class="h-12 w-32 shrink-0 justify-start text-base font-normal tabular-nums"
       :disabled="isLocked"
       :aria-label="`${messages.pickTime}${timeLabel ? `: ${timeLabel}` : ''}`"
+      aria-haspopup="dialog"
       data-touch-time
       @click="timeOpen = true"
     >
@@ -270,11 +329,12 @@ const choiceClass = 'flex h-12 w-full cursor-pointer items-center justify-center
               class="flex h-12 w-full items-center justify-center rounded-lg text-lg tabular-nums transition-colors"
               :disabled="isDisabled(cell.date)"
               :data-date="formatDateValue(cell.date, false, null)"
-              :aria-current="isSameDay(today, cell.date) ? 'date' : undefined"
+              :aria-current="isSameDay(today(), cell.date) ? 'date' : undefined"
+              :aria-label="longDate(cell.date)"
               :aria-pressed="isSameDay(day, cell.date)"
               :class="[
                 cell.inMonth ? 'text-foreground' : 'text-muted-foreground/60',
-                isSameDay(today, cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : '',
+                isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : '',
                 isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : '',
                 isDisabled(cell.date) ? 'cursor-not-allowed line-through opacity-40' : 'cursor-pointer hover:bg-accent',
               ]"
@@ -286,8 +346,11 @@ const choiceClass = 'flex h-12 w-full cursor-pointer items-center justify-center
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <Button variant="outline" type="button" class="h-12 text-base" :disabled="isDisabled(today)" @click="pickToday">
+          <Button variant="outline" type="button" class="h-12 text-base" :disabled="isDisabled(today())" @click="pickToday">
             {{ messages.today }}
+          </Button>
+          <Button v-if="canClear" variant="outline" type="button" class="col-span-2 row-start-2 h-12 text-base" data-touch-clear @click="clear">
+            {{ messages.clearAll }}
           </Button>
           <Button variant="secondary" type="button" class="h-12 text-base" @click="dateOpen = false">
             {{ messages.done }}
@@ -333,9 +396,14 @@ const choiceClass = 'flex h-12 w-full cursor-pointer items-center justify-center
           </button>
         </div>
 
-        <Button type="button" class="h-12 text-base" @click="timeOpen = false">
-          {{ messages.done }}
-        </Button>
+        <div class="grid gap-2" :class="canClear ? 'grid-cols-2' : 'grid-cols-1'">
+          <Button v-if="canClear" variant="outline" type="button" class="h-12 text-base" data-touch-clear @click="clear">
+            {{ messages.clearAll }}
+          </Button>
+          <Button type="button" class="h-12 text-base" @click="timeOpen = false">
+            {{ messages.done }}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   </div>

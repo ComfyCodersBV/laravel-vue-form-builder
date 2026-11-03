@@ -12,7 +12,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   `HandlePrecognitiveRequests` middleware and the action a form request.
 * A date field with `touchPicker()` shows a large date button and a separate time button. They open a sheet with
   48 px day buttons (today ringed) and a sheet with one button per hour and per minute step (`minuteStep()`,
-  `hours()`), so nothing has to be typed on a phone. Min/max dates, disabled weekdays and dates, week start, locale
+  `hours()`), so nothing has to be typed on a phone. A picked day without a time gets the first hour, and a field
+  that is not required gets a "Wissen" button that empties it. Min/max dates, disabled weekdays and dates, week start, locale
   and timezone work as on the regular picker; range fields keep the regular picker. See `docs/fields/date-time.md`.
 * `SUPPORTED_SCHEMA_VERSION` is now `1.10`.
 * New form messages: `pickTime`, `hour`, `done`, `step`, `stepOf`, `previousStep`, `nextStep`, `save`,

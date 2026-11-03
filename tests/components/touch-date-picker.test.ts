@@ -47,19 +47,62 @@ describe('touch date picker', () => {
         expect(find('button[data-date="2026-11-03"]').getAttribute('aria-current')).toBe('date')
     })
 
-    it('emits nothing usable until both a day and an hour are picked', async () => {
-        const wrapper = picker()
+    it('fills in the first hour when a day is picked without a time, then opens the time sheet', async () => {
+        const wrapper = picker({ hourFrom: 8 })
 
         await open(wrapper, '[data-touch-date]')
         await press('button[data-date="2026-11-12"]')
 
-        expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+        expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['2026-11-12 08:00'])
+        expect(wrapper.find('[data-touch-time]').text()).toBe('08:00')
         expect(find('button[data-hour]')).not.toBeNull()
 
         await press('button[data-hour="19"]')
         await press('button[data-minute="30"]')
 
         expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['2026-11-12 19:30'])
+    })
+
+    it('empties a clearable field from either sheet', async () => {
+        const wrapper = picker({ modelValue: '2026-11-12 19:30', clearable: true })
+
+        await open(wrapper, '[data-touch-time]')
+        await press('[data-touch-clear]')
+
+        expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([''])
+        expect(wrapper.find('[data-touch-date]').text()).toBe('Pick a date')
+    })
+
+    it('offers no clear button on a field that is not clearable', async () => {
+        const wrapper = picker({ modelValue: '2026-11-12 19:30' })
+
+        await open(wrapper, '[data-touch-date]')
+
+        expect(find('[data-touch-clear]')).toBeNull()
+    })
+
+    it('builds the zoned value from the picked wall clock, also in a daylight saving gap', async () => {
+        const zone = process.env.TZ
+        process.env.TZ = 'Europe/Amsterdam'
+        const wrapper = picker({ modelValue: '2027-03-28T10:00:00+02:00', timezone: 'Europe/Amsterdam' })
+
+        await open(wrapper, '[data-touch-time]')
+        await press('button[data-hour="2"]')
+        await press('button[data-minute="30"]')
+
+        expect(String(wrapper.emitted('update:modelValue')?.at(-1)?.[0])).toMatch(/^2027-03-28T02:30:00[+-]\d{2}:\d{2}$/)
+        process.env.TZ = zone
+    })
+
+    it('labels each day with its full date and marks the buttons as opening a dialog', async () => {
+        const wrapper = picker({ locale: 'en-GB' })
+
+        expect(wrapper.find('[data-touch-date]').attributes('aria-haspopup')).toBe('dialog')
+        expect(wrapper.find('[data-touch-time]').attributes('aria-haspopup')).toBe('dialog')
+
+        await open(wrapper, '[data-touch-date]')
+
+        expect(find('button[data-date="2026-11-12"]').getAttribute('aria-label')).toBe('Thursday, 12 November 2026')
     })
 
     it('keeps the time when another day is picked', async () => {
