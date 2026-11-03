@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check } from '@lucide/vue'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import { Button } from './ui/button'
 import { conditionData, formValues, meetsCondition, visibleValueFields } from '../lib/conditions'
@@ -131,7 +131,9 @@ function jumpTo(index: number): void {
     }
 }
 
-watch(() => Object.keys(props.form.errors ?? {}).join(','), () => {
+async function jumpToFirstError(): Promise<void> {
+    await nextTick()
+
     if (!current.value || hasErrors(current.value)) {
         return
     }
@@ -139,11 +141,11 @@ watch(() => Object.keys(props.form.errors ?? {}).join(','), () => {
     const index = visibleSteps.value.findIndex((step) => hasErrors(step))
 
     if (index >= 0) {
-        void goTo(index)
+        await goTo(index)
     }
-})
+}
 
-defineExpose({ next, previous, isLast, currentIndex })
+defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex })
 </script>
 
 <template>

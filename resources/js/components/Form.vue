@@ -236,10 +236,17 @@ function successHandler(options: Record<string, any> | undefined): (...args: any
 const submitForm = () => {
     const method = resolvedMethod()
     const action = props.action ?? props.schema.action
-    const options = {
+    const options: Record<string, any> = {
         onError: () => emit('error'),
         ...(props.options ?? {}),
         onSuccess: successHandler(props.options),
+    }
+    const onError = options.onError
+
+    options.onError = (...args: any[]) => {
+        void wizard.value?.jumpToFirstError()
+
+        return onError(...args)
     }
 
     if (props.transport === 'http') {

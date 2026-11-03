@@ -173,6 +173,27 @@ describe('form with steps', () => {
     })
 
     it('jumps back to the first step with an error after a failed submit', async () => {
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: {
+                schema: schemaWith(),
+                transport: 'http',
+                submitter: async () => {
+                    throw { errors: { day: ['Pick a day.'] } }
+                },
+            },
+        })
+
+        await clickNext(wrapper)
+        await clickNext(wrapper)
+        await wrapper.find('form').trigger('submit')
+        await flushPromises()
+
+        expect(currentStep(wrapper)).toBe('when')
+        expect(formOf(wrapper).errors.day).toBe('Pick a day.')
+    })
+
+    it('does not move to another step when errors change without a submit', async () => {
         const { wrapper } = wizardForm(schemaWith())
 
         await clickNext(wrapper)
@@ -180,7 +201,7 @@ describe('form with steps', () => {
         formOf(wrapper).errors = { day: 'Pick a day.' }
         await flushPromises()
 
-        expect(currentStep(wrapper)).toBe('when')
+        expect(currentStep(wrapper)).toBe('details')
     })
 
     it('renders the before and after slots of the current step', async () => {
