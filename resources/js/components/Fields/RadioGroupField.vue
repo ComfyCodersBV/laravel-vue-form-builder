@@ -103,7 +103,7 @@ function isDisabled(option: FieldOption): boolean {
 
 function tileClass(option: FieldOption): string[] {
   return [
-    'relative flex min-h-20 items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
+    'relative flex min-h-16 items-center gap-3 rounded-lg border-2 p-4 text-left transition-colors',
     isSelected(option) ? 'border-primary bg-primary/10' : 'border-input bg-background',
     isDisabled(option) ? 'cursor-not-allowed opacity-50' : 'hover:border-primary',
   ]
@@ -117,6 +117,7 @@ function tileClass(option: FieldOption): string[] {
       :disabled="props.disabled || props.readonly"
       @update:model-value="onUpdateInternal"
       :class="groupClass"
+      :aria-label="props.label || undefined"
       :data-tiles="props.tiles ? '' : undefined"
     >
       <input type="hidden" :name="props.name" value="" />
@@ -139,7 +140,7 @@ function tileClass(option: FieldOption): string[] {
             data-option-tile
           />
           <span
-            class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2"
+            class="flex size-5 shrink-0 items-center justify-center rounded-full border-2"
             :class="isSelected(opt) ? 'border-primary' : 'border-input'"
             aria-hidden="true"
           >
