@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { computed, onBeforeUnmount, provide, useSlots, watch } from 'vue'
+import { computed, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
+import FormWizard from './FormWizard.vue'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
@@ -10,6 +11,7 @@ import { normalizeTags } from '../lib/tags'
 import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
 import { columnsKey, layoutKey, normalizeColumns, type FormColumns, type FormLayout } from '../lib/layout'
 import type { Field, FormSchema } from '../types/form-builder'
+import { validatePrecognitively } from '../lib/precognition'
 import { carriesFiles, useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
@@ -287,14 +289,42 @@ const hasFormErrors = computed(() => Object.keys(formErrors.value).length > 0)
 
 const slots = useSlots()
 
-defineExpose({ submit: submitForm, form, formErrors })
+const steps = computed(() => props.schema.fields
+    .filter((field) => field.type === 'step')
+    .map((field, index) => ({ ...field, name: field.name || `step-${index + 1}` })))
+
+const usesSteps = computed(() => steps.value.length > 0)
+
+const fieldsBesideSteps = computed(() => props.schema.fields.filter((field) => field.type !== 'step' && field.type !== 'submit'))
+
+const submitLabel = computed(() => props.schema.fields.find((field) => field.type === 'submit')?.label)
+
+const stepSlotNames = computed(() => Object.keys(slots).filter((name) => name.startsWith('step-')))
+
+const wizard = ref<InstanceType<typeof FormWizard> | null>(null)
+
+function validateStep(names: string[]) {
+    return validatePrecognitively(resolvedMethod(), props.action ?? props.schema.action, form.data(), names)
+}
+
+function onSubmit(): void {
+    if (usesSteps.value && wizard.value && !wizard.value.isLast) {
+        void wizard.value.next()
+
+        return
+    }
+
+    submitForm()
+}
+
+defineExpose({ submit: submitForm, form, formErrors, wizard })
 </script>
 
 <template>
     <form
         :id="schema.id"
         :class="schema.formClass || ''"
-        @submit.prevent="submitForm"
+        @submit.prevent="onSubmit"
     >
         <template v-if="hasFormErrors">
             <slot v-if="slots['form-errors']" name="form-errors" :errors="formErrors" />
@@ -308,7 +338,26 @@ defineExpose({ submit: submitForm, form, formErrors })
             </div>
         </template>
 
+        <FormWizard
+            v-if="usesSteps"
+            ref="wizard"
+            :steps="steps"
+            :extra-fields="fieldsBesideSteps"
+            :all-fields="fields"
+            :form="form"
+            :submit-label="submitLabel"
+            :columns="columns ?? schema.columns ?? 1"
+            :on-field-change="onFieldChange || shouldSubmitOnChange ? handleFieldChange : undefined"
+            :field-overrides="fieldOverrides"
+            :validate-step="schema.validateSteps ? validateStep : undefined"
+        >
+            <template v-for="name in stepSlotNames" :key="name" #[name]="scope">
+                <slot :name="name" v-bind="scope" />
+            </template>
+        </FormWizard>
+
         <FormRenderer
+            v-else
             :columns="columns ?? schema.columns ?? 1"
             :layout-from-form="[schema.formClass].flat().filter(Boolean).length > 0"
             :fields="schema.fields"

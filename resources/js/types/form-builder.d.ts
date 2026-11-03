@@ -116,5 +116,6 @@ export interface FormSchema {
     locale?: string
     resetOnSuccess?: boolean
     submitOnChange?: boolean
+    validateSteps?: boolean
     columns?: FormColumns
 }

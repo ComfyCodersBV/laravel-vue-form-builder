@@ -3,7 +3,8 @@
     import FormField from './FormField.vue'
     import type { Field } from '../types/form-builder'
     import { computed, inject } from 'vue'
-    import { flattenFields, formFieldsKey } from '../lib/fields'
+    import { formFieldsKey } from '../lib/fields'
+    import { conditionData, formValues, meetsCondition } from '../lib/conditions'
     import { normalizeColumns, spanOf, type FormColumns } from '../lib/layout'
 
     const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1, layoutFromForm = false } = defineProps<{
@@ -41,52 +42,12 @@
 
     const formFields = inject(formFieldsKey, [])
 
-    const BOOLEAN_FIELD_TYPES = ['checkbox', 'toggle']
-
-    function isOn(value: any, onValue: any): boolean {
-        if (value === true || value === false) {
-            return value
-        }
-
-        if (value === undefined || value === null) {
-            return false
-        }
-
-        return String(value) === String(onValue ?? '1')
-    }
-
-    function conditionData(data: Record<string, any>): Record<string, any> {
-        const normalized = { ...data }
-
-        flattenFields([...formFields, ...fields]).forEach((field: any) => {
-            if (! field?.name || ! BOOLEAN_FIELD_TYPES.includes(field.type) || ! (field.name in normalized)) {
-                return
-            }
-
-            normalized[field.name] = isOn(normalized[field.name], field.value)
-        })
-
-        return normalized
-    }
-
     function isVisible(field: Field): boolean {
         if (! field.condition) {
             return true
         }
 
-        try {
-            const data: Record<string, any> = conditionData(typeof (form as any).data === 'function'
-                ? (form as any).data()
-                : { ...form })
-
-            const keys = Object.keys(data)
-            const values = keys.map((k) => data[k])
-            const fn = new Function('form', ...keys, `return !!(${field.condition})`)
-
-            return fn(data, ...values)
-        } catch {
-            return true
-        }
+        return meetsCondition(field, conditionData(formValues(form), [...formFields, ...fields]))
     }
     </script>
 

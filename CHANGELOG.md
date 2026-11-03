@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.14.0 - 2026-11-03
+* Forms with `Step` fields (from laravel-form-builder 1.10) show one step at a time, with a step indicator ("Stap 1
+  van 3"), large Back and Next buttons and the submit button on the last step. Steps whose fields are all hidden are
+  skipped, Enter moves to the next step, and a failed submit jumps back to the first step with an error. Each step
+  gets a `step-{name}-before` and `step-{name}-after` slot. See `docs/steps.md`.
+* With `FormConfig::validateSteps()`, Next first validates the visible fields of the step on the server with a
+  Laravel Precognition request (`Precognition-Validate-Only`) and only moves on when they pass. The route needs the
+  `HandlePrecognitiveRequests` middleware.
+* `SUPPORTED_SCHEMA_VERSION` is now `1.10`.
+* New form messages: `step`, `stepOf`, `previousStep`, `nextStep`, `save`, `checkingStep` and
+  `stepCheckFailed`, in English and Dutch.
+
 ## 1.13.6 - 2026-10-30
 * Fix `space-y-*` on a one-column form with its own `FormConfig::class()` no longer spacing the fields apart. Since
   1.13.4 the fields sat in a `contents` wrapper, so `space-y-*` on the form only reached that wrapper and the fields

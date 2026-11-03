@@ -66,3 +66,8 @@ Section::make()
 See [Columns](../columns.md) for columns on the whole form.
 
 Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer.
+
+## Steps
+
+To split a long form into steps that are shown one at a time, use `Step` instead of `Section`. See
+[Steps](../steps.md).

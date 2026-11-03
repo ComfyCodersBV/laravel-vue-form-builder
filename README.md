@@ -13,6 +13,7 @@ Topics covered:
 - [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options)
 - [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage)
 - [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/validation)
+- [Steps (multi-step forms)](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/steps)
 - [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/configuration)
 
 ## CrudBuilder

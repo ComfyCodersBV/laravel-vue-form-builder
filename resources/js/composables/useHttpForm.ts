@@ -58,7 +58,7 @@ function readMetaContent(name: string): string | null {
     return document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)?.content ?? null
 }
 
-function csrfHeaders(): Record<string, string> {
+export function csrfHeaders(): Record<string, string> {
     const cookieToken = readCookie('XSRF-TOKEN')
 
     if (cookieToken) {

@@ -8,7 +8,7 @@ export type FormColumns = 1 | 2 | 3 | 4;
 
 export const columnsKey: InjectionKey<Ref<FormColumns>> = Symbol('form-builder-columns');
 
-const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden', 'section'];
+const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden', 'section', 'step'];
 
 interface SpannableField {
     type?: string;

@@ -43,6 +43,13 @@ export interface FormMessages {
     typeToSearch: string;
     searching: string;
     searchFailed: string;
+    step: string;
+    stepOf: string;
+    previousStep: string;
+    nextStep: string;
+    save: string;
+    checkingStep: string;
+    stepCheckFailed: string;
 }
 
 export const en: FormMessages = {
@@ -88,6 +95,13 @@ export const en: FormMessages = {
     typeToSearch: 'Type to search',
     searching: 'Searching...',
     searchFailed: 'Searching failed, try again',
+    step: 'Step',
+    stepOf: 'Step :current of :total',
+    previousStep: 'Back',
+    nextStep: 'Next',
+    save: 'Save',
+    checkingStep: 'Checking...',
+    stepCheckFailed: 'Checking this step failed, try again',
 };
 
 export const nl: FormMessages = {
@@ -133,6 +147,13 @@ export const nl: FormMessages = {
     typeToSearch: 'Typ om te zoeken',
     searching: 'Zoeken...',
     searchFailed: 'Zoeken is mislukt, probeer het opnieuw',
+    step: 'Stap',
+    stepOf: 'Stap :current van :total',
+    previousStep: 'Terug',
+    nextStep: 'Volgende',
+    save: 'Opslaan',
+    checkingStep: 'Controleren...',
+    stepCheckFailed: 'Controleren van deze stap is mislukt, probeer het opnieuw',
 };
 
 export const DEFAULT_LOCALE = 'en';
