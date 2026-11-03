@@ -232,3 +232,121 @@ describe('form with steps', () => {
         expect(wrapper.find('#after-when').exists()).toBe(false)
     })
 })
+
+describe('a wizard that remembers its values', () => {
+    const rememberedSchema = (extra: Record<string, unknown>[] = []) => {
+        const schema = schemaWith()
+        schema.fields[2].fields = [...(schema.fields[2].fields ?? []), ...extra]
+
+        return schema
+    }
+
+    function rememberingForm(key: string, schema: Record<string, any> = rememberedSchema()) {
+        const requests: HttpFormRequest[] = []
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: {
+                schema,
+                remember: key,
+                transport: 'http',
+                submitter: async (request: HttpFormRequest) => {
+                    requests.push(request)
+                },
+            },
+        })
+
+        return { wrapper, requests }
+    }
+
+    function loadDocument(type: 'navigate' | 'reload'): void {
+        vi.spyOn(performance, 'getEntriesByType').mockReturnValue([
+            { type, name: window.location.href } as unknown as PerformanceEntry,
+        ])
+    }
+
+    async function fillUpToTheLastStep(wrapper: ReturnType<typeof mount>): Promise<void> {
+        formOf(wrapper).day = 'friday'
+        await clickNext(wrapper)
+        formOf(wrapper).renter = 'Johan'
+        await clickNext(wrapper)
+        formOf(wrapper).notes = 'Bring chairs'
+        await nextTick()
+    }
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+        window.sessionStorage.clear()
+    })
+
+    it('restores the values and the step after a reload', async () => {
+        loadDocument('navigate')
+        const first = rememberingForm('reload')
+        await fillUpToTheLastStep(first.wrapper)
+        first.wrapper.unmount()
+
+        loadDocument('reload')
+        const { wrapper } = rememberingForm('reload')
+        await nextTick()
+
+        expect(currentStep(wrapper)).toBe('details')
+        expect(formOf(wrapper).day).toBe('friday')
+        expect(formOf(wrapper).renter).toBe('Johan')
+        expect(formOf(wrapper).notes).toBe('Bring chairs')
+    })
+
+    it('starts empty when the page is opened again without a reload', async () => {
+        loadDocument('navigate')
+        const first = rememberingForm('fresh')
+        await fillUpToTheLastStep(first.wrapper)
+        first.wrapper.unmount()
+
+        const { wrapper } = rememberingForm('fresh')
+
+        expect(currentStep(wrapper)).toBe('when')
+        expect(formOf(wrapper).day).toBe('')
+        expect(Object.keys(window.sessionStorage)).toHaveLength(0)
+    })
+
+    it('never stores a password, a file or a hidden value', async () => {
+        loadDocument('navigate')
+        const { wrapper } = rememberingForm('secret', rememberedSchema([
+            { name: 'secret', type: 'password' },
+            { name: 'attachment', type: 'file' },
+            { name: 'token', type: 'hidden', default: 'abc' },
+        ]))
+
+        formOf(wrapper).secret = 'hunter2'
+        formOf(wrapper).day = 'friday'
+        await nextTick()
+
+        const stored = Object.values(window.sessionStorage).join('')
+
+        expect(stored).toContain('friday')
+        expect(stored).not.toContain('hunter2')
+        expect(stored).not.toContain('secret')
+        expect(stored).not.toContain('abc')
+    })
+
+    it('forgets the values after a successful submit', async () => {
+        loadDocument('navigate')
+        const { wrapper, requests } = rememberingForm('submit')
+        await fillUpToTheLastStep(wrapper)
+
+        expect(Object.keys(window.sessionStorage)).toHaveLength(1)
+
+        await wrapper.find('form').trigger('submit')
+        await flushPromises()
+
+        expect(requests).toHaveLength(1)
+        expect(Object.keys(window.sessionStorage)).toHaveLength(0)
+    })
+
+    it('remembers nothing without the remember prop', async () => {
+        const { wrapper } = wizardForm(schemaWith())
+
+        formOf(wrapper).day = 'friday'
+        await nextTick()
+
+        expect(Object.keys(window.sessionStorage)).toHaveLength(0)
+    })
+})

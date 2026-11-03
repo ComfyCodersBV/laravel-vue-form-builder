@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check } from '@lucide/vue'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import { Button } from './ui/button'
 import { conditionData, formValues, meetsCondition, visibleValueFields } from '../lib/conditions'
@@ -20,7 +20,10 @@ const props = defineProps<{
     onFieldChange?: (field: string, value: any) => void
     fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
     validateStep?: (fields: string[]) => Promise<StepValidation>
+    initialStep?: string
 }>()
+
+const emit = defineEmits<{ (e: 'step-change', name: string | undefined): void }>()
 
 const messageContext = useFormMessages()
 const messages = computed(() => messageContext.value.messages)
@@ -33,13 +36,18 @@ function hasVisibleContent(step: Field): boolean {
 
 const visibleSteps = computed(() => props.steps.filter((step) => meetsCondition(step, data.value) && hasVisibleContent(step)))
 
-const currentName = ref<string | undefined>(props.steps[0]?.name)
+const currentName = ref<string | undefined>(
+    props.steps.some((step) => step.name === props.initialStep) ? props.initialStep : props.steps[0]?.name,
+)
 const checking = ref(false)
 const stepError = ref<string | null>(null)
 const heading = ref<HTMLElement | null>(null)
 
 const currentIndex = computed(() => Math.max(0, visibleSteps.value.findIndex((step) => step.name === currentName.value)))
 const current = computed(() => visibleSteps.value[currentIndex.value])
+
+watch(() => current.value?.name, (name) => emit('step-change', name))
+
 const isLast = computed(() => currentIndex.value >= visibleSteps.value.length - 1)
 const stepColumns = computed((): FormColumns => normalizeColumns(current.value?.columns ?? props.columns ?? 1))
 

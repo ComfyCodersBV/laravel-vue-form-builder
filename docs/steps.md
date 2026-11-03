@@ -48,6 +48,15 @@ public function fields(): array
   On a phone (below 640 px) it shows only the numbered circles, and the current step's title is the heading below.
 - Earlier steps can be reopened with **Back** or by tapping their number. Later steps are only reached with **Next**.
 
+## Keeping the step across a reload
+
+Pass `remember` to `<Form>` to keep the typed values and the current step when the page is reloaded halfway, see
+[Vue Usage](vue-usage.md#remembering-the-values-across-a-reload):
+
+```vue
+<Form :schema="form" remember />
+```
+
 ## Validating each step on the server
 
 By default **Next** moves on without a check, and the server validates everything on submit. With

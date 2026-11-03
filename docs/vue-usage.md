@@ -189,6 +189,25 @@ typed. The prop wins over the schema, so `:reset-on-success="false"` keeps the v
 Independent of this option, file fields always forget the chosen file after a successful submit (and their remove
 checkbox unticks): the upload is done, and submitting again should not upload it twice.
 
+## Remembering the values across a reload
+
+A long form, such as one with steps, loses everything when the page is reloaded halfway. Pass `remember` to keep the
+typed values, and on a form with steps the current step, in the browser tab's `sessionStorage`:
+
+```vue
+<Form :schema="form" remember />
+<Form :schema="form" remember="booking" />
+```
+
+- The values are stored under the form's `id` (or the name you pass) and the page URL with its query string, so the
+  create page and the edit page of each record keep their own values.
+- They come back when the same page is reloaded (or reopened with the browser's back or forward button after it was
+  left). Opening the page again by a link starts from the server's values, so an edit form never shows changes that
+  were left unsaved earlier.
+- A successful submit forgets them. Closing the tab does too.
+- Password, file, hidden and reCAPTCHA fields are never stored.
+- Without the prop nothing is stored. Requires `laravel-vue-form-builder` 1.16 or newer.
+
 ## Errors that belong to no field
 
 An error whose key matches no field — `conflicts`, `form`, a failed HTTP request — has nowhere to go under a field, so

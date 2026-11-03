@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { computed, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { fieldSlotsKey } from '../lib/field-slots'
@@ -12,6 +12,7 @@ import { DEFAULT_THEME, mergeTheme, themeKey } from '../lib/theme'
 import { columnsKey, layoutKey, normalizeColumns, type FormColumns, type FormLayout } from '../lib/layout'
 import type { Field, FormSchema } from '../types/form-builder'
 import { validatePrecognitively } from '../lib/precognition'
+import { forgetRemembered, rememberedFieldNames, rememberKey, takeRemembered, writeRemembered } from '../lib/remember'
 import { carriesFiles, useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
@@ -34,6 +35,7 @@ const props = withDefaults(defineProps<{
     resetOnSuccess?: boolean
     submitOnChange?: boolean
     submitDelay?: number
+    remember?: boolean | string
 }>(), {
     resetOnSuccess: undefined,
     submitOnChange: undefined,
@@ -146,6 +148,35 @@ const form: any = props.transport === 'http'
     ? useHttpForm(buildFormData(props.defaults), { submitter: props.submitter, errorAdapter: props.errorAdapter })
     : useForm(buildFormData(props.defaults))
 
+const storageKey = rememberKey(props.remember, props.schema.id)
+
+const remembered = rememberedFieldNames(props.schema.fields)
+
+const restored = takeRemembered(storageKey, remembered)
+
+Object.entries(restored?.values ?? {}).forEach(([name, value]) => {
+    form[name] = value
+})
+
+const currentStep = ref<string | undefined>(restored?.step)
+
+let rememberPaused = false
+
+function rememberedState() {
+    return {
+        values: Object.fromEntries(remembered.map((name) => [name, form[name]])),
+        step: currentStep.value,
+    }
+}
+
+if (storageKey) {
+    watch(rememberedState, (state) => {
+        if (!rememberPaused) {
+            writeRemembered(storageKey, state)
+        }
+    }, { deep: true })
+}
+
 watch(() => JSON.stringify(props.defaults ?? {}), () => {
     const data = buildFormData(props.defaults)
 
@@ -210,7 +241,21 @@ function clearFiles(): void {
     })
 }
 
+function forgetAfterSuccess(): void {
+    if (!storageKey) {
+        return
+    }
+
+    rememberPaused = true
+    forgetRemembered(storageKey)
+    void nextTick(() => {
+        rememberPaused = false
+    })
+}
+
 function afterSuccess(): void {
+    forgetAfterSuccess()
+
     if (shouldResetOnSuccess.value) {
         form.reset?.()
         form.clearErrors?.()
@@ -357,6 +402,8 @@ defineExpose({ submit: submitForm, form, formErrors, wizard })
             :on-field-change="onFieldChange || shouldSubmitOnChange ? handleFieldChange : undefined"
             :field-overrides="fieldOverrides"
             :validate-step="schema.validateSteps ? validateStep : undefined"
+            :initial-step="currentStep"
+            @step-change="currentStep = $event"
         >
             <template v-for="name in stepSlotNames" :key="name" #[name]="scope">
                 <slot :name="name" v-bind="scope" />
