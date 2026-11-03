@@ -239,8 +239,9 @@ Radio::make('gender')
 
 ### Tiles
 
-Use `->tiles()` to show each option as a large card that is easy to tap on a phone. The label is shown in bold and the
-option's `description` as a second line. The selected card gets a primary border and a light primary background:
+Use `->tiles()` to show each option as a large card that is easy to tap on a phone, without a radio dot. The option's
+`description` is shown as a second line. The selected card gets a bold label, an accent border and a light accent
+background:
 
 ```php
 Radio::make('unit_id')
@@ -256,6 +257,8 @@ Radio::make('unit_id')
   or more. Tiles work best for a handful of options; for a long list use a searchable `Select`.
 - The keyboard works as in any radio group: Tab reaches the group, the arrow keys move the choice.
 - A `disabled` option is shown dimmed and cannot be picked. A link of an option is shown under its description.
+- The accent is the theme's `--primary`. Set the CSS variable `--form-tile-accent` on a parent (or `:root`) to use another
+  colour, for example a brand colour: `--form-tile-accent: var(--brand);`.
 - `->tiles()` overrides `->inline()`.
 
 Requires `tranquil-tools/laravel-form-builder` 1.11 and `laravel-vue-form-builder` 1.16 or newer. An older renderer

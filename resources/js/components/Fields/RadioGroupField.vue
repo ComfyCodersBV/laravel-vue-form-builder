@@ -104,8 +104,10 @@ function isDisabled(option: FieldOption): boolean {
 function tileClass(option: FieldOption): string[] {
   return [
     'relative flex min-h-16 items-center gap-3 rounded-lg border-2 p-4 text-left transition-colors',
-    isSelected(option) ? 'border-primary bg-primary/10' : 'border-input bg-background',
-    isDisabled(option) ? 'cursor-not-allowed opacity-50' : 'hover:border-primary',
+    isSelected(option)
+      ? 'border-[var(--form-tile-accent,var(--primary))] bg-[color-mix(in_oklab,var(--form-tile-accent,var(--primary))_10%,transparent)]'
+      : 'border-input bg-background',
+    isDisabled(option) ? 'cursor-not-allowed opacity-50' : 'hover:border-[var(--form-tile-accent,var(--primary))]',
   ]
 }
 </script>
@@ -139,15 +141,8 @@ function tileClass(option: FieldOption): string[] {
             :class="isDisabled(opt) ? '' : 'cursor-pointer'"
             data-option-tile
           />
-          <span
-            class="flex size-5 shrink-0 items-center justify-center rounded-full border-2"
-            :class="isSelected(opt) ? 'border-primary' : 'border-input'"
-            aria-hidden="true"
-          >
-            <span v-if="isSelected(opt)" class="size-2.5 rounded-full bg-primary" />
-          </span>
           <span class="flex min-w-0 flex-col gap-1">
-            <span :id="`${optionId(opt)}-label`" class="text-base font-semibold leading-snug">{{ opt.label }}</span>
+            <span :id="`${optionId(opt)}-label`" class="text-base leading-snug" :class="isSelected(opt) ? 'font-semibold' : 'font-normal'">{{ opt.label }}</span>
             <span
               v-if="descriptionOf(opt)"
               :id="`${optionId(opt)}-description`"

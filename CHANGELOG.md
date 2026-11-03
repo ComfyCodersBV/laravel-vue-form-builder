@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.16.1 - 2026-11-03
+* Radio tiles no longer show a radio dot: the whole card is the choice, and the selected card shows its label in bold.
+* The tile accent (border and light background of the selected card) follows the new CSS variable `--form-tile-accent`,
+  falling back to the theme's `--primary`, so an app can give tiles its brand colour.
+
 ## 1.16.0 - 2026-11-03
 * Radio fields with `tiles` (`Radio::tiles()` from laravel-form-builder 1.11) show each option as a large selectable
   card: the label in bold, the option's `description` (or `help`) as a second line, a primary border and a light
