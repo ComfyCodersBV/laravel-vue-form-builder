@@ -135,7 +135,7 @@ function tileClass(option: FieldOption): string[] {
             :disabled="opt.disabled"
             :aria-labelledby="`${optionId(opt)}-label`"
             :aria-describedby="descriptionOf(opt) ? `${optionId(opt)}-description` : undefined"
-            class="absolute inset-0 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed"
+            class="absolute inset-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed"
             :class="isDisabled(opt) ? '' : 'cursor-pointer'"
             data-option-tile
           />

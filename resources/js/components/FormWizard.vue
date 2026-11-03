@@ -160,7 +160,7 @@ defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex })
     <div class="space-y-6" data-form-wizard>
         <nav :aria-label="progressLabel" class="space-y-2">
             <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400" data-step-progress>{{ progressLabel }}</p>
-            <ol class="grid gap-2" :style="{ gridTemplateColumns: `repeat(${visibleSteps.length}, minmax(0, 1fr))` }">
+            <ol class="grid gap-2" :style="{ gridTemplateColumns: `repeat(${Math.max(1, visibleSteps.length)}, minmax(0, 1fr))` }">
                 <li
                     v-for="(step, index) in visibleSteps"
                     :key="step.name ?? index"
