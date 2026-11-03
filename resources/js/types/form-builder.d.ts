@@ -96,6 +96,7 @@ export interface Field {
     minuteStep?: number
     hourFrom?: number
     hourTo?: number
+    tiles?: boolean
 }
 
 export interface CurrentFile {

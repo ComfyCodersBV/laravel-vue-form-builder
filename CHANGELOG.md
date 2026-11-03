@@ -2,7 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
-## 1.15.1 - 2026-11-03
+## 1.16.0 - 2026-11-03
+* Radio fields with `tiles` (`Radio::tiles()` from laravel-form-builder 1.11) show each option as a large selectable
+  card: the label in bold, the option's `description` (or `help`) as a second line, a primary border and a light
+  primary background when selected, a focus ring on keyboard focus and a dimmed card when disabled. The cards sit in
+  one column on a phone and in up to three columns from 640 px. The arrow keys move the choice as in any radio group.
+  `SUPPORTED_SCHEMA_VERSION` is now `1.11`. See `docs/fields/selection-fields.md`.
 * On a desktop, where the touch picker opens as a popover, its date and time buttons have the height and text size of a
   regular input (`h-9`, small text) instead of the 48 px phone size. Phones and touch screens keep the large buttons.
 

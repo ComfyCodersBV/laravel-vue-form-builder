@@ -237,6 +237,30 @@ Radio::make('gender')
     ->inline()
 ```
 
+### Tiles
+
+Use `->tiles()` to show each option as a large card that is easy to tap on a phone. The label is shown in bold and the
+option's `description` as a second line. The selected card gets a primary border and a light primary background:
+
+```php
+Radio::make('unit_id')
+    ->label('Room')
+    ->options([
+        ['value' => 1, 'label' => 'Main hall', 'description' => 'Up to 120 people'],
+        ['value' => 2, 'label' => 'Attic', 'description' => 'Up to 20 people'],
+    ])
+    ->tiles()
+```
+
+- The cards sit in one column on a phone and side by side from 640 px: two columns for two options, three for three
+  or more. Tiles work best for a handful of options; for a long list use a searchable `Select`.
+- The keyboard works as in any radio group: Tab reaches the group, the arrow keys move the choice.
+- A `disabled` option is shown dimmed and cannot be picked. A link of an option is shown under its description.
+- `->tiles()` overrides `->inline()`.
+
+Requires `tranquil-tools/laravel-form-builder` 1.11 and `laravel-vue-form-builder` 1.16 or newer. An older renderer
+shows plain radios.
+
 ### Descriptions and links per option
 
 An option given as an array can carry a `description` (shown as text under the label) and a link next to it, for an
