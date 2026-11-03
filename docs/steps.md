@@ -69,6 +69,9 @@ Route::resource('bookings', BookingController::class)
     ->middlewareFor(['store', 'update'], HandlePrecognitiveRequests::class);
 ```
 
+- The controller action must validate with a form request (a `FormRequest` parameter, for example one whose
+  `rules()` returns `YourForm::rules()`). Precognition runs the form request and stops before the action itself, so
+  validating inside the action with `YourForm::make()->validate($request)` checks nothing and every step passes.
 - The request goes to the form's action with the form's method (spoofed with `_method`), the whole form as JSON and
   `Precognition-Validate-Only` set to the visible fields of the step. Your form request validates only those, so a
   rule like `after:starts_at` still sees the other values. Authorisation runs as usual.

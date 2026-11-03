@@ -9,7 +9,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   gets a `step-{name}-before` and `step-{name}-after` slot. See `docs/steps.md`.
 * With `FormConfig::validateSteps()`, Next first validates the visible fields of the step on the server with a
   Laravel Precognition request (`Precognition-Validate-Only`) and only moves on when they pass. The route needs the
-  `HandlePrecognitiveRequests` middleware.
+  `HandlePrecognitiveRequests` middleware and the action a form request.
 * A date field with `touchPicker()` shows a large date button and a separate time button. They open a sheet with
   48 px day buttons (today ringed) and a sheet with one button per hour and per minute step (`minuteStep()`,
   `hours()`), so nothing has to be typed on a phone. Min/max dates, disabled weekdays and dates, week start, locale
