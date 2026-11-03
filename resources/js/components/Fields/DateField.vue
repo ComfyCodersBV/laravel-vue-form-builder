@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
 import type { Field } from '../../types/form-builder'
-import { DatePicker } from '../ui/date-picker'
+import { DatePicker, TouchDatePicker } from '../ui/date-picker'
 import { ref, watch, computed } from 'vue'
 import type { DisabledDate } from '../../lib/dates'
 
@@ -15,6 +15,10 @@ interface DateFieldProps extends Field {
   serverTimezone?: string
   disabledWeekdays?: number[]
   disabledDates?: DisabledDate[]
+  touch?: boolean
+  minuteStep?: number
+  hourFrom?: number
+  hourTo?: number
 }
 
 const props = withDefaults(defineProps<DateFieldProps>(), {
@@ -29,6 +33,10 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   serverTimezone: undefined,
   disabledWeekdays: () => [],
   disabledDates: () => [],
+  touch: false,
+  minuteStep: 15,
+  hourFrom: 0,
+  hourTo: 23,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
@@ -45,7 +53,30 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
 
 <template>
   <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="(props as any).className" :theme="props.theme">
+    <TouchDatePicker
+      v-if="props.touch && !props.range"
+      :id="props.name"
+      v-model="internal"
+      :enable-time="props.enableTime"
+      :placeholder="props.placeholder || undefined"
+      :min-date="props.minDate"
+      :max-date="props.maxDate"
+      :week-starts-on="props.weekStartsOn"
+      :format="props.format || 'locale'"
+      :locale="props.locale"
+      :disabled="!!props.disabled"
+      :readonly="!!props.readonly"
+      :timezone="props.timezone"
+      :server-timezone="props.serverTimezone"
+      :disabled-weekdays="props.disabledWeekdays"
+      :disabled-dates="props.disabledDates"
+      :minute-step="props.minuteStep"
+      :hour-from="props.hourFrom"
+      :hour-to="props.hourTo"
+      :label="props.label"
+    />
     <DatePicker
+      v-else
       :id="props.name"
       v-model="internal"
       :enable-time="props.enableTime"

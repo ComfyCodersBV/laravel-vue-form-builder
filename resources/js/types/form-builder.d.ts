@@ -92,6 +92,10 @@ export interface Field {
     selected?: { value: string | number; label: string } | null
     profile?: string
     features?: string[]
+    touch?: boolean
+    minuteStep?: number
+    hourFrom?: number
+    hourTo?: number
 }
 
 export interface CurrentFile {

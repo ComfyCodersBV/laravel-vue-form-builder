@@ -148,6 +148,33 @@ The standalone `DatePicker` takes the same as `disabled-weekdays` and `disabled-
 
 Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer.
 
+### Touch picker
+
+`->touchPicker()` swaps the small popover for a picker made for phones and for people who find small controls hard.
+The field shows a large date button and, with time enabled, a separate time button next to it. The date button opens
+a sheet from the bottom of the screen (a centered dialog on wider screens) with day buttons of 48 px, today ringed and
+"Today" and "Done" buttons. The time button opens a sheet with one button per hour and one per minute step. Nothing is
+typed, so no keyboard or scroll wheel opens on iOS.
+
+```php
+DateTime::make('starts_at')
+    ->touchPicker()
+    ->weekStartsOn(1)
+    ->minuteStep(15)  // minute buttons :00 :15 :30 :45 (default 15)
+    ->hours(7, 23)    // hour buttons 07 to 23 (default 0 to 23)
+```
+
+- `minDate`, `maxDate`, `disabledWeekdays`, `disabledDates`, `weekStartsOn`, `locale` and `timezone` work as on the
+  regular picker. The value that is submitted is the same as well.
+- Picking a day while no time is chosen yet opens the time sheet right after. Until an hour is picked, a date-time
+  field submits an empty value, so a `required` rule catches a forgotten time.
+- A stored time outside `hours()` or between the minute steps (for example `06:10`) is still shown and selected.
+- The date button shows the day as `di 12 november 2026` (short weekday, long month) in the form locale; `format()`
+  does not apply to it.
+- `range()` fields ignore `touchPicker()` and keep the regular picker.
+
+Requires `tranquil-tools/laravel-form-builder` 1.10 and `laravel-vue-form-builder` 1.14 or newer.
+
 ### Week start
 
 Set the first day of the week in the calendar. `0` = Sunday (default), `1` = Monday:

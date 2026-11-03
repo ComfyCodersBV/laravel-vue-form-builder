@@ -43,6 +43,9 @@ export interface FormMessages {
     typeToSearch: string;
     searching: string;
     searchFailed: string;
+    pickTime: string;
+    hour: string;
+    done: string;
     step: string;
     stepOf: string;
     previousStep: string;
@@ -95,6 +98,9 @@ export const en: FormMessages = {
     typeToSearch: 'Type to search',
     searching: 'Searching...',
     searchFailed: 'Searching failed, try again',
+    pickTime: 'Pick a time',
+    hour: 'Hour',
+    done: 'Done',
     step: 'Step',
     stepOf: 'Step :current of :total',
     previousStep: 'Back',
@@ -147,6 +153,9 @@ export const nl: FormMessages = {
     typeToSearch: 'Typ om te zoeken',
     searching: 'Zoeken...',
     searchFailed: 'Zoeken is mislukt, probeer het opnieuw',
+    pickTime: 'Kies tijd',
+    hour: 'Uur',
+    done: 'Klaar',
     step: 'Stap',
     stepOf: 'Stap :current van :total',
     previousStep: 'Terug',

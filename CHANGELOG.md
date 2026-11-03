@@ -10,9 +10,13 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * With `FormConfig::validateSteps()`, Next first validates the visible fields of the step on the server with a
   Laravel Precognition request (`Precognition-Validate-Only`) and only moves on when they pass. The route needs the
   `HandlePrecognitiveRequests` middleware.
+* A date field with `touchPicker()` shows a large date button and a separate time button. They open a sheet with
+  48 px day buttons (today ringed) and a sheet with one button per hour and per minute step (`minuteStep()`,
+  `hours()`), so nothing has to be typed on a phone. Min/max dates, disabled weekdays and dates, week start, locale
+  and timezone work as on the regular picker; range fields keep the regular picker. See `docs/fields/date-time.md`.
 * `SUPPORTED_SCHEMA_VERSION` is now `1.10`.
-* New form messages: `step`, `stepOf`, `previousStep`, `nextStep`, `save`, `checkingStep` and
-  `stepCheckFailed`, in English and Dutch.
+* New form messages: `pickTime`, `hour`, `done`, `step`, `stepOf`, `previousStep`, `nextStep`, `save`,
+  `checkingStep` and `stepCheckFailed`, in English and Dutch.
 
 ## 1.13.6 - 2026-10-30
 * Fix `space-y-*` on a one-column form with its own `FormConfig::class()` no longer spacing the fields apart. Since

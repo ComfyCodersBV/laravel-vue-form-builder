@@ -4,9 +4,10 @@ import { Button } from '../button/index'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/index'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from '@lucide/vue'
 import { useFormMessages } from '../../../lib/messages'
-import { dateOfWallClock, resolveTimezone, toDisplayWallClock, toZonedIso, wallClockOfDate } from '../../../lib/timezone'
-import { isUnavailableDate, type DisabledDate } from '../../../lib/dates'
-import { formatDate, formatHasTime, parseFormattedDate } from '../../../lib/date-format'
+import { resolveTimezone } from '../../../lib/timezone'
+import type { DisabledDate } from '../../../lib/dates'
+import { formatDate, formatHasTime } from '../../../lib/date-format'
+import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels as labelsOfWeek, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
   id?: string
@@ -50,29 +51,21 @@ const messages = computed(() => messageContext.value.messages)
 const calendarLocale = computed(() => props.locale ?? messageContext.value.locale)
 const zone = computed(() => props.enableTime ? resolveTimezone(props.timezone) : null)
 
-const weekdayLabels = computed(() => {
-  const formatter = new Intl.DateTimeFormat(calendarLocale.value, { weekday: 'short' })
-  const labels = Array.from({ length: 7 }, (_, i) => formatter.format(new Date(2023, 0, 1 + i)))
-
-  return (props.weekStartsOn ?? 0) === 1 ? [...labels.slice(1), labels[0]] : labels
-})
+const weekdayLabels = computed(() => labelsOfWeek(calendarLocale.value, props.weekStartsOn ?? 0))
 
 const monthLabel = computed(() => new Date(viewYear.value, viewMonth.value, 1).toLocaleString(calendarLocale.value, { month: 'long', year: 'numeric' }))
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
 
 function pad(n: number) { return n < 10 ? `0${n}` : String(n) }
-// ISO formatting for submission
+const valueContext = computed((): DateValueContext => ({
+  zone: zone.value,
+  serverTimezone: props.serverTimezone,
+  format: props.format,
+  locale: calendarLocale.value,
+}))
 function formatISO(d: Date | null, withTime: boolean) {
-  if (!d) return null
-  if (withTime && zone.value) return toZonedIso(wallClockOfDate(d), zone.value)
-  const y = d.getFullYear()
-  const m = pad(d.getMonth() + 1)
-  const day = pad(d.getDate())
-  if (!withTime) return `${y}-${m}-${day}`
-  const hh = pad(d.getHours())
-  const mm = pad(d.getMinutes())
-  return `${y}-${m}-${day} ${hh}:${mm}`
+  return formatDateValue(d, withTime, zone.value)
 }
 // Display formatting (props.format)
 function formatDisplay(d: Date | null, fmt: string, withTime: boolean, locale?: string) {
@@ -88,33 +81,7 @@ function formatDisplay(d: Date | null, fmt: string, withTime: boolean, locale?: 
   return out
 }
 function parseDate(s: string | null, withTime: boolean): Date | null {
-  if (!s) return null
-
-  if (withTime && zone.value) {
-    const wall = toDisplayWallClock(s, zone.value, props.serverTimezone)
-    return wall ? dateOfWallClock(wall) : null
-  }
-
-  // Handle ISO 8601 format (e.g. "2026-03-19T13:56:08.000000Z") by parsing natively
-  if (s.includes('T')) {
-    const dt = new Date(s)
-    return Number.isNaN(dt.getTime()) ? null : dt
-  }
-
-  const [datePart, timePart] = s.split(' ')
-  const segments = datePart.split('-')
-  if (segments.length !== 3 || !/^\d{4}$/.test(segments[0]) || !/^\d{1,2}$/.test(segments[1]) || !/^\d{1,2}$/.test(segments[2])) {
-    return props.format === 'locale' ? null : parseFormattedDate(s, props.format, calendarLocale.value)
-  }
-  const [y, m, d] = segments.map(Number)
-  if (m < 1 || m > 12 || d < 1 || d > 31) return null
-  const dt = new Date(y, (m - 1), d)
-  if (withTime && timePart) {
-    const [hh, mm] = timePart.split(':').map(Number)
-    if (!Number.isNaN(hh)) dt.setHours(hh)
-    if (!Number.isNaN(mm)) dt.setMinutes(mm)
-  }
-  return dt
+  return parseDateValue(s, withTime, valueContext.value)
 }
 
 const open = ref(false)
@@ -191,36 +158,7 @@ function nextMonth() {
   if (viewMonth.value === 11) { viewMonth.value = 0; viewYear.value += 1 } else { viewMonth.value += 1 }
 }
 
-const weeks = computed(() => {
-  const first = new Date(viewYear.value, viewMonth.value, 1)
-  const dow = first.getDay() // 0=Sun
-  const wstart = (props.weekStartsOn ?? 0) === 1 ? 1 : 0
-  const startDay = (dow - wstart + 7) % 7
-  const daysInMonth = new Date(viewYear.value, viewMonth.value + 1, 0).getDate()
-  const cells: Array<{ date: Date, inMonth: boolean }> = []
-  const lead = startDay
-  for (let i = 0; i < lead; i++) {
-    const d = new Date(viewYear.value, viewMonth.value, -i)
-    cells.unshift({ date: d, inMonth: false })
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    cells.push({ date: new Date(viewYear.value, viewMonth.value, d), inMonth: true })
-  }
-  while (cells.length % 7 !== 0) {
-    const last = cells[cells.length - 1].date
-    const d = new Date(last)
-    d.setDate(d.getDate() + 1)
-    cells.push({ date: d, inMonth: false })
-  }
-  const rows: typeof cells[] = []
-  for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7))
-  return rows
-})
-
-function isSameDay(a: Date | null, b: Date) {
-  if (!a) return false
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
-}
+const weeks = computed(() => monthGrid(viewYear.value, viewMonth.value, props.weekStartsOn ?? 0))
 
 function isBetween(d: Date, a: Date | null, b: Date | null) {
   if (!a || !b) return false
@@ -231,20 +169,7 @@ function isBetween(d: Date, a: Date | null, b: Date | null) {
 }
 
 function isDisabled(d: Date) {
-  if (isUnavailableDate(d, props.disabledWeekdays, props.disabledDates)) return true
-  if (!props.minDate && !props.maxDate) return false
-  const md = props.minDate ? parseDate(props.minDate, props.enableTime) : null
-  const xd = props.maxDate ? parseDate(props.maxDate, props.enableTime) : null
-  const t = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
-  if (md) {
-    const tm = new Date(md.getFullYear(), md.getMonth(), md.getDate()).getTime()
-    if (t < tm) return true
-  }
-  if (xd) {
-    const tx = new Date(xd.getFullYear(), xd.getMonth(), xd.getDate()).getTime()
-    if (t > tx) return true
-  }
-  return false
+  return isDisabledDay(d, props, props.enableTime, valueContext.value)
 }
 
 const hours = computed({
