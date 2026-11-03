@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { computed, nextTick, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
+import { computed, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { fieldSlotsKey } from '../lib/field-slots'
@@ -160,7 +160,7 @@ Object.entries(restored?.values ?? {}).forEach(([name, value]) => {
 
 const currentStep = ref<string | undefined>(restored?.step)
 
-let rememberPaused = false
+let forgottenState: string | null = null
 
 function rememberedState() {
     return {
@@ -171,9 +171,12 @@ function rememberedState() {
 
 if (storageKey) {
     watch(rememberedState, (state) => {
-        if (!rememberPaused) {
-            writeRemembered(storageKey, state)
+        if (JSON.stringify(state) === forgottenState) {
+            return
         }
+
+        forgottenState = null
+        writeRemembered(storageKey, state)
     }, { deep: true })
 }
 
@@ -246,22 +249,18 @@ function forgetAfterSuccess(): void {
         return
     }
 
-    rememberPaused = true
+    forgottenState = JSON.stringify(rememberedState())
     forgetRemembered(storageKey)
-    void nextTick(() => {
-        rememberPaused = false
-    })
 }
 
 function afterSuccess(): void {
-    forgetAfterSuccess()
-
     if (shouldResetOnSuccess.value) {
         form.reset?.()
         form.clearErrors?.()
     }
 
     clearFiles()
+    forgetAfterSuccess()
 }
 
 function successHandler(options: Record<string, any> | undefined): (...args: any[]) => void {

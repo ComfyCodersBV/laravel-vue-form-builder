@@ -11,8 +11,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * New `remember` prop on `<Form>` (`remember` or `remember="name"`): the typed values, and on a form with steps the
   current step, are kept in the tab's `sessionStorage` under the form id (or the name) and the page URL, and come back
   when that page is reloaded. Opening the page again by a link starts from the server's values. A successful submit
-  forgets them. Password, file, hidden and reCAPTCHA fields are never stored. Off by default. See
-  `docs/vue-usage.md`.
+  forgets them. Password, file, hidden and reCAPTCHA fields are never stored. Off by default, and not meant
+  for pages rendered with SSR. See `docs/vue-usage.md`.
 * Every step in the step indicator gets the same width, whatever the length of its title. A long title wraps to a
   second line and is cut off with an ellipsis after that. On a phone the indicator shows only the numbered circles;
   the title of the current step is the heading below it.

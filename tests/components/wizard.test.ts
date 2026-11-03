@@ -341,6 +341,20 @@ describe('a wizard that remembers its values', () => {
         expect(Object.keys(window.sessionStorage)).toHaveLength(0)
     })
 
+    it('stays forgotten when the form resets itself after a successful submit', async () => {
+        loadDocument('navigate')
+        const { wrapper } = rememberingForm('reset', rememberedSchema())
+        await wrapper.setProps({ resetOnSuccess: true })
+        await fillUpToTheLastStep(wrapper)
+
+        await wrapper.find('form').trigger('submit')
+        await flushPromises()
+        await nextTick()
+
+        expect(formOf(wrapper).notes).toBe('')
+        expect(Object.keys(window.sessionStorage)).toHaveLength(0)
+    })
+
     it('remembers nothing without the remember prop', async () => {
         const { wrapper } = wizardForm(schemaWith())
 

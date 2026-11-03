@@ -201,9 +201,11 @@ typed values, and on a form with steps the current step, in the browser tab's `s
 
 - The values are stored under the form's `id` (or the name you pass) and the page URL with its query string, so the
   create page and the edit page of each record keep their own values.
-- They come back when the same page is reloaded (or reopened with the browser's back or forward button after it was
-  left). Opening the page again by a link starts from the server's values, so an edit form never shows changes that
-  were left unsaved earlier.
+- They come back when the browser loads the same page again as a whole document: a reload, or back and forward after a
+  full page load. Opening the page again by a link, or Inertia's own back and forward, starts from the server's
+  values, so an edit form never shows changes that were left unsaved earlier.
+- The values are restored in the browser. With server-side rendering the server renders the server's values, so do not
+  use `remember` on a page that is rendered with SSR.
 - A successful submit forgets them. Closing the tab does too.
 - Password, file, hidden and reCAPTCHA fields are never stored.
 - Without the prop nothing is stored. Requires `laravel-vue-form-builder` 1.16 or newer.
