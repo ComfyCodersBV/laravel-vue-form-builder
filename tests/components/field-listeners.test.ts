@@ -26,6 +26,9 @@ const elements: Array<[string, Record<string, unknown>, string]> = [
     ['time', { type: 'time', label: 'Subject' }, 'input#subject'],
     ['file', { type: 'file', label: 'Subject' }, 'input#subject'],
     ['date', { type: 'date', label: 'Subject' }, 'button#subject'],
+    ['touch date', { type: 'date', label: 'Subject', touch: true }, 'button#subject'],
+    ['delete', { type: 'delete', label: 'Remove', deleteUrl: '/x' }, 'button'],
+    ['multiple select', { type: 'select', label: 'Subject', options: { a: 'A' }, multiple: true }, 'button[aria-haspopup="dialog"]'],
     ['select', { type: 'select', label: 'Subject', options: { a: 'A' } }, '#subject'],
     ['searchable select', { type: 'select', label: 'Subject', options: { a: 'A' }, searchable: true }, 'button#subject'],
     ['checkbox', { type: 'checkbox', label: 'Subject' }, '#subject-cb'],
@@ -53,7 +56,7 @@ describe('listeners from fieldOverrides', () => {
         wrapper.unmount();
     });
 
-    it.each(elements.filter(([name]) => !['button', 'submit'].includes(name)))(
+    it.each(elements.filter(([name]) => !['button', 'submit', 'delete'].includes(name)))(
         'keeps onClick of a %s off its wrapper',
         async (_, field) => {
             const onClick = vi.fn();
@@ -102,11 +105,12 @@ describe('listeners from fieldOverrides', () => {
 
     it('puts onClick on a button that asks for confirmation', async () => {
         const onClick = vi.fn();
-        const wrapper = mountField({ type: 'button', label: 'Preview', confirmTitle: 'Sure?' }, { onClick });
+        const wrapper = mountField({ type: 'button', label: 'Preview', confirmTitle: 'Sure?', rules: [] }, { onClick });
 
         await wrapper.get('[data-testid="field-subject"]').trigger('click');
 
         expect(onClick).toHaveBeenCalledTimes(1);
+        expect(wrapper.get('[data-testid="field-subject"]').attributes()).not.toHaveProperty('rules');
 
         wrapper.unmount();
     });

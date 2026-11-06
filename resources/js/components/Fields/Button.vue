@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { useFieldListeners } from '../../lib/listeners';
 import {
     Dialog,
     DialogClose,
@@ -76,6 +77,8 @@ function handleConfirmAction() {
 }
 
 defineOptions({ inheritAttrs: false })
+
+const { listeners } = useFieldListeners()
 </script>
 
 <template>
@@ -84,7 +87,7 @@ defineOptions({ inheritAttrs: false })
         <Dialog v-model:open="showDialog">
             <DialogTrigger as-child>
                 <Button
-                    v-bind="$attrs"
+                    v-bind="listeners()"
                     :variant="variant"
                     type="button"
                     :data-testid="testId"
