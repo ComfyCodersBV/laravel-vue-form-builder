@@ -93,9 +93,12 @@ function toggle(value: string | number) {
             <button v-for="option in optionsList" :key="String(option.value)" type="button"
                     :disabled="option.disabled || disabled"
                     class="rounded-full border px-3 py-1 text-xs uppercase tracking-wide transition disabled:opacity-50"
-                    :class="isSelected(option.value)
-                        ? 'border-transparent bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
-                        : 'border-neutral-300 text-neutral-600 hover:border-neutral-400 dark:border-neutral-600 dark:text-neutral-300'"
+                    :class="[
+                        isSelected(option.value)
+                            ? 'border-transparent bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                            : 'border-neutral-300 text-neutral-600 hover:border-neutral-400 dark:border-neutral-600 dark:text-neutral-300',
+                        inputClassName,
+                    ]"
                     @click="toggle(option.value)">
                 {{ option.label }}
             </button>
@@ -105,7 +108,8 @@ function toggle(value: string | number) {
             <div v-for="option in optionsList" :key="String(option.value)"
                  :class="inline ? 'inline-flex items-center gap-2' : 'flex items-center gap-2'">
                 <Checkbox :id="`${name}-${String(option.value)}`" :name="`${name}[]`" :value="String(option.value)"
-                          :disabled="option.disabled || disabled" v-model="getCheckboxModel(option.value).value"/>
+                          :disabled="option.disabled || disabled" :class="inputClassName"
+                          v-model="getCheckboxModel(option.value).value"/>
                 <Label :for="`${name}-${String(option.value)}`">{{ option.label }}</Label>
             </div>
         </div>

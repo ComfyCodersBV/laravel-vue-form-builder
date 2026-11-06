@@ -214,7 +214,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 :accept="accept"
                 :multiple="multiple"
                 @change="handleChange"
-                :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass())"
+                :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass(), inputClassName)"
             />
 
             <span

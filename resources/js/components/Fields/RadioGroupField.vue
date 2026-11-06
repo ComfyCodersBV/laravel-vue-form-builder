@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { cn } from '../../lib/utils'
 import type { Field, FieldOption } from '../../types/form-builder'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { RadioGroupItem as RadioGroupTile } from 'reka-ui'
@@ -101,14 +102,15 @@ function isDisabled(option: FieldOption): boolean {
   return Boolean(option.disabled || props.disabled || props.readonly)
 }
 
-function tileClass(option: FieldOption): string[] {
-  return [
+function tileClass(option: FieldOption): string {
+  return cn(
     'relative flex min-h-16 items-center gap-3 rounded-lg border-2 p-4 text-left transition-colors',
     isSelected(option)
       ? 'border-[var(--form-tile-accent,var(--primary))] bg-[color-mix(in_oklab,var(--form-tile-accent,var(--primary))_10%,transparent)]'
       : 'border-input bg-background',
     isDisabled(option) ? 'cursor-not-allowed opacity-50' : 'hover:border-[var(--form-tile-accent,var(--primary))]',
-  ]
+    props.inputClassName,
+  )
 }
 </script>
 
@@ -174,7 +176,7 @@ function tileClass(option: FieldOption): string[] {
           :class="props.inline ? 'inline-flex items-center gap-2' : 'flex items-start gap-2'"
           :data-option="String(opt.value)"
         >
-          <RadioGroupItem :id="`${props.name}-${String(opt.value)}`" :value="String(opt.value)" :disabled="opt.disabled" />
+          <RadioGroupItem :id="`${props.name}-${String(opt.value)}`" :value="String(opt.value)" :disabled="opt.disabled" :class="props.inputClassName" />
           <div class="flex flex-col">
             <div class="flex flex-wrap items-center gap-2">
               <Label :for="`${props.name}-${String(opt.value)}`">{{ opt.label }}</Label>

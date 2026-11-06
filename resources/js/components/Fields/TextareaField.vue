@@ -33,6 +33,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
             :placeholder="placeholder"
             :disabled="disabled"
             :readonly="readonly"
+            :class="inputClassName"
         />
     </BaseField>
 </template>

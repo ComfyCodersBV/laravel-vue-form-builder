@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
 import { useFieldListeners } from '../../lib/listeners'
+import { cn } from '../../lib/utils'
 import type { Field } from '../../types/form-builder'
 import { Input } from '../ui/input'
 import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover'
@@ -220,8 +221,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                         aria-autocomplete="none"
                         autocomplete="off"
                         inputmode="numeric"
-                        class="pl-9 dark:text-neutral-100"
-                        :class="{ 'pr-9': isClearable }"
+                        :class="cn('pl-9 dark:text-neutral-100', isClearable ? 'pr-9' : '', inputClassName)"
                         @update:model-value="onInput"
                         @focus="openList"
                         @click="openList"

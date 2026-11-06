@@ -60,7 +60,7 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
     <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <input type="hidden" :name="props.name" :value="model" />
 
-        <div v-if="editorComponent" :data-testid="props.name ? `field-${props.name}` : undefined">
+        <div v-if="editorComponent" :data-testid="props.name ? `field-${props.name}` : undefined" :class="props.inputClassName">
             <component
                 :is="editorComponent"
                 v-model:model-value="model"
@@ -77,6 +77,7 @@ watch(() => props.editor, warnAboutUnregisteredEditor, { immediate: true })
                 :placeholder="props.placeholder"
                 :disabled="props.disabled"
                 :readonly="props.readonly"
+                :class-name="props.inputClassName"
             />
 
             <div

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
 import { useFieldListeners } from '../../lib/listeners';
+import { cn } from '../../lib/utils';
 import type { Field } from '../../types/form-builder';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
@@ -362,7 +363,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                             variant="outline"
                             :id="props.name"
                             :disabled="props.disabled || props.readonly"
-                            class="w-full min-w-0 justify-between font-normal"
+                            :class="cn('w-full min-w-0 justify-between font-normal', props.inputClassName)"
                         >
                             <span class="truncate" :class="{ 'mr-8': isClearable }">
                                 <span v-if="selectedOptionLabel && isRemote">{{ selectedOptionLabel }}</span>
@@ -435,7 +436,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                     :disabled="props.disabled || props.readonly"
                     @update:model-value="onUpdateInternal"
                 >
-                    <SelectTrigger v-bind="listeners()" :id="props.name" class="w-full min-w-0 justify-between">
+                    <SelectTrigger v-bind="listeners()" :id="props.name" :class="cn('w-full min-w-0 justify-between', props.inputClassName)">
                         <span class="truncate" :class="{ 'mr-8': isClearable }">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
@@ -472,6 +473,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
             <input type="hidden" :name="props.name" value="" />
             <MultiSelect
                 v-bind="listeners()"
+                :class="props.inputClassName"
                 v-model="selectedLocal"
                 :options="optionsList"
                 :placeholder="props.placeholder ?? undefined"

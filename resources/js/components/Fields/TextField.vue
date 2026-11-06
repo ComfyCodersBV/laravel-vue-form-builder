@@ -107,7 +107,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
         :autocomplete="autocomplete ?? (showsStored ? 'new-password' : undefined)"
         :type="type"
         v-model="model"
-        :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass())"
+        :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass(), inputClassName)"
       />
 
       <span

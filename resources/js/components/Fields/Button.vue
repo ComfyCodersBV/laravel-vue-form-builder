@@ -17,6 +17,7 @@ import {
 
 interface Props {
     className?: string
+    inputClassName?: string
     name?: string
     label?: string
     labelHtml?: string
@@ -31,6 +32,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     className: undefined,
+    inputClassName: undefined,
     name: undefined,
     label: '',
     labelHtml: undefined,
@@ -91,7 +93,7 @@ const { listeners } = useFieldListeners()
                     :variant="variant"
                     type="button"
                     :data-testid="testId"
-                    :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
+                    :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className, inputClassName)"
                     :aria-label="ariaLabel"
                 >
                     <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />
@@ -129,7 +131,7 @@ const { listeners } = useFieldListeners()
             :variant="variant"
             :type="type"
             :data-testid="testId"
-            :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className)"
+            :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className, inputClassName)"
             :aria-label="ariaLabel"
         >
             <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />

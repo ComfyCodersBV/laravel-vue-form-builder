@@ -231,6 +231,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                         'focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
                         fieldError ? 'border-destructive' : '',
                         isLocked ? 'cursor-not-allowed opacity-50' : '',
+                        inputClassName,
                     )"
                     @update:model-value="updateTags"
                 >
