@@ -126,6 +126,14 @@ Text::make('website')
     ])
 ```
 
+Event listeners and Vue bindings cannot come from PHP. A key starting with `@`, `:`, `v-on:` or `v-bind:` throws an
+`InvalidArgumentException`; attach the handler in Vue instead, see
+[Click and other event handlers](../vue-usage.md#click-and-other-event-handlers):
+
+```vue
+<Form :schema="form" :field-overrides="{ website: { onBlur: checkWebsite } }" />
+```
+
 ## Conditional visibility
 
 Show or hide a field based on the current form state. Pass a JavaScript expression that is evaluated in the Vue component. The expression has access to each field's value by its name:

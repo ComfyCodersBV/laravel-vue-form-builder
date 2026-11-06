@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { X } from '@lucide/vue'
@@ -196,10 +197,14 @@ watch(query, (term) => {
 })
 
 onBeforeUnmount(() => controller?.abort())
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error: fieldError, className, help, theme }">
+    <BaseField v-bind="{ ...wrapperAttrs(), label, name, error: fieldError, className, help, theme }">
         <ComboboxRoot
             :model-value="tags"
             :open="isOpen"
@@ -255,6 +260,7 @@ onBeforeUnmount(() => controller?.abort())
 
                     <ComboboxInput v-model="query" as-child>
                         <TagsInputInput
+                            v-bind="listeners()"
                             :id="name"
                             :readonly="isFull"
                             :placeholder="tags.length === 0 ? placeholder : undefined"

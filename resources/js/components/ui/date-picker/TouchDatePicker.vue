@@ -268,6 +268,8 @@ const actionClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-b
 const navClass = computed(() => anchored.value ? 'size-9' : 'size-12')
 const navIconClass = computed(() => anchored.value ? 'size-4' : 'size-6')
 const triggerIconClass = computed(() => anchored.value ? 'size-4' : 'size-5')
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
@@ -275,6 +277,7 @@ const triggerIconClass = computed(() => anchored.value ? 'size-4' : 'size-5')
     <TouchPickerSurface v-model:open="dateOpen" :anchored="anchored" :description="messages.pickDate" data-touch-calendar>
       <template #trigger>
         <Button
+          v-bind="$attrs"
           :id="props.id"
           variant="outline"
           type="button"

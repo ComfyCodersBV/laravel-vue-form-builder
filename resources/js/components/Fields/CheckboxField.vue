@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import type { FormTheme } from '../../lib/theme'
@@ -51,13 +52,18 @@ const isChecked = computed({
         }
     }
 })
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
+    <BaseField v-bind="wrapperAttrs()" :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox
+                v-bind="listeners()"
                 :id="`${name}-cb`"
                 :name="name"
                 :value="String(value ?? '1')"

@@ -82,12 +82,15 @@ function clearAll() {
 function labelFor(val: string | number) {
   return props.options.find(o => String(o.value) === String(val))?.label ?? String(val)
 }
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
       <button
+        v-bind="$attrs"
         ref="triggerRef"
         type="button"
         :disabled="props.disabled"

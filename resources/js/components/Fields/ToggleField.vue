@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import { Switch } from '../ui/switch'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
@@ -50,13 +51,18 @@ const model = computed<boolean>({
         }
     },
 })
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
+    <BaseField v-bind="wrapperAttrs()" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Switch
+                v-bind="listeners()"
                 :model-value="model"
                 @update:model-value="(v) => model = v"
                 :id="`${name}-tgl`" :name="name"
