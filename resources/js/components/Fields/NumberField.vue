@@ -159,7 +159,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                     :placeholder="placeholder"
                     :disabled="disabled"
                     :readonly="readonly"
-                    :class="cn('flex-1', stepper ? 'rounded-none text-center' : cn(leftRoundClass(), rightRoundClass()))"
+                    :class="cn('flex-1', stepper ? 'rounded-none text-center' : cn(leftRoundClass(), rightRoundClass()), inputClassName)"
                 />
 
                 <Button

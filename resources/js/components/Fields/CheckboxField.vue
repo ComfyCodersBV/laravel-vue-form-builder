@@ -19,6 +19,7 @@ const props = defineProps<{
     disabled?: boolean
     readonly?: boolean
     className?: string
+    inputClassName?: string
     theme?: Partial<FormTheme>
     hideLabel?: boolean
 }>()
@@ -69,6 +70,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 :value="String(value ?? '1')"
                 v-model="isChecked"
                 :disabled="disabled"
+                :class="inputClassName"
             />
             <Label v-if="inlineLabel" :for="`${name}-cb`" :class="labelHidden && !checkboxLabel ? VISUALLY_HIDDEN : undefined">{{ inlineLabel }}</Label>
         </div>

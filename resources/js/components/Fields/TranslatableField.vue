@@ -52,6 +52,7 @@ function fieldFor(locale: LocaleOption): Field {
 
     return {
         ...(props.field ?? { type: 'text' }),
+        inputClassName: props.field?.inputClassName ?? props.inputClassName,
         name: nameFor(locale.value),
         label: stacked ? locale.label : `${props.label ?? props.name ?? ''} (${locale.label})`,
         hideLabel: !stacked,

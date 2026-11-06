@@ -50,8 +50,10 @@ in the class list:
 
 This makes the theme a tool for adjusting the defaults. To discard them entirely, use a slot.
 
-> `->class('...')` still replaces the wrapper outright rather than merging into it, which is what it
-> has always done. Use `->theme(['wrapper' => '...'])` to add to the wrapper instead.
+> `->wrapperClass('...')`, and `->class('...')` which it replaces in name only, still replace the
+> wrapper outright rather than merging into it, which is what `->class()` has always done. Use
+> `->theme(['wrapper' => '...'])` to add to the wrapper instead. Classes for the control itself go
+> through `->inputClass('...')`, see [Common options](fields/common-options.md#css-classes).
 
 ## Replacing a field entirely
 

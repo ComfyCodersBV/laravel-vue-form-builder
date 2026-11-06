@@ -50,6 +50,8 @@ export interface Field {
     readonly?: boolean
     disabled?: boolean
     className?: string
+    wrapperClassName?: string
+    inputClassName?: string
     theme?: Partial<FormTheme>
     modelValue?: FieldValue
     default?: FieldValue

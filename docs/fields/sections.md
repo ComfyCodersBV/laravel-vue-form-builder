@@ -36,7 +36,8 @@ public function fields(): array
 - Sections can be nested, and conditions (`->if()`) work on a section and across sections.
 - In a two-column form a section spans both columns and lays out its own fields in two columns, unless it sets its own
   `->columns()`.
-- `->class('...')` replaces the classes of the section element (default `space-y-4`).
+- `->wrapperClass('...')` (or the older `->class('...')`) replaces the classes of the section element (default
+  `space-y-4`). `->inputClass()` has no effect on a section.
 
 ## Columns
 

@@ -64,6 +64,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
       v-bind="listeners()"
       v-if="props.touch && !props.range"
       :id="props.name"
+      :class="props.inputClassName"
       v-model="internal"
       :enable-time="props.enableTime"
       :placeholder="props.placeholder || undefined"
@@ -88,6 +89,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
       v-bind="listeners()"
       v-else
       :id="props.name"
+      :class="props.inputClassName"
       v-model="internal"
       :enable-time="props.enableTime"
       :placeholder="props.placeholder || undefined"

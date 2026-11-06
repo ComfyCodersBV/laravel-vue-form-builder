@@ -126,6 +126,19 @@ function slotPropsFor() {
     }
 }
 
+function boundProps(): Record<string, any> {
+    const { wrapperClassName, ...props }: Record<string, any> = {
+        ...field,
+        ...extraProps(),
+        ...(fieldOverrides?.[field.name ?? ''] ?? {}),
+    }
+
+    return {
+        ...props,
+        className: wrapperClassName ?? props.className,
+    }
+}
+
 function updateValue(value: any): void {
     const name = field.name ?? ''
 
@@ -150,7 +163,7 @@ function updateValue(value: any): void {
     <component
         v-else-if="componentFor()"
         :is="componentFor()"
-        v-bind="{ ...field, ...extraProps(), ...(fieldOverrides?.[field.name ?? ''] ?? {}) }"
+        v-bind="boundProps()"
         :model-value="form[field.name!]"
         :error="form.errors[field.name!]"
         @update:modelValue="updateValue"

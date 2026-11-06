@@ -12,6 +12,7 @@ interface Props {
     confirmTitle?: string
     confirmMessage?: string
     className?: string
+    inputClassName?: string
 }
 
 const props = defineProps<Props>();
@@ -29,6 +30,7 @@ const mergedClassName = computed(() => cn('w-fit', props.className));
         :confirm-title="confirmTitle"
         :confirm-message="confirmMessage"
         :class-name="mergedClassName"
+        :input-class-name="inputClassName"
         type="submit"
     />
 </template>

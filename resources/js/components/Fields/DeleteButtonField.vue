@@ -11,6 +11,7 @@ interface Props {
     confirmMessage?: string;
     deleteUrl?: string;
     className?: string;
+    inputClassName?: string;
 }
 
 defineProps<Props>();
@@ -27,6 +28,7 @@ defineProps<Props>();
         :confirm-message="confirmMessage"
         :delete-url="deleteUrl"
         :class-name="className"
+        :input-class-name="inputClassName"
         variant="destructive"
     />
 </template>

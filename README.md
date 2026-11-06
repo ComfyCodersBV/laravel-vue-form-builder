@@ -201,6 +201,10 @@ class ExampleFormRequest extends FormRequest
 }
 ```
 
+A field takes classes in two places: `->wrapperClass()` (or the older `->class()`) replaces the classes of the wrapper
+around label, control and errors, and `->inputClass()` adds classes to the input, select, checkbox or button itself.
+See [Common options](docs/fields/common-options.md#css-classes).
+
 ```vue
 
 <script setup lang="ts">

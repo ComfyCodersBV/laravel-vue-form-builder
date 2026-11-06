@@ -68,6 +68,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 :id="`${name}-tgl`" :name="name"
                 :value="String(value ?? '1')"
                 :disabled="disabled"
+                :class="inputClassName"
             />
             <label v-if="label" :class="labelHidden ? VISUALLY_HIDDEN : 'text-sm'" :for="`${name}-tgl`">{{ label }}</label>
         </div>

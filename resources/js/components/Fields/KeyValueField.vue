@@ -182,7 +182,7 @@ function keyInputClass(k: string) {
             <div v-for="(row, i) in rows" :key="i" class="grid grid-cols-12 gap-2 items-center">
                 <div class="col-span-5">
                     <Input :placeholder="keyPlaceholder ?? messages.key" v-model="row.key" :readonly="!editableKeys"
-                           :disabled="!editableKeys" :class="keyInputClass(row.key)"/>
+                           :disabled="!editableKeys" :class="cn(keyInputClass(row.key), inputClassName)"/>
                 </div>
                 <div class="col-span-5">
                     <div class="relative">
@@ -192,7 +192,7 @@ function keyInputClass(k: string) {
                             v-model="row.value"
                             :readonly="!editableValues || readonlyValueKeys.includes(row.key)"
                             :disabled="!editableValues || readonlyValueKeys.includes(row.key)"
-                            :class="isSensitiveKey(row.key) ? 'pr-9' : ''"
+                            :class="cn(isSensitiveKey(row.key) ? 'pr-9' : '', inputClassName)"
                         />
                         <button v-if="isSensitiveKey(row.key)" type="button"
                                 class="absolute inset-y-0 right-0 flex items-center px-2 text-neutral-500 hover:text-neutral-800"

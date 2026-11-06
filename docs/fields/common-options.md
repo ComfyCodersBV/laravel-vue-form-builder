@@ -105,14 +105,34 @@ Both accept a boolean argument — useful for conditional logic:
 ->readonly($isLocked)
 ```
 
-## CSS class
+## CSS classes
 
-Adds CSS classes to the field wrapper element:
+A field has two class hooks: the wrapper around the label, control, help and error, and the control itself.
 
 ```php
 Text::make('title')
-    ->class('col-span-2')
+    ->wrapperClass('col-span-2')
+    ->inputClass('font-mono uppercase')
 ```
+
+- `->wrapperClass('...')` replaces the wrapper's classes (the theme's `wrapper`) outright. Use
+  `->theme(['wrapper' => '...'])` to add to them instead, see [Theming](../theming.md).
+- `->class('...')` is the older name of `->wrapperClass()` and keeps working exactly as before.
+- `->inputClass('...')` adds classes to the element itself: the input, textarea, the trigger of a select or date
+  field, the checkbox, each checkbox or radio of a group, each radio tile, the switch of a toggle, the box of a tags
+  field, the key and value inputs of a key-value field, every locale of a translatable field, the editor of a WYSIWYG
+  field and the button of a `Button`, `Submit` or `DeleteButton`. The classes merge with the defaults, and on most
+  elements a conflicting utility wins: `->inputClass('h-12')` replaces the default `h-9` of an input. Hidden and reCAPTCHA fields ignore it.
+- Buttons have no wrapper, so on a button both land on the button.
+
+From Vue the same goes through `fieldOverrides` with `wrapperClassName` and `inputClassName`:
+
+```vue
+<Form :schema="form" :field-overrides="{ title: { wrapperClassName: 'col-span-2', inputClassName: 'font-mono' } }" />
+```
+
+The schema key of the wrapper class stays `className`, so a form built with an older laravel-form-builder renders the
+same. `inputClass()` needs laravel-form-builder 1.13; an older renderer ignores it.
 
 ## HTML attributes
 

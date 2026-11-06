@@ -28,8 +28,9 @@ A schema without `columns` (the default) leaves the form at one column, as befor
 
 A one-column form spaces its fields `space-y-4` apart. A one-column form with its own `FormConfig::class()` lays out
 its fields itself instead: the fields are then direct children of the `<form>`, so a class such as
-`['grid', 'grid-cols-5', 'gap-4']` with `->class('col-span-5')` on the fields, or `space-y-6`, works on them.
-A section in such a form is one cell of that layout too, so give it a `->class('col-span-5')` as well.
+`['grid', 'grid-cols-5', 'gap-4']` with `->wrapperClass('col-span-5')` (or the older `->class()`) on the fields, or
+`space-y-6`, works on them. A section in such a form is one cell of that layout too, so give it a
+`->wrapperClass('col-span-5')` as well.
 
 ## On a section
 

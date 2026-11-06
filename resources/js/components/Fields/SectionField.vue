@@ -25,7 +25,7 @@ const hasHeading = computed(() => Boolean(props.field.title || props.field.descr
 </script>
 
 <template>
-    <section :class="field.className ?? 'space-y-4'" data-form-section>
+    <section :class="field.wrapperClassName ?? field.className ?? 'space-y-4'" data-form-section>
         <header v-if="hasHeading" class="space-y-1 border-b border-neutral-200 pb-2 dark:border-neutral-700">
             <h3 v-if="field.title" class="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                 {{ field.title }}

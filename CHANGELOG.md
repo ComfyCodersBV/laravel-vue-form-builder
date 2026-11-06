@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.18.0 - 2026-11-06
+* `inputClassName` in a field's schema (`->inputClass()` from laravel-form-builder 1.13) adds classes to the element
+  itself instead of the wrapper: the input, textarea, select and date trigger, checkbox, each option of a checkbox or
+  radio group, each radio tile, the switch, the tags box, the key-value inputs, each locale of a translatable field,
+  the WYSIWYG editor and the button of `Button`, `Submit` and `DeleteButton`. On most elements it merges through
+  `cn()`, so a conflicting utility replaces the default one.
+* `wrapperClassName` sets the wrapper class like `className`, which keeps working. When both are set,
+  `wrapperClassName` wins. Both work in `fieldOverrides`.
+* `SUPPORTED_SCHEMA_VERSION` is now `1.12`. See `docs/fields/common-options.md`.
+
 ## 1.17.0 - 2026-11-06
 * Event listeners passed through `fieldOverrides` (`onClick`, `onFocus`, `onBlur`, `onKeydown`, ...) land on the
   field's own element instead of on the wrapper around it: the button of `Button`, `Submit` and `DeleteButton` (also

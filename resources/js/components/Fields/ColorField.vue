@@ -66,7 +66,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                     :placeholder="placeholder"
                     type="text"
                     v-model="model"
-                    :class="cn('flex-1 rounded-l-none dark:text-neutral-100')"
+                    :class="cn('flex-1 rounded-l-none dark:text-neutral-100', inputClassName)"
                 />
             </div>
 
