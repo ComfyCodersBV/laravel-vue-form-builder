@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import type { Field } from '../../types/form-builder'
 import { DatePicker, TouchDatePicker } from '../ui/date-picker'
 import { ref, watch, computed } from 'vue'
@@ -51,11 +52,16 @@ watch(internal, (v) => emit('update:modelValue', v))
 const singleValue = computed(() => typeof internal.value === 'string' ? internal.value : '')
 const rangeStart = computed(() => (internal.value?.start ?? ''))
 const rangeEnd = computed(() => (internal.value?.end ?? ''))
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-  <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="(props as any).className" :theme="props.theme">
+  <BaseField v-bind="wrapperAttrs()" :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="(props as any).className" :theme="props.theme">
     <TouchDatePicker
+      v-bind="listeners()"
       v-if="props.touch && !props.range"
       :id="props.name"
       v-model="internal"
@@ -79,6 +85,7 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
       :clearable="props.clearable"
     />
     <DatePicker
+      v-bind="listeners()"
       v-else
       :id="props.name"
       v-model="internal"

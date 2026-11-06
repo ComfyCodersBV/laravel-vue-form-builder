@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { CurrentFile, Field } from '../../types/form-builder'
 import { computed, ref, watch } from 'vue'
@@ -145,10 +146,14 @@ function getName() {
 
     return props.name
 }
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error, className, help, theme }">
+    <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
       <div v-if="listsFiles" class="mb-2 space-y-1 text-sm" data-current-files>
           <div class="text-xs text-muted-foreground">{{ messageContext.messages.currentFiles }}</div>
           <ul class="divide-y rounded-md border border-input">
@@ -199,6 +204,7 @@ function getName() {
           </span>
 
             <Input
+                v-bind="listeners()"
                 :id="name"
                 :name="getName()"
                 :disabled="disabled"

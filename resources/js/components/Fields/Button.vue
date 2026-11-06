@@ -74,6 +74,8 @@ function handleConfirmAction() {
     emit('confirm');
     showDialog.value = false;
 }
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
@@ -82,6 +84,7 @@ function handleConfirmAction() {
         <Dialog v-model:open="showDialog">
             <DialogTrigger as-child>
                 <Button
+                    v-bind="$attrs"
                     :variant="variant"
                     type="button"
                     :data-testid="testId"
@@ -119,6 +122,7 @@ function handleConfirmAction() {
     </template>
     <template v-else>
         <Button
+            v-bind="$attrs"
             :variant="variant"
             :type="type"
             :data-testid="testId"

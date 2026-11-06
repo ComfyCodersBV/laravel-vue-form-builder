@@ -52,6 +52,17 @@ Button::make('reset')
     ->label('Reset form')
 ```
 
+### Handling a click
+
+A click handler is Vue code, so it goes on the button through `fieldOverrides` rather than through `attributes()` in
+PHP, which refuses `@click`:
+
+```vue
+<Form :schema="form" :field-overrides="{ reset: { onClick: () => resetFilters() } }" />
+```
+
+See [Click and other event handlers](../vue-usage.md#click-and-other-event-handlers).
+
 ### Variants
 
 Control the button style using `variant()`:

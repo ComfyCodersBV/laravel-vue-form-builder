@@ -188,12 +188,14 @@ const minutes = computed({
       emit('update:modelValue', formatISO(selected.value, props.enableTime))
   }
 })
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button :id="props.id" variant="outline" type="button" class="w-full justify-start text-left font-normal" :disabled="props.disabled || props.readonly">
+      <Button v-bind="$attrs" :id="props.id" variant="outline" type="button" class="w-full justify-start text-left font-normal" :disabled="props.disabled || props.readonly">
         <CalendarIcon class="mr-2 h-4 w-4" />
         <template v-if="!props.range">
           <span v-if="selected">{{ formatDisplay(selected, props.format, props.enableTime, props.locale) }}</span>

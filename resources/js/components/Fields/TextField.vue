@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
@@ -78,10 +79,14 @@ function rightRoundClass() {
 function leftRoundClass() {
   return hasPrepend.value ? 'rounded-l-none border-l-0' : ''
 }
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-  <BaseField v-bind="{ label, name, error, className, help, theme }">
+  <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
     <div class="flex w-full">
       <span
         v-if="prepend"
@@ -91,6 +96,7 @@ function leftRoundClass() {
       </span>
 
       <Input
+        v-bind="listeners()"
         :id="name"
         :name="name"
         :disabled="disabled"

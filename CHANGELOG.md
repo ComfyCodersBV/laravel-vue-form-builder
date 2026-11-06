@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.17.0 - 2026-11-06
+* Event listeners passed through `fieldOverrides` (`onClick`, `onFocus`, `onBlur`, `onKeydown`, ...) land on the
+  field's own element instead of on the wrapper around it: the button of `Button`, `Submit` and `DeleteButton` (also
+  when it asks for confirmation), the input of text, email, password, number, money, colour, time, file and tags
+  fields, the textarea, the trigger of a select or date field, the checkbox and the switch. The field's own handlers
+  keep running. Other unknown attributes stay on the wrapper as before. See `docs/vue-usage.md`.
+* laravel-form-builder 1.12 refuses `->attributes(['@click' => ...])` and other Vue directives with a clear exception,
+  instead of a page that breaks in the browser.
+
 ## 1.16.1 - 2026-11-03
 * Radio tiles no longer show a radio dot: the whole card is the choice, and the selected card shows its label in bold.
 * The tile accent (border and light background of the selected card) follows the new CSS variable `--form-tile-accent`,

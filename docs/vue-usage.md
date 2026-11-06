@@ -83,6 +83,34 @@ The callback receives:
 - `value` — the new value
 - `form` — the entire current form state as a plain object
 
+## Click and other event handlers
+
+A form class is PHP and its schema is JSON, so it cannot carry a Vue listener: `->attributes(['@click' => '...'])`
+throws an `InvalidArgumentException` (so do `v-on:`, `v-bind:` and `:` keys). Attach handlers in Vue through
+`fieldOverrides`, keyed by the field name, as `on` + the event name:
+
+```php
+Button::make('preview')->label('Preview')
+```
+
+```vue
+<template>
+    <Form
+        :schema="form"
+        :field-overrides="{
+            preview: { onClick: () => (previewOpen = true) },
+            email: { onBlur: checkEmail, onFocus: () => (hint = true) },
+        }"
+    />
+</template>
+```
+
+The listener lands on the element itself, not on the wrapper around it: the button of a `Button`, `Submit` or
+`DeleteButton` (the button that opens the dialog when it asks for confirmation), the `<input>` of text, email, password,
+number, money, colour, time, file and tags fields, the `<textarea>`, the trigger of a select or date field, the checkbox
+and the switch of a toggle. A field's own handlers keep running next to yours. On fields made of several controls
+(checkboxes, radios, key-value, repeater, translatable, wysiwyg) a listener stays on the wrapper around them.
+
 ## Custom layouts with `FormRenderer`
 
 `Form.vue` wraps everything in a `<form>` element. If you need a custom layout — for example, a two-column grid — use `FormRenderer.vue` instead. It renders as a fragment (no wrapper element) so it can be placed inside any grid or flex container.

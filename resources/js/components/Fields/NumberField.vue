@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
+import { useFieldListeners } from '../../lib/listeners';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { computed } from 'vue';
@@ -118,10 +119,14 @@ function onBeforeInput(e: InputEvent) {
         e.preventDefault()
     }
 }
+
+defineOptions({ inheritAttrs: false });
+
+const { listeners, wrapperAttrs } = useFieldListeners();
 </script>
 
 <template>
-        <BaseField v-bind="{ label, name, error, className, help, theme }">
+        <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
             <div class="flex w-full">
             <span
                 v-if="prepend"
@@ -144,6 +149,7 @@ function onBeforeInput(e: InputEvent) {
                 </Button>
 
                 <Input
+                    v-bind="listeners()"
                     type="text"
                     inputmode="numeric"
                     v-model="model"

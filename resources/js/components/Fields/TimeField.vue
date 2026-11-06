@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import type { Field } from '../../types/form-builder'
 import { Input } from '../ui/input'
 import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover'
@@ -192,15 +193,20 @@ function clear(): void {
     emitValue(null)
     closeList()
 }
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error, className, help, theme }">
+    <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
         <Popover :open="open" @update:open="(value: boolean) => { open = value }">
             <PopoverAnchor as-child>
                 <div ref="anchor" class="relative w-full">
                     <Clock class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
+                        v-bind="listeners()"
                         :id="name"
                         :name="name"
                         :model-value="text"

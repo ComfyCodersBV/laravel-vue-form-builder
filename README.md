@@ -220,3 +220,12 @@ class ExampleFormRequest extends FormRequest
     </div>
 </template>
 ```
+
+Click and other event handlers are attached in Vue, never from PHP (`->attributes(['@click' => ...])` throws). Pass
+them through `fieldOverrides`, and they land on the button or input itself:
+
+```vue
+<Form :schema="form" :field-overrides="{ preview: { onClick: () => (previewOpen = true) } }" />
+```
+
+See [Click and other event handlers](docs/vue-usage.md#click-and-other-event-handlers).

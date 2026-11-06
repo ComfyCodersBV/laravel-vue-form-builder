@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
+import { useFieldListeners } from '../../lib/listeners';
 import type { Field } from '../../types/form-builder';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
@@ -343,15 +344,20 @@ const isClearable = computed(() => props.clearable
 function clearValue() {
     onUpdateInternal('');
 }
+
+defineOptions({ inheritAttrs: false });
+
+const { listeners, wrapperAttrs } = useFieldListeners();
 </script>
 
 <template>
-    <BaseField :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
+    <BaseField v-bind="wrapperAttrs()" :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="props.className" :theme="props.theme">
         <template v-if="!props.multiple && (props.searchable || isRemote)">
             <div class="relative">
                 <Popover v-model:open="comboboxOpen">
                     <PopoverTrigger as-child>
                         <Button
+                            v-bind="listeners()"
                             type="button"
                             variant="outline"
                             :id="props.name"
@@ -429,7 +435,7 @@ function clearValue() {
                     :disabled="props.disabled || props.readonly"
                     @update:model-value="onUpdateInternal"
                 >
-                    <SelectTrigger :id="props.name" class="w-full min-w-0 justify-between">
+                    <SelectTrigger v-bind="listeners()" :id="props.name" class="w-full min-w-0 justify-between">
                         <span class="truncate" :class="{ 'mr-8': isClearable }">
                             <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
                             <span v-else class="text-muted-foreground">
@@ -465,6 +471,7 @@ function clearValue() {
         <template v-else>
             <input type="hidden" :name="props.name" value="" />
             <MultiSelect
+                v-bind="listeners()"
                 v-model="selectedLocal"
                 :options="optionsList"
                 :placeholder="props.placeholder ?? undefined"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
@@ -37,10 +38,14 @@ function selectSwatch(swatch: string): void {
 
     model.value = swatch
 }
+
+defineOptions({ inheritAttrs: false })
+
+const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="{ label, name, error, className, help, theme }">
+    <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
         <div class="flex w-full flex-col gap-2">
             <div class="flex w-full">
                 <input
@@ -53,6 +58,7 @@ function selectSwatch(swatch: string): void {
                 />
 
                 <Input
+                    v-bind="listeners()"
                     :id="name"
                     :name="name"
                     :disabled="disabled"
