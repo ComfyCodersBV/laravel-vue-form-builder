@@ -118,11 +118,12 @@ Text::make('title')
 - `->wrapperClass('...')` replaces the wrapper's classes (the theme's `wrapper`) outright. Use
   `->theme(['wrapper' => '...'])` to add to them instead, see [Theming](../theming.md).
 - `->class('...')` is the older name of `->wrapperClass()` and keeps working exactly as before.
-- `->inputClass('...')` adds classes to the element itself: the input, textarea, the trigger of a select or date
-  field, the checkbox, each checkbox or radio of a group, each radio tile, the switch of a toggle, the box of a tags
-  field, the key and value inputs of a key-value field, every locale of a translatable field, the editor of a WYSIWYG
-  field and the button of a `Button`, `Submit` or `DeleteButton`. The classes merge with the defaults, and on most
-  elements a conflicting utility wins: `->inputClass('h-12')` replaces the default `h-9` of an input. Hidden and reCAPTCHA fields ignore it.
+- `->inputClass('...')` adds classes to the element itself: the input, textarea, the trigger of a select or date field,
+  the checkbox, each checkbox or radio of a group, each radio tile, the switch of a toggle, the box of a tags field, the
+  key and value inputs of a key-value field, every locale of a translatable field, the editor of a WYSIWYG field and the
+  button of a `Button`, `Submit` or `DeleteButton`. The classes merge with the defaults, and on most elements a
+  conflicting utility wins: `->inputClass('h-12')` replaces the default `h-9` of an input. Hidden and reCAPTCHA fields
+  ignore it.
 - Buttons have no wrapper, so on a button both land on the button.
 
 From Vue the same goes through `fieldOverrides` with `wrapperClassName` and `inputClassName`:

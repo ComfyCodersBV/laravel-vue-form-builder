@@ -22,10 +22,10 @@ const elements: Array<[string, Record<string, unknown>, string, unknown?]> = [
     ['time', { type: 'time' }, 'input#subject'],
     ['file', { type: 'file' }, 'input#subject'],
     ['date', { type: 'date' }, 'button#subject'],
-    ['touch date', { type: 'date', touch: true }, '[data-touch-picker]'],
+    ['touch date', { type: 'date', touch: true }, 'button#subject'],
     ['select', { type: 'select', options: { a: 'A' } }, '#subject'],
     ['searchable select', { type: 'select', options: { a: 'A' }, searchable: true }, 'button#subject'],
-    ['multiple select', { type: 'select', options: { a: 'A' }, multiple: true }, 'button[aria-haspopup], button'],
+    ['multiple select', { type: 'select', options: { a: 'A' }, multiple: true }, 'button[aria-haspopup="dialog"]'],
     ['checkbox', { type: 'checkbox' }, '#subject-cb'],
     ['checkboxes', { type: 'checkboxes', options: { a: 'A' } }, '#subject-a', []],
     ['checkbox buttons', { type: 'checkboxes', options: { a: 'A' }, buttons: true }, 'button', []],
@@ -72,6 +72,19 @@ describe('field classes', () => {
 
         expect(wrapper.classes()).toEqual(['agent-wrapper']);
         expect(wrapper.attributes()).not.toHaveProperty('wrapperclassname');
+    });
+
+    it('takes wrapperClassName and inputClassName from fieldOverrides', () => {
+        const wrapper = mount(FormField, {
+            props: {
+                field: { name: 'subject', label: 'Subject', type: 'text', className: 'from-schema' },
+                form: reactive({ subject: '', errors: {} }),
+                fieldOverrides: { subject: { wrapperClassName: 'agent-wrapper', inputClassName: 'agent-input' } },
+            },
+        });
+
+        expect(wrapper.classes()).toEqual(['agent-wrapper']);
+        expect(wrapper.get('input').classes()).toContain('agent-input');
     });
 
     it('keeps className as the wrapper class of an older schema', () => {
