@@ -26,6 +26,7 @@ export type FieldValue =
 export interface FieldOption {
     value: string | number
     label: string
+    group?: string
     help?: string
     description?: string
     disabled?: boolean
@@ -57,6 +58,7 @@ export interface Field {
     default?: FieldValue
     error?: string | string[]
     options?: Record<string, string> | Array<FieldOption> | Array<string | number>
+    optionOrder?: Array<string | number>
     fields?: Field[]
     attrs?: Record<string, unknown>
     append?: string

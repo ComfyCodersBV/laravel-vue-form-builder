@@ -6,8 +6,9 @@ import { Input } from '../input'
 import { X, ChevronsUpDown } from '@lucide/vue'
 import { cn } from '../../../lib/utils'
 import { useFormMessages } from '../../../lib/messages'
+import { groupOptions, type SelectOption } from '../../../lib/options'
 
-export interface Option { value: string | number; label: string }
+export type Option = SelectOption
 
 interface Props {
   modelValue?: Array<string | number>
@@ -60,6 +61,8 @@ const filtered = computed(() => {
   const q = query.value.toLowerCase()
   return props.options.filter(o => o.label.toLowerCase().includes(q) || String(o.value).toLowerCase().includes(q))
 })
+
+const filteredGroups = computed(() => groupOptions(filtered.value))
 
 function toggleValue(val: string | number) {
   if (props.disabled || props.readonly) return
@@ -124,18 +127,28 @@ defineOptions({ inheritAttrs: false })
         <Button type="button" variant="outline" size="sm" @click="clearAll" :disabled="!selected.length">{{ messages.clearAll }}</Button>
       </div>
       <div class="max-h-64 overflow-auto pt-2">
-        <button
-          v-for="opt in filtered"
-          :key="String(opt.value)"
-          type="button"
-          class="flex w-full items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-accent"
-          :class="selectedSet.has(String(opt.value)) ? 'bg-accent' : ''"
-          @click="toggleValue(opt.value)"
-          :disabled="props.disabled || props.readonly"
+        <div
+          v-for="(group, groupIndex) in filteredGroups"
+          :key="`group-${groupIndex}`"
+          :role="group.label === null ? undefined : 'group'"
+          :aria-label="group.label ?? undefined"
         >
-          <span class="truncate mr-2">{{ opt.label }}</span>
-          <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">{{ messages.selected }}</span>
-        </button>
+          <div v-if="group.label !== null" class="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground" data-select-group>
+            {{ group.label }}
+          </div>
+          <button
+            v-for="opt in group.options"
+            :key="String(opt.value)"
+            type="button"
+            class="flex w-full items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-accent"
+            :class="selectedSet.has(String(opt.value)) ? 'bg-accent' : ''"
+            @click="toggleValue(opt.value)"
+            :disabled="props.disabled || props.readonly"
+          >
+            <span class="truncate mr-2">{{ opt.label }}</span>
+            <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">{{ messages.selected }}</span>
+          </button>
+        </div>
         <div v-if="!filtered.length" class="px-2 py-3 text-xs text-muted-foreground">{{ messages.noResults }}</div>
       </div>
     </PopoverContent>

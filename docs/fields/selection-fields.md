@@ -40,6 +40,29 @@ Select::make('user_id')
     ->optionValue('id')          // default: 'id'
 ```
 
+Options given as a map keep the order you give them. The schema also sends `optionOrder` (the keys as strings),
+because a browser would sort numeric keys such as ids. Values of a map always reach the browser as strings.
+
+### Option groups
+
+`->optionGroups()` shows the options under a heading per group, in the plain dropdown, the searchable combobox and the
+multi-select alike. Each group is a map or a list of rows, as `->options()` takes:
+
+```php
+Select::make('post_id')
+    ->label('Post')
+    ->optionGroups([
+        'Costs' => [7 => 'Rent', 2 => 'Energy'],
+        'Income' => FinancePost::query()->where('kind', 'income')->get(['id', 'name']),
+    ])
+    ->searchable()
+```
+
+The schema sends one flat `options` list of rows that each carry a `group`; a map becomes rows under the field's
+`optionValue` and `optionLabel` keys (`id` and `name` unless set). Any option row may carry a `group`, also rows given
+to `->options()` and the `[{value, label, group}]` a `searchUrl` returns. Options of one group must follow each other;
+a group that comes back later gets a second heading.
+
 ### Multi-select
 
 ```php

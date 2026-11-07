@@ -3,7 +3,7 @@ import BaseField from './BaseField.vue';
 import { useFieldListeners } from '../../lib/listeners';
 import { cn } from '../../lib/utils';
 import type { Field } from '../../types/form-builder';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
@@ -13,8 +13,9 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useFormMessages } from '../../lib/messages'
 import { suggestionsRequestUrl } from '../../lib/tags'
+import { groupOptions, hasGroups, toOptions, type SelectOption } from '../../lib/options'
 
-interface Option { value: string | number; label: string }
+type Option = SelectOption;
 type Options = Record<string, string> | Array<Option> | Array<string | number>;
 type OptionSearch = (query: string) => Promise<Array<any>> | Array<any>;
 
@@ -22,6 +23,7 @@ const SEARCH_DELAY = 250;
 
 interface SelectProps extends Field {
     options?: Options;
+    optionOrder?: Array<string | number>;
     placeholder?: string;
     multiple?: boolean;
     optionLabel?: string;
@@ -46,6 +48,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
     label: undefined,
     modelValue: '',
     options: () => ({} as Options),
+    optionOrder: undefined,
     optionLabel: 'name',
     optionValue: 'id',
     placeholder: undefined,
@@ -133,39 +136,21 @@ const remoteSelected = ref<Option | null>(null);
 const isSearching = ref(false);
 const searchFailed = ref(false);
 
-function toOptions(optionsValue: Options | undefined, labelKey: string, valueKey: string): Option[] {
-    if (! optionsValue) {
-        return [];
-    }
-
-    if (Array.isArray(optionsValue)) {
-        return optionsValue.map((item: any) => {
-            if (typeof item === 'object' && item !== null) {
-                const label = getProp(item, labelKey) ?? String(item);
-                const value = getProp(item, valueKey) ?? String(item);
-
-                return { value, label };
-            }
-
-            return {
-                value: item,
-                label: String(item)
-            };
-        });
-    }
-
-    return Object.entries(optionsValue as Record<string, string>).map(
-        ([value, label]) => ({ value, label })
-    );
-}
-
 const optionsList = computed<Option[]>(() => {
     if (searchesUrl.value) {
         return toOptions(remoteResults.value, 'label', 'value');
     }
 
-    return toOptions(isRemote.value ? remoteResults.value : props.options, optionLabel.value, optionValue.value);
+    if (isRemote.value) {
+        return toOptions(remoteResults.value, optionLabel.value, optionValue.value);
+    }
+
+    return toOptions(props.options, optionLabel.value, optionValue.value, props.optionOrder);
 });
+
+const optionGroups = computed(() => groupOptions(optionsList.value));
+
+const isGrouped = computed(() => hasGroups(optionsList.value));
 
 const selectedOptionLabel = computed(() => {
     if (!internalKey.value) return '';
@@ -331,6 +316,8 @@ const comboboxFilteredOptions = computed(() => {
     return optionsList.value.filter(option => option.label.toLowerCase().includes(query));
 });
 
+const comboboxGroups = computed(() => groupOptions(comboboxFilteredOptions.value));
+
 function selectComboboxOption(option: Option) {
     onUpdateInternal(option.value);
     comboboxOpen.value = false;
@@ -385,17 +372,31 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                             />
                         </div>
                         <div class="max-h-64 overflow-auto">
-                            <button
-                                v-for="option in comboboxFilteredOptions"
-                                :key="String(option.value)"
-                                type="button"
-                                class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
-                                :class="String(option.value) === internalKey ? 'bg-accent' : ''"
-                                @click="selectComboboxOption(option)"
+                            <div
+                                v-for="(group, groupIndex) in comboboxGroups"
+                                :key="`group-${groupIndex}`"
+                                :role="group.label === null ? undefined : 'group'"
+                                :aria-label="group.label ?? undefined"
                             >
-                                <span v-if="isRemote" class="truncate">{{ option.label }}</span>
-                                <span v-else class="truncate" v-html="option.label"></span>
-                            </button>
+                                <div
+                                    v-if="group.label !== null"
+                                    class="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground"
+                                    data-select-group
+                                >
+                                    {{ group.label }}
+                                </div>
+                                <button
+                                    v-for="option in group.options"
+                                    :key="String(option.value)"
+                                    type="button"
+                                    class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+                                    :class="String(option.value) === internalKey ? 'bg-accent' : ''"
+                                    @click="selectComboboxOption(option)"
+                                >
+                                    <span v-if="isRemote" class="truncate">{{ option.label }}</span>
+                                    <span v-else class="truncate" v-html="option.label"></span>
+                                </button>
+                            </div>
                             <div role="status" aria-live="polite">
                                 <div v-if="isBelowMinimum" class="px-2 py-3 text-xs text-muted-foreground" data-select-hint>
                                     {{ messages.typeToSearch }}
@@ -445,13 +446,27 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                         </span>
                     </SelectTrigger>
                     <SelectContent class="min-w-[var(--reka-select-trigger-width)]">
-                        <SelectItem
-                            v-for="option in optionsList"
-                            :key="String(option.value)"
-                            :value="String(option.value)"
-                        >
-                            <div v-html="option.label" class="flex justify-between items-center w-full"></div>
-                        </SelectItem>
+                        <template v-if="isGrouped">
+                            <SelectGroup v-for="(group, groupIndex) in optionGroups" :key="`group-${groupIndex}`">
+                                <SelectLabel v-if="group.label !== null" data-select-group>{{ group.label }}</SelectLabel>
+                                <SelectItem
+                                    v-for="option in group.options"
+                                    :key="String(option.value)"
+                                    :value="String(option.value)"
+                                >
+                                    <div v-html="option.label" class="flex justify-between items-center w-full"></div>
+                                </SelectItem>
+                            </SelectGroup>
+                        </template>
+                        <template v-else>
+                            <SelectItem
+                                v-for="option in optionsList"
+                                :key="String(option.value)"
+                                :value="String(option.value)"
+                            >
+                                <div v-html="option.label" class="flex justify-between items-center w-full"></div>
+                            </SelectItem>
+                        </template>
                     </SelectContent>
                     <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
                 </Select>
