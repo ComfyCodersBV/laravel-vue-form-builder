@@ -85,9 +85,18 @@ export interface DependentOptions {
     options: Record<string, Array<unknown>> | Array<Array<unknown>>
 }
 
-export function dependentOptionsFor(dependent: DependentOptions, value: unknown): Array<unknown> {
-    const key = typeof value === 'boolean' ? String(value) : value === null || value === undefined ? '' : String(value)
-    const options = (dependent.options as Record<string, Array<unknown>>)[key]
+const NO_OPTIONS: Array<unknown> = []
 
-    return Array.isArray(options) ? options : []
+function dependentKey(value: unknown): string {
+    if (typeof value === 'boolean') {
+        return value ? '1' : '0'
+    }
+
+    return value === null || value === undefined ? '' : String(value)
+}
+
+export function dependentOptionsFor(dependent: DependentOptions, value: unknown): Array<unknown> {
+    const options = (dependent.options as Record<string, Array<unknown>>)[dependentKey(value)]
+
+    return Array.isArray(options) ? options : NO_OPTIONS
 }

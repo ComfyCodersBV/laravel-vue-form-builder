@@ -85,6 +85,7 @@ Select::make('post_id')
 Each list is a map or a list of rows (rows may carry a `group`). The field adds a `DependentOption` rule
 (`TranquilTools\FormBuilder\Rules\DependentOption`) that only accepts a value listed for the submitted value of the
 other field, for a multiple select every value. Inside a `Repeater` the other field is read from the same row. A
+boolean value of the other field (checkbox or toggle) matches the keys `1` and `0`. A
 dependent select cannot also use `->searchUrl()`.
 
 ### Multi-select

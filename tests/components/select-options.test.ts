@@ -2,7 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import Form from '../../resources/js/components/Form.vue'
-import { toOptions } from '../../resources/js/lib/options'
+import { dependentOptionsFor, toOptions } from '../../resources/js/lib/options'
 
 const schemaWith = (fields: Array<Record<string, unknown>>, defaults: Record<string, unknown> = {}) => ({
     schemaVersion: '1.13',
@@ -45,6 +45,13 @@ describe('select options', () => {
     it('keeps the server order of options given as a map', () => {
         expect(toOptions({ 3: 'Bram', 12: 'Anna' }, 'name', 'id', ['12', '3']).map((option) => option.label)).toEqual(['Anna', 'Bram'])
         expect(toOptions({ 3: 'Bram', 12: 'Anna' }, 'name', 'id').map((option) => option.label)).toEqual(['Bram', 'Anna'])
+    })
+
+    it('reads a boolean value it depends on as 1 or 0', () => {
+        const dependent = { field: 'member', options: { 1: ['member'], 0: ['guest'] } }
+
+        expect(dependentOptionsFor(dependent, true)).toEqual(['member'])
+        expect(dependentOptionsFor(dependent, false)).toEqual(['guest'])
     })
 
     it('shows options in the order the server sent', async () => {

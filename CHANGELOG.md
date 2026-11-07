@@ -11,7 +11,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * Option rows with a `group` (`Select::optionGroups()`, or a `group` key on any row or `searchUrl` result) show under a
   heading per group in the dropdown, the searchable combobox and the multi-select.
 * A select with `dependentOptions` (`Select::optionsFor()`) shows the options for the current value of the other field
-  and clears a choice that is no longer listed. Inside a repeater it reads the other field from the same row. See
+  and clears a choice that is no longer listed. Inside a repeater it reads the other field from the same row. A boolean
+  value (checkbox or toggle) matches the keys `1` and `0`. See
   `docs/fields/selection-fields.md`.
 * `Repeater::inline()` renders each row as one line: the sub-fields side by side with the row actions at the end. On
   small screens a row stacks in a card. Before, the sub-fields still stacked inside a numbered card.
