@@ -59,6 +59,7 @@ export interface Field {
     error?: string | string[]
     options?: Record<string, string> | Array<FieldOption> | Array<string | number>
     optionOrder?: Array<string | number>
+    dependentOptions?: { field: string; options: Record<string, Array<unknown>> | Array<Array<unknown>> }
     fields?: Field[]
     attrs?: Record<string, unknown>
     append?: string

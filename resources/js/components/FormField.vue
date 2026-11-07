@@ -3,6 +3,7 @@ import { computed, inject, provide } from 'vue'
 import { useFormMessages } from '../lib/messages'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { hideLabelKey } from '../lib/label'
+import { dependentOptionsFor } from '../lib/options'
 import type { Field } from '../types/form-builder'
 
 import Button from './Fields/Button.vue'
@@ -79,6 +80,10 @@ function extraProps(): Record<string, any> {
 
     if (field.type === 'tags' || field.type === 'repeater') {
         return { entryErrors: entryErrorsFor(field.name ?? '') }
+    }
+
+    if (field.type === 'select' && field.dependentOptions) {
+        return { options: dependentOptionsFor(field.dependentOptions, form[field.dependentOptions.field]) }
     }
 
     if (field.type === 'file') {

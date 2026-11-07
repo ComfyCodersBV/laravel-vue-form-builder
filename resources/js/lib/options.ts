@@ -79,3 +79,15 @@ export function groupOptions(options: SelectOption[]): OptionGroup[] {
 export function hasGroups(options: SelectOption[]): boolean {
     return options.some((option) => option.group !== undefined)
 }
+
+export interface DependentOptions {
+    field: string
+    options: Record<string, Array<unknown>> | Array<Array<unknown>>
+}
+
+export function dependentOptionsFor(dependent: DependentOptions, value: unknown): Array<unknown> {
+    const key = typeof value === 'boolean' ? String(value) : value === null || value === undefined ? '' : String(value)
+    const options = (dependent.options as Record<string, Array<unknown>>)[key]
+
+    return Array.isArray(options) ? options : []
+}

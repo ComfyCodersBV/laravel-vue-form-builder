@@ -63,6 +63,30 @@ The schema sends one flat `options` list of rows that each carry a `group`; a ma
 to `->options()` and the `[{value, label, group}]` a `searchUrl` returns. Options of one group must follow each other;
 a group that comes back later gets a second heading.
 
+### Options that depend on another field
+
+`->optionsFor(string $field, array $optionsPerValue)` shows the options listed for the current value of another field.
+When that value changes, a choice that is no longer listed is cleared.
+
+```php
+Radio::make('direction')
+    ->options(['expense' => 'Expense', 'income' => 'Income']),
+
+Select::make('post_id')
+    ->label('Post')
+    ->optionsFor('direction', [
+        'expense' => $expensePosts,
+        'income' => $incomePosts,
+    ])
+    ->searchable()
+    ->rules(['required', 'integer'])
+```
+
+Each list is a map or a list of rows (rows may carry a `group`). The field adds a `DependentOption` rule
+(`TranquilTools\FormBuilder\Rules\DependentOption`) that only accepts a value listed for the submitted value of the
+other field, for a multiple select every value. Inside a `Repeater` the other field is read from the same row. A
+dependent select cannot also use `->searchUrl()`.
+
 ### Multi-select
 
 ```php

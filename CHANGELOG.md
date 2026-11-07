@@ -29,6 +29,22 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * Server errors of a repeater row (`lines.1.amount`) show under that sub-field in that row. Before, they showed nowhere.
   See `docs/fields/repeater.md`.
 
+## 1.19.0 - 2026-11-07
+* A file field shows the errors of single files (`files.0`, `files.1`, ...) under the field, each message once, unless
+  the field has an error of its own. Before, they showed nowhere. With `Files::fileRules()` from laravel-form-builder
+  1.14 the rules per file live on the field. See `docs/fields/file.md`.
+* A select follows `optionOrder` from laravel-form-builder 1.14, so options given as a map keep the server order
+  instead of being sorted by numeric key in the browser.
+* Option rows with a `group` (`Select::optionGroups()`, or a `group` key on any row or `searchUrl` result) show under a
+  heading per group in the dropdown, the searchable combobox and the multi-select.
+* A select with `dependentOptions` (`Select::optionsFor()`) shows the options for the current value of the other field
+  and clears a choice that is no longer listed. Inside a repeater it reads the other field from the same row. See
+  `docs/fields/selection-fields.md`.
+* `Repeater::inline()` renders each row as one line: the sub-fields side by side with the row actions at the end. On
+  small screens a row stacks in a card. Before, the sub-fields still stacked inside a numbered card.
+* Server errors of a repeater row (`lines.1.amount`) show under that sub-field in that row. Before, they showed nowhere.
+  See `docs/fields/repeater.md`.
+
 ## 1.18.0 - 2026-11-06
 * `inputClassName` in a field's schema (`->inputClass()` from laravel-form-builder 1.13) adds classes to the element
   itself instead of the wrapper: the input, textarea, select and date trigger, checkbox, each option of a checkbox or
