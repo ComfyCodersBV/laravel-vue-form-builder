@@ -81,6 +81,13 @@ function extraProps(): Record<string, any> {
         return { entryErrors: entryErrorsFor(field.name ?? '') }
     }
 
+    if (field.type === 'file') {
+        return {
+            entryErrors: entryErrorsFor(field.name ?? ''),
+            ...(field.removeFlag ? { removeRequested: form[field.removeFlag] } : {}),
+        }
+    }
+
     if (!field.removeFlag) {
         return {}
     }

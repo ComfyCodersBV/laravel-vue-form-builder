@@ -21,6 +21,7 @@ interface FileFieldProps extends Field {
     removeFlag?: string
     removeRequested?: boolean | string | number | string[]
     currentFiles?: CurrentFile[]
+    entryErrors?: Record<string, string | string[]>
 }
 
 const props = withDefaults(defineProps<FileFieldProps>(), {
@@ -44,6 +45,7 @@ const props = withDefaults(defineProps<FileFieldProps>(), {
     removeFlag: undefined,
     removeRequested: false,
     currentFiles: undefined,
+    entryErrors: () => ({}),
 })
 
 const emit = defineEmits<{
@@ -65,6 +67,16 @@ watch(() => props.modelValue, (value) => {
     if (input) {
         input.value = ''
     }
+})
+
+const fieldError = computed(() => {
+    if (props.error) {
+        return props.error
+    }
+
+    const entryMessages = Object.values(props.entryErrors).flat()
+
+    return entryMessages.length > 0 ? [...new Set(entryMessages)].join(' ') : undefined
 })
 
 const IMAGE_PATTERN = /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i
@@ -153,7 +165,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
+    <BaseField v-bind="{ ...wrapperAttrs(), label, name, error: fieldError, className, help, theme }">
       <div v-if="listsFiles" class="mb-2 space-y-1 text-sm" data-current-files>
           <div class="text-xs text-muted-foreground">{{ messageContext.messages.currentFiles }}</div>
           <ul class="divide-y rounded-md border border-input">

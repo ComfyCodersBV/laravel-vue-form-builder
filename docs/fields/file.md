@@ -53,6 +53,21 @@ File::make('photos')
 
 `Files` is a shorthand for `File::make()->multiple()`.
 
+### Rules per file
+
+`Files::fileRules(...)` validates every uploaded file. The rules become `<name>.*` next to the field's own rules, which
+still apply to the list as a whole:
+
+```php
+Files::make('files')
+    ->rules(['required', 'array', 'max:10'])
+    ->fileRules(['file', 'max:20480', 'mimes:pdf,docx'])
+```
+
+The errors of single files (`files.0`, `files.1`, ...) show under the field, each message once. An error of the field
+itself (`files`) takes precedence. Name the files in the messages with `attributes()` on your form request, for example
+`'files.0' => $file->getClientOriginalName()`.
+
 ### Current file
 
 Show the file that is stored now, so an edit form tells the user what they would replace:

@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.19.0 - 2026-11-07
+* A file field shows the errors of single files (`files.0`, `files.1`, ...) under the field, each message once, unless
+  the field has an error of its own. Before, they showed nowhere. With `Files::fileRules()` from laravel-form-builder
+  1.14 the rules per file live on the field. See `docs/fields/file.md`.
+
 ## 1.18.0 - 2026-11-06
 * `inputClassName` in a field's schema (`->inputClass()` from laravel-form-builder 1.13) adds classes to the element
   itself instead of the wrapper: the input, textarea, select and date trigger, checkbox, each option of a checkbox or
