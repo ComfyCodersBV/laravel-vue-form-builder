@@ -33,6 +33,15 @@ Repeater::make('ingredients')
 Prefer simple input sub-fields (text, number, select, textarea, toggle). The row
 value is a plain object keyed by each sub-field `name`.
 
+### Inline rows
+
+`->inline()` renders each row as one line: the sub-fields side by side in equal columns with the row actions at the
+end, without the numbered card. On small screens a row stacks its sub-fields in a bordered card again.
+
+### Errors per row
+
+Server errors of a row, such as `ingredients.1.name`, show under that sub-field in that row.
+
 ---
 
 ## Validation
@@ -63,4 +72,4 @@ example above contributes the following to `Form::rules()`:
 | `->addable(bool)`          | Allow adding rows (default: `true`)                           |
 | `->deletable(bool)`        | Allow removing rows (default: `true`)                         |
 | `->reorderable(bool)`      | Allow drag-to-reorder rows (default: `false`)                 |
-| `->inline(bool)`           | Lay out each row's sub-fields horizontally instead of stacked |
+| `->inline(bool)`           | Render each row as one line of sub-fields instead of a card   |

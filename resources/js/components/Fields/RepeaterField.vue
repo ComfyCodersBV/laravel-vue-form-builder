@@ -21,6 +21,7 @@ interface RepeaterProps extends Field {
     addable?: boolean
     deletable?: boolean
     reorderable?: boolean
+    entryErrors?: Record<string, string | string[]>
 }
 
 const props = withDefaults(defineProps<RepeaterProps>(), {
@@ -39,6 +40,7 @@ const props = withDefaults(defineProps<RepeaterProps>(), {
     addable: true,
     deletable: true,
     reorderable: false,
+    entryErrors: () => ({}),
 })
 
 const emit = defineEmits<{ 'update:modelValue': [Array<Record<string, any>>] }>()
@@ -99,8 +101,17 @@ watch(
 // exposing `form[fieldName]` and `form.errors`. A per-row proxy maps reads
 // and writes straight onto the reactive row object. Proxies are memoised so
 // FormRenderer receives a stable `form` prop across re-renders.
-const emptyErrors: Record<string, any> = {}
 const formCache = new WeakMap<object, any>()
+
+function rowErrors(row: Record<string, any>): Record<string, string | string[]> {
+    const prefix = `${rows.value.indexOf(row)}.`
+
+    return Object.fromEntries(
+        Object.entries(props.entryErrors)
+            .filter(([key]) => key.startsWith(prefix))
+            .map(([key, message]) => [key.slice(prefix.length), message]),
+    )
+}
 
 function rowForm(row: Record<string, any>) {
     const cached = formCache.get(row)
@@ -111,7 +122,7 @@ function rowForm(row: Record<string, any>) {
     const proxy = new Proxy(row, {
         get(target, prop) {
             if (prop === 'errors') {
-                return emptyErrors
+                return rowErrors(target)
             }
             return Reflect.get(target, prop)
         },
@@ -123,6 +134,8 @@ function rowForm(row: Record<string, any>) {
     formCache.set(row, proxy)
     return proxy
 }
+
+const hasLabels = computed(() => props.fields.some((field) => Boolean(field.label) && !field.hideLabel && field.type !== 'hidden'))
 
 const canAdd = computed(() =>
     props.addable && (props.max === undefined || rows.value.length < props.max)
@@ -168,13 +181,14 @@ function moveDown(idx: number) {
 <template>
     <BaseField v-bind="{ label, name, error, className, help, theme }">
         <div class="space-y-3">
-            <div v-for="(row, i) in rows" :key="i"
-                 class="rounded-md border border-neutral-200 p-3 dark:border-neutral-700">
-                <div class="mb-2 flex items-center justify-between">
-                    <span class="text-xs font-medium text-neutral-500">
-                        {{ itemLabel ? `${itemLabel} ${i + 1}` : `#${i + 1}` }}
-                    </span>
-                    <div class="flex items-center gap-1">
+            <template v-if="inline">
+                <div v-for="(row, i) in rows" :key="i"
+                     class="flex flex-col gap-3 rounded-md border border-neutral-200 p-3 sm:flex-row sm:items-start sm:border-0 sm:p-0 dark:border-neutral-700"
+                     data-repeater-row>
+                    <div class="grid min-w-0 flex-1 gap-3 sm:auto-cols-fr sm:grid-flow-col">
+                        <FormRenderer :fields="fields" :form="rowForm(row)" layout-from-form/>
+                    </div>
+                    <div class="flex items-center justify-end gap-1" :class="{ 'sm:pt-6': hasLabels }">
                         <Button v-if="reorderable" type="button" size="icon" variant="outline"
                                 :disabled="i === 0" :aria-label="messages.moveUp" @click="moveUp(i)">
                             <ArrowUp class="size-4"/>
@@ -189,11 +203,37 @@ function moveDown(idx: number) {
                         </Button>
                     </div>
                 </div>
+            </template>
 
-                <div :class="inline ? 'flex flex-wrap items-start gap-3' : 'space-y-3'">
-                    <FormRenderer :fields="fields" :form="rowForm(row)"/>
+            <template v-else>
+                <div v-for="(row, i) in rows" :key="i"
+                     class="rounded-md border border-neutral-200 p-3 dark:border-neutral-700"
+                     data-repeater-row>
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-xs font-medium text-neutral-500">
+                            {{ itemLabel ? `${itemLabel} ${i + 1}` : `#${i + 1}` }}
+                        </span>
+                        <div class="flex items-center gap-1">
+                            <Button v-if="reorderable" type="button" size="icon" variant="outline"
+                                    :disabled="i === 0" :aria-label="messages.moveUp" @click="moveUp(i)">
+                                <ArrowUp class="size-4"/>
+                            </Button>
+                            <Button v-if="reorderable" type="button" size="icon" variant="outline"
+                                    :disabled="i === rows.length - 1" :aria-label="messages.moveDown" @click="moveDown(i)">
+                                <ArrowDown class="size-4"/>
+                            </Button>
+                            <Button v-if="deletable" type="button" size="icon" variant="destructive"
+                                    :disabled="!canDelete()" :aria-label="messages.remove" @click="removeRow(i)">
+                                <Trash2 class="size-4"/>
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <FormRenderer :fields="fields" :form="rowForm(row)"/>
+                    </div>
                 </div>
-            </div>
+            </template>
 
             <p v-if="!rows.length" class="text-sm text-neutral-500">
                 {{ addActionLabel ?? messages.addItem }}

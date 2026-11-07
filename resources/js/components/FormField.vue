@@ -77,7 +77,7 @@ function extraProps(): Record<string, any> {
         return { form }
     }
 
-    if (field.type === 'tags') {
+    if (field.type === 'tags' || field.type === 'repeater') {
         return { entryErrors: entryErrorsFor(field.name ?? '') }
     }
 
