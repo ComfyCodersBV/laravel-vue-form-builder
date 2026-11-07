@@ -13,7 +13,8 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useFormMessages } from '../../lib/messages'
 import { suggestionsRequestUrl } from '../../lib/tags'
-import { groupOptions, hasGroups, toOptions, type SelectOption } from '../../lib/options'
+import { codeWidth, groupOptions, hasGroups, optionMatches, toOptions, type SelectOption } from '../../lib/options'
+import OptionContent from './OptionContent.vue'
 
 type Option = SelectOption;
 type Options = Record<string, string> | Array<Option> | Array<string | number>;
@@ -28,6 +29,7 @@ interface SelectProps extends Field {
     multiple?: boolean;
     optionLabel?: string;
     optionValue?: string;
+    optionCode?: string;
     searchable?: boolean;
     searchPlaceholder?: string;
     noResultsLabel?: string;
@@ -51,6 +53,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
     optionOrder: undefined,
     optionLabel: 'name',
     optionValue: 'id',
+    optionCode: undefined,
     placeholder: undefined,
     readonly: false,
     multiple: false,
@@ -138,45 +141,49 @@ const searchFailed = ref(false);
 
 const optionsList = computed<Option[]>(() => {
     if (searchesUrl.value) {
-        return toOptions(remoteResults.value, 'label', 'value');
+        return toOptions(remoteResults.value, 'label', 'value', undefined, props.optionCode ? 'code' : undefined);
     }
 
     if (isRemote.value) {
-        return toOptions(remoteResults.value, optionLabel.value, optionValue.value);
+        return toOptions(remoteResults.value, optionLabel.value, optionValue.value, undefined, props.optionCode);
     }
 
-    return toOptions(props.options, optionLabel.value, optionValue.value, props.optionOrder);
+    return toOptions(props.options, optionLabel.value, optionValue.value, props.optionOrder, props.optionCode);
 });
 
 const optionGroups = computed(() => groupOptions(optionsList.value));
 
 const isGrouped = computed(() => hasGroups(optionsList.value));
 
-const selectedOptionLabel = computed(() => {
-    if (!internalKey.value) return '';
+const selectedOption = computed<Option | null>(() => {
+    if (!internalKey.value) return null;
 
     const found = optionsList.value.find(
         option => String(option.value) === String(internalKey.value)
     );
 
     if (found) {
-        return found.label;
+        return found;
     }
 
     if (isRemote.value && remoteSelected.value && String(remoteSelected.value.value) === internalKey.value) {
-        return remoteSelected.value.label;
+        return remoteSelected.value;
     }
 
     if (isRemote.value && props.selected && String(props.selected.value) === internalKey.value) {
-        return props.selected.label;
+        return props.optionCode ? props.selected : { value: props.selected.value, label: props.selected.label };
     }
 
     if (isRemote.value && props.selectedLabel) {
-        return props.selectedLabel;
+        return { value: internalKey.value, label: props.selectedLabel };
     }
 
-    return String(internalKey.value);
+    return { value: internalKey.value, label: String(internalKey.value) };
 });
+
+const listCodeWidth = computed(() => codeWidth(optionsList.value));
+
+const triggerCodeWidth = computed(() => listCodeWidth.value ?? codeWidth(selectedOption.value ? [selectedOption.value] : []));
 
 const internalKey = ref<string>('');
 const selectedLocal = ref<Array<string | number>>([]);
@@ -311,9 +318,7 @@ const comboboxFilteredOptions = computed(() => {
         return optionsList.value;
     }
 
-    const query = comboboxQuery.value.toLowerCase();
-
-    return optionsList.value.filter(option => option.label.toLowerCase().includes(query));
+    return optionsList.value.filter(option => optionMatches(option, comboboxQuery.value));
 });
 
 const comboboxGroups = computed(() => groupOptions(comboboxFilteredOptions.value));
@@ -353,8 +358,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                             :class="cn('w-full min-w-0 justify-between font-normal', props.inputClassName)"
                         >
                             <span class="truncate" :class="{ 'mr-8': isClearable }">
-                                <span v-if="selectedOptionLabel && isRemote">{{ selectedOptionLabel }}</span>
-                                <span v-else-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
+                                <OptionContent v-if="selectedOption" :option="selectedOption" :code-width="triggerCodeWidth" :html="!isRemote" />
                                 <span v-else class="text-muted-foreground">
                                     {{ props.placeholder ?? props.choosePlaceholder ?? messages.chooseOption }}
                                 </span>
@@ -393,8 +397,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                                     :class="String(option.value) === internalKey ? 'bg-accent' : ''"
                                     @click="selectComboboxOption(option)"
                                 >
-                                    <span v-if="isRemote" class="truncate">{{ option.label }}</span>
-                                    <span v-else class="truncate" v-html="option.label"></span>
+                                    <OptionContent :option="option" :code-width="listCodeWidth" :html="!isRemote" />
                                 </button>
                             </div>
                             <div role="status" aria-live="polite">
@@ -439,7 +442,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                 >
                     <SelectTrigger v-bind="listeners()" :id="props.name" :class="cn('w-full min-w-0 justify-between', props.inputClassName)">
                         <span class="truncate" :class="{ 'mr-8': isClearable }">
-                            <span v-if="selectedOptionLabel" v-html="selectedOptionLabel"></span>
+                            <OptionContent v-if="selectedOption" :option="selectedOption" :code-width="triggerCodeWidth" html />
                             <span v-else class="text-muted-foreground">
                                 {{ props.placeholder ?? props.choosePlaceholder ?? messages.chooseOption }}
                             </span>
@@ -454,7 +457,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                                     :key="String(option.value)"
                                     :value="String(option.value)"
                                 >
-                                    <div v-html="option.label" class="flex justify-between items-center w-full"></div>
+                                    <OptionContent :option="option" :code-width="listCodeWidth" html tag="div" label-class="flex justify-between items-center w-full" />
                                 </SelectItem>
                             </SelectGroup>
                         </template>
@@ -464,7 +467,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                                 :key="String(option.value)"
                                 :value="String(option.value)"
                             >
-                                <div v-html="option.label" class="flex justify-between items-center w-full"></div>
+                                <OptionContent :option="option" :code-width="listCodeWidth" html tag="div" label-class="flex justify-between items-center w-full" />
                             </SelectItem>
                         </template>
                     </SelectContent>

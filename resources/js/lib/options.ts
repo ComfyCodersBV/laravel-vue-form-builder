@@ -2,6 +2,7 @@ export interface SelectOption {
     value: string | number
     label: string
     group?: string
+    code?: string
 }
 
 export interface OptionGroup {
@@ -23,7 +24,17 @@ function groupOf(item: Record<string, unknown>): string | undefined {
     return typeof item.group === 'string' && item.group !== '' ? item.group : undefined
 }
 
-function fromRow(item: unknown, labelKey: string, valueKey: string): SelectOption {
+function codeOf(item: Record<string, unknown>, key: string | undefined): string | undefined {
+    if (!key) {
+        return undefined
+    }
+
+    const code = readProperty(item, key)
+
+    return (typeof code === 'string' || typeof code === 'number') && String(code) !== '' ? String(code) : undefined
+}
+
+function fromRow(item: unknown, labelKey: string, valueKey: string, codeKey?: string): SelectOption {
     if (typeof item !== 'object' || item === null) {
         return { value: item as string | number, label: String(item) }
     }
@@ -34,8 +45,13 @@ function fromRow(item: unknown, labelKey: string, valueKey: string): SelectOptio
         label: String(readProperty(row, labelKey) ?? String(item)),
     }
     const group = groupOf(row)
+    const code = codeOf(row, codeKey)
 
-    return group ? { ...option, group } : option
+    return {
+        ...option,
+        ...(group ? { group } : {}),
+        ...(code ? { code } : {}),
+    }
 }
 
 export function toOptions(
@@ -43,13 +59,14 @@ export function toOptions(
     labelKey: string,
     valueKey: string,
     order?: Array<string | number>,
+    codeKey?: string,
 ): SelectOption[] {
     if (!options) {
         return []
     }
 
     if (Array.isArray(options)) {
-        return options.map((item) => fromRow(item, labelKey, valueKey))
+        return options.map((item) => fromRow(item, labelKey, valueKey, codeKey))
     }
 
     const map = options as Record<string, unknown>
@@ -78,6 +95,50 @@ export function groupOptions(options: SelectOption[]): OptionGroup[] {
 
 export function hasGroups(options: SelectOption[]): boolean {
     return options.some((option) => option.group !== undefined)
+}
+
+export function codeWidth(options: SelectOption[]): number | null {
+    const width = options.reduce((widest, option) => Math.max(widest, option.code?.length ?? 0), 0)
+
+    return width > 0 ? width : null
+}
+
+export function plainText(html: string): string {
+    if (!/[<&]/.test(html)) {
+        return html
+    }
+
+    if (typeof DOMParser === 'undefined') {
+        return html.replace(/<[^>]*>/g, '')
+    }
+
+    return new DOMParser().parseFromString(html, 'text/html').body.textContent ?? ''
+}
+
+const searchTexts = new WeakMap<SelectOption, string>()
+
+function searchText(option: SelectOption, html: boolean): string {
+    if (!html) {
+        return [option.code, option.label].filter(Boolean).join(' ').toLowerCase()
+    }
+
+    const cached = searchTexts.get(option)
+
+    if (cached !== undefined) {
+        return cached
+    }
+
+    const text = [option.code, plainText(option.label)].filter(Boolean).join(' ').toLowerCase()
+
+    searchTexts.set(option, text)
+
+    return text
+}
+
+export function optionMatches(option: SelectOption, query: string, html = true): boolean {
+    const text = searchText(option, html)
+
+    return query.toLowerCase().split(/\s+/).filter(Boolean).every((term) => text.includes(term))
 }
 
 export interface DependentOptions {

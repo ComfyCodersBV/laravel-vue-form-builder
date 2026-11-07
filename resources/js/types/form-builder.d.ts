@@ -27,6 +27,7 @@ export interface FieldOption {
     value: string | number
     label: string
     group?: string
+    code?: string
     help?: string
     description?: string
     disabled?: boolean
@@ -94,7 +95,8 @@ export interface Field {
     suggestionsUrl?: string
     searchUrl?: string
     minSearchLength?: number
-    selected?: { value: string | number; label: string } | null
+    selected?: { value: string | number; label: string; code?: string } | null
+    optionCode?: string
     profile?: string
     features?: string[]
     touch?: boolean

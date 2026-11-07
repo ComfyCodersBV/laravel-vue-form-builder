@@ -63,6 +63,33 @@ The schema sends one flat `options` list of rows that each carry a `group`; a ma
 to `->options()` and the `[{value, label, group}]` a `searchUrl` returns. Options of one group must follow each other;
 a group that comes back later gets a second heading.
 
+### Option codes
+
+`->optionCode()` shows a code in its own column in front of each label, for example a ledger number in front of the
+name of a finance post. The codes sit in a fixed-width column with tabular figures, so the labels line up; an option
+without a code gets an empty cell. The search matches the code and the label, each word on its own (`8010 rent`), and
+the closed field shows the code with the label.
+
+```php
+Select::make('post_id')
+    ->label('Post')
+    ->optionGroups([
+        'Income' => FinancePost::query()->where('kind', 'income')->get(['id', 'name', 'code']),
+        'Costs' => FinancePost::query()->where('kind', 'expense')->get(['id', 'name', 'code']),
+    ])
+    ->optionCode()               // default: 'code'
+    ->searchable()
+```
+
+The rows carry the code under the key given to `->optionCode()` (`'code'` unless set), in `->options()`,
+`->optionGroups()` and `->optionsFor()` alike; a map has no room for a code. The schema sends `optionCode` and the rows
+unchanged. Without `->optionCode()` a `code` key in a row is ignored. A `searchUrl` answers with
+`[{value, label, code}]`, and `->selected($value, $label, $code)` passes the code of the stored value. Codes are always
+rendered as text. Labels stay as they were: HTML in static options, text from a search. The search never matches the
+markup of an HTML label. The multi-select shows the column too.
+
+Requires `tranquil-tools/laravel-form-builder` 1.15 and `laravel-vue-form-builder` 1.20 or newer.
+
 ### Options that depend on another field
 
 `->optionsFor(string $field, array $optionsPerValue)` shows the options listed for the current value of another field.
@@ -132,7 +159,8 @@ Select::make('accessor')
 
 - A select with a search url never sends its `options`, also when `->options()` was called.
 - `->selected($value, $label)` sends the stored value with its label as `selected: {value, label}`, so an edit form
-  shows the label without searching. Without a label the value itself is shown. `null` sends nothing. It only names
+  shows the label without searching. With `->optionCode()`, a third argument adds its code: `selected: {value, label,
+  code}`. Without a label the value itself is shown. `null` sends nothing. It only names
   the value: the field value itself still comes from the form defaults, as for any other field.
 - The field adds no rule of its own, because the options are not known up front. Validate the value on the server with
   an `exists`-style rule.

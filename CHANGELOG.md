@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.20.0 - 2026-11-07
+* A select with `optionCode` (`Select::optionCode()` from laravel-form-builder 1.15) shows the code of each option in
+  its own fixed-width column with tabular figures, so the labels line up, also for an option without a code. This
+  holds for the plain dropdown, the searchable combobox and the multi-select, for grouped and dependent options and for
+  `searchUrl` results (`[{value, label, code}]`). The closed field shows the code with the label, also for
+  `selected: {value, label, code}`. Codes are rendered as text. Without `optionCode` nothing changes. See
+  `docs/fields/selection-fields.md`.
+* The searchable combobox and the multi-select match every word of the search on its own, against the code and the
+  text of the label. Before, the combobox searched the label's HTML, so a search could match markup.
+
 ## 1.19.0 - 2026-11-07
 * A file field shows the errors of single files (`files.0`, `files.1`, ...) under the field, each message once, unless
   the field has an error of its own. Before, they showed nowhere. With `Files::fileRules()` from laravel-form-builder

@@ -6,7 +6,8 @@ import { Input } from '../input'
 import { X, ChevronsUpDown } from '@lucide/vue'
 import { cn } from '../../../lib/utils'
 import { useFormMessages } from '../../../lib/messages'
-import { groupOptions, type SelectOption } from '../../../lib/options'
+import { codeWidth, groupOptions, optionMatches, type SelectOption } from '../../../lib/options'
+import OptionContent from '../../Fields/OptionContent.vue'
 
 export type Option = SelectOption
 
@@ -59,8 +60,10 @@ const selectedSet = computed(() => new Set(selected.value.map(String)))
 const filtered = computed(() => {
   if (!query.value) return props.options
   const q = query.value.toLowerCase()
-  return props.options.filter(o => o.label.toLowerCase().includes(q) || String(o.value).toLowerCase().includes(q))
+  return props.options.filter(o => optionMatches(o, query.value, false) || String(o.value).toLowerCase().includes(q))
 })
+
+const listCodeWidth = computed(() => codeWidth(props.options))
 
 const filteredGroups = computed(() => groupOptions(filtered.value))
 
@@ -83,7 +86,11 @@ function clearAll() {
 }
 
 function labelFor(val: string | number) {
-  return props.options.find(o => String(o.value) === String(val))?.label ?? String(val)
+  const option = props.options.find(o => String(o.value) === String(val))
+
+  if (!option) return String(val)
+
+  return option.code ? `${option.code} ${option.label}` : option.label
 }
 
 defineOptions({ inheritAttrs: false })
@@ -145,7 +152,7 @@ defineOptions({ inheritAttrs: false })
             @click="toggleValue(opt.value)"
             :disabled="props.disabled || props.readonly"
           >
-            <span class="truncate mr-2">{{ opt.label }}</span>
+            <OptionContent :option="opt" :code-width="listCodeWidth" label-class="truncate mr-2" />
             <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">{{ messages.selected }}</span>
           </button>
         </div>

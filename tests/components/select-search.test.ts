@@ -216,6 +216,27 @@ describe('select with a search url', () => {
         expect(fetch).not.toHaveBeenCalled()
     })
 
+    it('lists the code of each match and shows the code of the selected value', async () => {
+        vi.stubGlobal('fetch', respondWith([{ value: 3, label: 'Rent', code: '8010' }]))
+        const wrapper = mount(Form, {
+            attachTo: document.body,
+            props: { schema: urlSchema({ optionCode: 'code', selected: { value: 9, label: 'Bar', code: '8100' } }, { brand_id: 9 }) },
+        })
+
+        expect(wrapper.find('button[id="brand_id"] [data-option-code]').text()).toBe('8100')
+
+        await type(await open(wrapper), 'rent')
+        await vi.advanceTimersByTimeAsync(300)
+        await flushPromises()
+
+        expect(optionButtons()[0].querySelector('[data-option-code]')?.textContent).toBe('8010')
+
+        optionButtons()[0].click()
+        await flushPromises()
+
+        expect(wrapper.find('button[id="brand_id"] [data-option-code]').text()).toBe('8010')
+    })
+
     it('does not show the selected label once another value is chosen', async () => {
         vi.stubGlobal('fetch', respondWith([{ value: 3, label: 'Other brand' }]))
         const wrapper = mount(Form, {
