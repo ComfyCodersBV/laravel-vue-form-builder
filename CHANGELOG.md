@@ -11,6 +11,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   `docs/fields/selection-fields.md`.
 * The searchable combobox and the multi-select match every word of the search on its own, against the code and the
   text of the label. Before, the combobox searched the label's HTML, so a search could match markup.
+* Requires laravel-form-builder 1.15 and supports schema version 1.14.
 
 ## 1.19.0 - 2026-11-07
 * A file field shows the errors of single files (`files.0`, `files.1`, ...) under the field, each message once, unless
