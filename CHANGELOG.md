@@ -18,6 +18,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * Server errors of a repeater row (`lines.1.amount`) show under that sub-field in that row. Before, they showed nowhere.
   See `docs/fields/repeater.md`.
 * Requires laravel-form-builder `^1.14`. `SUPPORTED_SCHEMA_VERSION` is now `1.13`.
+* The `docs/` folder ships in the installed package again, so `vendor/tranquil-tools/laravel-vue-form-builder/docs`
+  holds the documentation of the installed version.
 
 ## 1.18.0 - 2026-11-06
 * `inputClassName` in a field's schema (`->inputClass()` from laravel-form-builder 1.13) adds classes to the element
