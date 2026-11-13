@@ -2,6 +2,7 @@ import { computed, inject, type ComputedRef, type InjectionKey } from 'vue';
 
 export interface FieldMeta {
     markRequired: boolean;
+    helpText?: string;
 }
 
 export const fieldMetaKey: InjectionKey<ComputedRef<FieldMeta>> = Symbol('form-builder-field-meta');
@@ -14,6 +15,7 @@ export function useFieldMeta(own: () => Partial<FieldMeta>): ComputedRef<FieldMe
 
         return {
             markRequired: props.markRequired ?? injected?.value.markRequired ?? false,
+            helpText: props.helpText ?? injected?.value.helpText,
         };
     });
 }

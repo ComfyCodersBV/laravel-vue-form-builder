@@ -119,6 +119,21 @@ Text::make('api_key')
     ->help(new HtmlString('Find your key in the <a href="/settings">settings</a>.'))
 ```
 
+A plain string is escaped and then rendered as HTML. To render the help as plain text instead, with its line breaks
+kept, use `->helpText()` or `->help($text, html: false)`:
+
+```php
+Text::make('note')
+    ->helpText("Shown to the renter.\nNo markup: <b> stays <b>.")
+```
+
+The schema then carries `helpText`, which the renderer shows as text (and an escaped `help` for older renderers).
+Text computed in the browser goes through `fieldOverrides` the same way, so it never needs escaping by hand:
+
+```vue
+<Form :schema="form" :field-overrides="{ house_number: { helpText: `Found: ${address}` } }" />
+```
+
 ## Disabled and readonly
 
 ```php

@@ -63,7 +63,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="wrapperAttrs()" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" :mark-required="false" inline-label>
+    <BaseField v-bind="wrapperAttrs()" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" :mark-required="false" :help-text="helpText" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Switch

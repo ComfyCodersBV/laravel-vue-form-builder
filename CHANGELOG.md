@@ -12,6 +12,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   groups, toggles and single checkboxes, and for the required locales of a stacked translatable field. The asterisk
   uses the new `required` theme key (`ml-0.5 text-red-600`). `fieldOverrides` takes `markRequired` too. See
   `docs/fields/common-options.md`.
+* A field with `helpText` (`->helpText()` or `->help($text, html: false)` from laravel-form-builder 1.16, or
+  `fieldOverrides`) shows its help as plain text with its line breaks kept, instead of rendering `help` as HTML.
+  `help` still renders as HTML.
 
 ## 1.20.0 - 2026-11-07
 * A select with `optionCode` (`Select::optionCode()` from laravel-form-builder 1.15) shows the code of each option in

@@ -77,6 +77,7 @@ provide(fieldMetaKey, computed(() => {
 
     return {
         markRequired: merged.markRequired === true,
+        helpText: typeof merged.helpText === 'string' && merged.helpText !== '' ? merged.helpText : undefined,
     }
 }))
 

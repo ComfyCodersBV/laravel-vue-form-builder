@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<BaseFieldProps>(), {
     className: undefined,
     error: undefined,
     help: undefined,
+    helpText: undefined,
     markRequired: undefined,
     label: undefined,
     name: undefined,
@@ -39,7 +40,9 @@ const layout = inject(layoutKey, computed((): FormLayout => 'stacked'))
 
 const labelHidden = useHiddenLabel(() => props.hideLabel)
 
-const meta = useFieldMeta(() => ({ markRequired: props.markRequired }))
+const meta = useFieldMeta(() => ({ markRequired: props.markRequired, helpText: props.helpText }))
+
+const hasHelp = computed(() => Boolean(meta.value.helpText || props.help))
 
 const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(props.label) && !labelHidden.value)
 
@@ -51,7 +54,10 @@ const alignsWithControls = computed(() => layout.value === 'horizontal' && props
         <label :for="name" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div class="min-w-0 flex-1">
             <slot />
-            <div v-if="help" :class="theme.help" v-html="help"></div>
+            <template v-if="hasHelp">
+                <div v-if="meta.helpText" :class="[theme.help, 'whitespace-pre-line']" data-help-text>{{ meta.helpText }}</div>
+                <div v-else :class="theme.help" v-html="help"></div>
+            </template>
             <p v-if="error" :class="theme.error">
                 <span v-if="Array.isArray(error)">{{ error[0] }}</span>
                 <span v-else>{{ error }}</span>
@@ -64,7 +70,10 @@ const alignsWithControls = computed(() => layout.value === 'horizontal' && props
         <div>
             <slot />
         </div>
-        <div v-if="help" :class="theme.help" v-html="help"></div>
+        <template v-if="hasHelp">
+            <div v-if="meta.helpText" :class="[theme.help, 'whitespace-pre-line']" data-help-text>{{ meta.helpText }}</div>
+            <div v-else :class="theme.help" v-html="help"></div>
+        </template>
         <p v-if="error" :class="theme.error">
             <span v-if="Array.isArray(error)">{{ error[0] }}</span>
             <span v-else>{{ error }}</span>

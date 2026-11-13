@@ -90,3 +90,32 @@ describe('required indicator', () => {
         expect(labelFor(wrapper, 'name.en').find('[data-required-mark]').exists()).toBe(false)
     })
 })
+
+describe('plain-text help', () => {
+    it('renders helpText as text instead of html', () => {
+        const wrapper = mount(Form, {
+            props: { schema: schemaWith([{ name: 'a', type: 'text', label: 'A', help: '&lt;b&gt;', helpText: '<b>bold</b>\nnext' }]) },
+        })
+
+        expect(wrapper.find('[data-help-text]').text()).toBe('<b>bold</b>\nnext')
+        expect(wrapper.find('b').exists()).toBe(false)
+    })
+
+    it('keeps rendering help as html', () => {
+        const wrapper = mount(Form, { props: { schema: schemaWith([{ name: 'a', type: 'text', label: 'A', help: '<b>bold</b>' }]) } })
+
+        expect(wrapper.find('b').text()).toBe('bold')
+    })
+
+    it('takes plain-text help from a field override', () => {
+        const wrapper = mount(Form, {
+            props: {
+                schema: schemaWith([{ name: 'a', type: 'text', label: 'A', help: 'Server help' }]),
+                fieldOverrides: { a: { helpText: 'Street <found>' } },
+            },
+        })
+
+        expect(wrapper.find('[data-help-text]').text()).toBe('Street <found>')
+        expect(wrapper.text()).not.toContain('Server help')
+    })
+})

@@ -25,6 +25,7 @@ const props = defineProps<{
     theme?: Partial<FormTheme>
     hideLabel?: boolean
     markRequired?: boolean
+    helpText?: string
 }>()
 
 const labelHidden = useHiddenLabel(() => props.hideLabel)
@@ -65,7 +66,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="wrapperAttrs()" :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" :mark-required="meta.markRequired && Boolean(groupLabel)" inline-label>
+    <BaseField v-bind="wrapperAttrs()" :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" :mark-required="meta.markRequired && Boolean(groupLabel)" :help-text="helpText" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox
