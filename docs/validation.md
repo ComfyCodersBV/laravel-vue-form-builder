@@ -67,6 +67,40 @@ public function attributes(): array
 }
 ```
 
+### The `UsesForm` trait
+
+`UsesForm` gives the request both methods from one built form, so the form is built once and `rules()` and
+`attributes()` never drift apart:
+
+```php
+use App\Forms\ProductForm;
+use Illuminate\Foundation\Http\FormRequest;
+use TranquilTools\FormBuilder\Concerns\UsesForm;
+use TranquilTools\FormBuilder\FormConfig;
+
+class ProductFormRequest extends FormRequest
+{
+    use UsesForm;
+
+    protected function form(): FormConfig
+    {
+        return ProductForm::make(category: $this->route('category'));
+    }
+}
+```
+
+A request that adds rules of its own overrides `rules()` and starts from the built form:
+
+```php
+public function rules(): array
+{
+    return [
+        ...$this->builtForm()->getRules(),
+        'terms' => ['accepted'],
+    ];
+}
+```
+
 If your form class accepts constructor arguments, pass them through `rules()` as well:
 
 ```php
