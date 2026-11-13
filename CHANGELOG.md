@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.21.1 - 2026-11-13
+* A single checkbox rendered outside the field renderer, for example from a field slot, now shows the required
+  asterisk of the field it belongs to. Before, its `markRequired` prop fell back to `false` instead of the field.
+
 ## 1.21.0 - 2026-11-13
 * The date picker always shows six weeks, filled with the muted days of the months around it, so paging to a month
   of five weeks no longer moves the month buttons and a second click lands on the button instead of a date. This holds

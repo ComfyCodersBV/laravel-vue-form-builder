@@ -9,7 +9,7 @@ import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
 import { useFieldMeta } from '../../lib/field-meta'
 import RequiredMark from './RequiredMark.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     modelValue?: any
     value?: string | number | boolean
     falseValue?: string | number | boolean
@@ -26,7 +26,9 @@ const props = defineProps<{
     hideLabel?: boolean
     markRequired?: boolean
     helpText?: string
-}>()
+}>(), {
+    markRequired: undefined,
+})
 
 const labelHidden = useHiddenLabel(() => props.hideLabel)
 

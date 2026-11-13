@@ -119,3 +119,17 @@ describe('plain-text help', () => {
         expect(wrapper.text()).not.toContain('Server help')
     })
 })
+
+describe('a checkbox outside the field renderer', () => {
+    it('takes markRequired from the field it is rendered in', async () => {
+        const { default: CheckboxField } = await import('../../resources/js/components/Fields/CheckboxField.vue')
+        const { fieldMetaKey } = await import('../../resources/js/lib/field-meta')
+        const { computed } = await import('vue')
+        const wrapper = mount(CheckboxField, {
+            props: { name: 'agree', label: 'I agree' },
+            global: { provide: { [fieldMetaKey as symbol]: computed(() => ({ markRequired: true })) } },
+        })
+
+        expect(wrapper.find('[data-required-mark]').exists()).toBe(true)
+    })
+})
