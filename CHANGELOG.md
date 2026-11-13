@@ -22,6 +22,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   remembered or first step. The parameter is left out of the `remember` key, so a refresh on a later step still
   restores the values. `:step-param="false"` turns it off. See `docs/steps.md`.
 * `docs/validation.md` documents the `UsesForm` trait for form requests from laravel-form-builder 1.16.
+* Requires laravel-form-builder 1.16 and supports schema version 1.15.
 
 ## 1.20.0 - 2026-11-07
 * A select with `optionCode` (`Select::optionCode()` from laravel-form-builder 1.15) shows the code of each option in
