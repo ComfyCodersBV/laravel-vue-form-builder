@@ -46,6 +46,7 @@ export interface Field {
     type?: string
     label?: string
     condition?: string
+    rules?: string[]
     help?: string
     helpText?: string
     markRequired?: boolean
@@ -131,5 +132,6 @@ export interface FormSchema {
     resetOnSuccess?: boolean
     submitOnChange?: boolean
     validateSteps?: boolean
+    stepParam?: string
     columns?: FormColumns
 }

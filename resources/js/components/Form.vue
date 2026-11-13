@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { computed, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { fieldSlotsKey } from '../lib/field-slots'
@@ -13,6 +13,7 @@ import { columnsKey, layoutKey, normalizeColumns, type FormColumns, type FormLay
 import type { Field, FormSchema } from '../types/form-builder'
 import { validatePrecognitively } from '../lib/precognition'
 import { forgetRemembered, rememberedFieldNames, rememberKey, takeRemembered, writeRemembered } from '../lib/remember'
+import { readStepParam, useStepParamWriter } from '../lib/step-param'
 import { carriesFiles, useHttpForm, type HttpFormErrorAdapter, type HttpFormSubmitter } from '../composables/useHttpForm'
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
@@ -36,9 +37,11 @@ const props = withDefaults(defineProps<{
     submitOnChange?: boolean
     submitDelay?: number
     remember?: boolean | string
+    stepParam?: string | false
 }>(), {
     resetOnSuccess: undefined,
     submitOnChange: undefined,
+    stepParam: undefined,
 })
 
 const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
@@ -148,11 +151,17 @@ const form: any = props.transport === 'http'
     ? useHttpForm(buildFormData(props.defaults), { submitter: props.submitter, errorAdapter: props.errorAdapter })
     : useForm(buildFormData(props.defaults))
 
-const storageKey = rememberKey(props.remember, props.schema.id)
+const stepParam = props.stepParam === false ? undefined : (props.stepParam || props.schema.stepParam || undefined)
+
+const storageKey = rememberKey(props.remember, props.schema.id, stepParam)
 
 const remembered = rememberedFieldNames(props.schema.fields)
 
-const restored = takeRemembered(storageKey, remembered)
+const restored = takeRemembered(storageKey, remembered, stepParam)
+
+const requestedStep = readStepParam(stepParam)
+
+const writeStepParam = useStepParamWriter()
 
 Object.entries(restored?.values ?? {}).forEach(([name, value]) => {
     form[name] = value
@@ -354,6 +363,16 @@ const stepSlotNames = computed(() => Object.keys(slots).filter((name) => name.st
 
 const wizard = ref<InstanceType<typeof FormWizard> | null>(null)
 
+function syncStepParam(step: string | undefined): void {
+    if (stepParam && step) {
+        writeStepParam(stepParam, step)
+    }
+}
+
+watch(currentStep, syncStepParam)
+
+onMounted(() => syncStepParam(wizard.value?.currentStepName))
+
 function validateStep(names: string[]) {
     return validatePrecognitively(resolvedMethod(), props.action ?? props.schema.action, form.data(), names)
 }
@@ -402,6 +421,7 @@ defineExpose({ submit: submitForm, form, formErrors, wizard })
             :field-overrides="fieldOverrides"
             :validate-step="schema.validateSteps ? validateStep : undefined"
             :initial-step="currentStep"
+            :requested-step="requestedStep"
             @step-change="currentStep = $event"
         >
             <template v-for="name in stepSlotNames" :key="name" #[name]="scope">

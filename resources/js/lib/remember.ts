@@ -1,5 +1,6 @@
 import type { Field } from '../types/form-builder'
 import { flattenFields } from './fields'
+import { withoutParam } from './step-param'
 
 export interface RememberedForm {
     values: Record<string, unknown>
@@ -12,8 +13,8 @@ const FORGOTTEN_TYPES = ['password', 'file', 'hidden', 'recaptcha']
 
 const restoredKeys = new Set<string>()
 
-function currentUrl(): string {
-    return `${window.location.pathname}${window.location.search}`
+function currentUrl(ignoredParam?: string): string {
+    return `${window.location.pathname}${withoutParam(window.location.search, ignoredParam)}`
 }
 
 function storage(): Storage | null {
@@ -24,14 +25,14 @@ function storage(): Storage | null {
     }
 }
 
-export function rememberKey(remember: boolean | string | undefined, formId: string | undefined): string | null {
+export function rememberKey(remember: boolean | string | undefined, formId: string | undefined, ignoredParam?: string): string | null {
     if (!remember || typeof window === 'undefined') {
         return null
     }
 
     const name = typeof remember === 'string' ? remember : (formId || 'form')
 
-    return `${PREFIX}${name}:${currentUrl()}`
+    return `${PREFIX}${name}:${currentUrl(ignoredParam)}`
 }
 
 export function rememberedFieldNames(fields: Field[]): string[] {
@@ -40,7 +41,7 @@ export function rememberedFieldNames(fields: Field[]): string[] {
         .map((field) => field.name as string)
 }
 
-function documentWasReloaded(): boolean {
+function documentWasReloaded(ignoredParam?: string): boolean {
     const [entry] = typeof performance === 'undefined' || typeof performance.getEntriesByType !== 'function'
         ? []
         : performance.getEntriesByType('navigation') as PerformanceNavigationTiming[]
@@ -52,7 +53,7 @@ function documentWasReloaded(): boolean {
     try {
         const loaded = new URL(entry.name)
 
-        return `${loaded.pathname}${loaded.search}` === currentUrl()
+        return `${loaded.pathname}${withoutParam(loaded.search, ignoredParam)}` === currentUrl(ignoredParam)
     } catch {
         return false
     }
@@ -79,14 +80,14 @@ function parse(raw: string | null): RememberedForm | null {
     }
 }
 
-export function takeRemembered(key: string | null, names: string[]): RememberedForm | null {
+export function takeRemembered(key: string | null, names: string[], ignoredParam?: string): RememberedForm | null {
     const store = storage()
 
     if (!key || !store) {
         return null
     }
 
-    if (restoredKeys.has(key) || !documentWasReloaded()) {
+    if (restoredKeys.has(key) || !documentWasReloaded(ignoredParam)) {
         forgetRemembered(key)
 
         return null

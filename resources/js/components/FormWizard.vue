@@ -21,6 +21,7 @@ const props = defineProps<{
     fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
     validateStep?: (fields: string[]) => Promise<StepValidation>
     initialStep?: string
+    requestedStep?: string
 }>()
 
 const emit = defineEmits<{ (e: 'step-change', name: string | undefined): void }>()
@@ -36,9 +37,31 @@ function hasVisibleContent(step: Field): boolean {
 
 const visibleSteps = computed(() => props.steps.filter((step) => meetsCondition(step, data.value) && hasVisibleContent(step)))
 
-const currentName = ref<string | undefined>(
-    props.steps.some((step) => step.name === props.initialStep) ? props.initialStep : props.steps[0]?.name,
-)
+function isBlankValue(value: unknown): boolean {
+    return value === null || typeof value === 'undefined' || value === '' || (Array.isArray(value) && value.length === 0)
+}
+
+function requiredFieldsFilled(step: Field): boolean {
+    return visibleValueFields(step.fields ?? [], data.value)
+        .filter((field) => field.type !== 'file' && typeof field.name === 'string' && (field.rules ?? []).includes('required'))
+        .every((field) => !isBlankValue(props.form[field.name as string]))
+}
+
+function isReachable(name: string | undefined): boolean {
+    const index = visibleSteps.value.findIndex((step) => step.name === name)
+
+    return index >= 0 && visibleSteps.value.slice(0, index).every(requiredFieldsFilled)
+}
+
+function firstStepName(): string | undefined {
+    if (isReachable(props.requestedStep)) {
+        return props.requestedStep
+    }
+
+    return props.steps.some((step) => step.name === props.initialStep) ? props.initialStep : props.steps[0]?.name
+}
+
+const currentName = ref<string | undefined>(firstStepName())
 const checking = ref(false)
 const stepError = ref<string | null>(null)
 const heading = ref<HTMLElement | null>(null)
@@ -153,7 +176,7 @@ async function jumpToFirstError(): Promise<void> {
     }
 }
 
-defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex })
+defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex, currentStepName: computed(() => current.value?.name) })
 </script>
 
 <template>

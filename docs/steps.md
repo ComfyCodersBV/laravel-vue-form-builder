@@ -57,6 +57,25 @@ Pass `remember` to `<Form>` to keep the typed values and the current step when t
 <Form :schema="form" remember />
 ```
 
+## The step in the query string
+
+`$form->stepParam('step')` makes the wizard keep its current step in the query string, for example
+`/bookings/create?step=renter`. The renderer replaces the URL on every step change (no new history entries) and opens
+the step from the URL on load, so a refresh or a shared link lands on the same step. A step that does not exist, is
+hidden by its condition or cannot be reached yet (an earlier step has an empty required field) is ignored, and the
+wizard opens its first step or the remembered one. Together with `remember`, a refresh restores the values and the
+step: the step parameter is left out of the remember key.
+
+```php
+public function configure(FormConfig $form): void
+{
+    $form->stepParam('step');
+}
+```
+
+The `step-param` prop on `<Form>` sets or overrides the name in Vue, `:step-param="false"` turns it off. Inside an
+Inertia page the URL is replaced with `router.replace()`, elsewhere with `history.replaceState()`.
+
 ## Validating each step on the server
 
 By default **Next** moves on without a check, and the server validates everything on submit. With
