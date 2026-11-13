@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.21.0 - 2026-11-13
+* The date picker always shows six weeks, filled with the muted days of the months around it, so paging to a month
+  of five weeks no longer moves the month buttons and a second click lands on the button instead of a date. This holds
+  for the single date, the period and the date and time picker, and for the touch picker.
+
 ## 1.20.0 - 2026-11-07
 * A select with `optionCode` (`Select::optionCode()` from laravel-form-builder 1.15) shows the code of each option in
   its own fixed-width column with tabular figures, so the labels line up, also for an option without a code. This

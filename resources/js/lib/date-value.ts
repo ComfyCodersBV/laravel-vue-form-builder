@@ -109,6 +109,8 @@ export function isDisabledDay(date: Date, availability: DateAvailability, withTi
     return max !== null && day > startOfDay(max)
 }
 
+const CALENDAR_CELLS = 42
+
 export function monthGrid(year: number, month: number, weekStartsOn: number): Array<Array<{ date: Date; inMonth: boolean }>> {
     const first = new Date(year, month, 1)
     const lead = (first.getDay() - (weekStartsOn === 1 ? 1 : 0) + 7) % 7
@@ -123,7 +125,7 @@ export function monthGrid(year: number, month: number, weekStartsOn: number): Ar
         cells.push({ date: new Date(year, month, day), inMonth: true })
     }
 
-    while (cells.length % 7 !== 0) {
+    while (cells.length < CALENDAR_CELLS) {
         const next = new Date(cells[cells.length - 1].date)
         next.setDate(next.getDate() + 1)
         cells.push({ date: next, inMonth: false })
