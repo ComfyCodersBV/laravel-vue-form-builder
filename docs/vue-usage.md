@@ -299,7 +299,8 @@ Override single messages for one form with the `messages` prop:
 ```
 
 The standalone components (`TreeView`, `SortableList`, `Tabs`) follow the global locale. The full list of keys is the
-`FormMessages` type; `englishMessages` and `dutchMessages` are exported as starting points for a new language.
+`FormMessages` type; `englishMessages` and `dutchMessages` are exported as starting points for a new language. The
+`required` message is the screen reader text after the asterisk of a required field ("required" / "verplicht").
 
 ## Submitting without Inertia
 

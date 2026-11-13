@@ -56,6 +56,7 @@ function fieldFor(locale: LocaleOption): Field {
         name: nameFor(locale.value),
         label: stacked ? locale.label : `${props.label ?? props.name ?? ''} (${locale.label})`,
         hideLabel: !stacked,
+        markRequired: props.markRequired === true && isRequired(locale.value),
     }
 }
 

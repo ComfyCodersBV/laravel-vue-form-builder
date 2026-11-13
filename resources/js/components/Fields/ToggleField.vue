@@ -5,6 +5,8 @@ import { Switch } from '../ui/switch'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
 import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
+import { useFieldMeta } from '../../lib/field-meta'
+import RequiredMark from './RequiredMark.vue'
 
 type Props = Omit<Field, 'modelValue'> & {
     modelValue?: any
@@ -14,9 +16,12 @@ type Props = Omit<Field, 'modelValue'> & {
 
 const props = withDefaults(defineProps<Props>(), {
     disabled: false,
+    markRequired: undefined,
 })
 
 const labelHidden = useHiddenLabel(() => props.hideLabel)
+
+const meta = useFieldMeta(() => ({ markRequired: props.markRequired }))
 
 const emit = defineEmits<{ 'update:modelValue': [any] }>()
 
@@ -58,7 +63,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="wrapperAttrs()" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
+    <BaseField v-bind="wrapperAttrs()" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" :mark-required="false" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Switch
@@ -70,7 +75,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 :disabled="disabled"
                 :class="inputClassName"
             />
-            <label v-if="label" :class="labelHidden ? VISUALLY_HIDDEN : 'text-sm'" :for="`${name}-tgl`">{{ label }}</label>
+            <label v-if="label" :class="labelHidden ? VISUALLY_HIDDEN : 'text-sm'" :for="`${name}-tgl`">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="theme" /></label>
         </div>
     </BaseField>
 </template>

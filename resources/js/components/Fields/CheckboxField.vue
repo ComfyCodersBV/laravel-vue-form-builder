@@ -6,6 +6,8 @@ import { Label } from '../ui/label'
 import type { FormTheme } from '../../lib/theme'
 import { computed } from 'vue'
 import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
+import { useFieldMeta } from '../../lib/field-meta'
+import RequiredMark from './RequiredMark.vue'
 
 const props = defineProps<{
     modelValue?: any
@@ -22,9 +24,12 @@ const props = defineProps<{
     inputClassName?: string
     theme?: Partial<FormTheme>
     hideLabel?: boolean
+    markRequired?: boolean
 }>()
 
 const labelHidden = useHiddenLabel(() => props.hideLabel)
+
+const meta = useFieldMeta(() => ({ markRequired: props.markRequired }))
 
 const groupLabel = computed(() => props.checkboxLabel ? props.label : undefined)
 
@@ -60,7 +65,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 </script>
 
 <template>
-    <BaseField v-bind="wrapperAttrs()" :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" inline-label>
+    <BaseField v-bind="wrapperAttrs()" :label="groupLabel" :name="name" :error="error" :help="help" :class-name="className" :theme="theme" :hide-label="hideLabel" :mark-required="meta.markRequired && Boolean(groupLabel)" inline-label>
         <div class="flex items-center gap-2">
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox
@@ -72,7 +77,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 :disabled="disabled"
                 :class="inputClassName"
             />
-            <Label v-if="inlineLabel" :for="`${name}-cb`" :class="labelHidden && !checkboxLabel ? VISUALLY_HIDDEN : undefined">{{ inlineLabel }}</Label>
+            <Label v-if="inlineLabel" :for="`${name}-cb`" :class="labelHidden && !checkboxLabel ? VISUALLY_HIDDEN : undefined">{{ inlineLabel }}<RequiredMark v-if="meta.markRequired && !groupLabel" :theme="theme" /></Label>
         </div>
     </BaseField>
 </template>

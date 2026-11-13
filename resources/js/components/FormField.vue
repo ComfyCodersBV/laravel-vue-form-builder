@@ -3,6 +3,7 @@ import { computed, inject, provide } from 'vue'
 import { useFormMessages } from '../lib/messages'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { hideLabelKey } from '../lib/label'
+import { fieldMetaKey } from '../lib/field-meta'
 import { dependentOptionsFor } from '../lib/options'
 import type { Field } from '../types/form-builder'
 
@@ -70,6 +71,14 @@ const fieldComponents: Record<string, any> = {
 const fieldSlots = inject(fieldSlotsKey, {})
 
 provide(hideLabelKey, computed(() => field.hideLabel === true))
+
+provide(fieldMetaKey, computed(() => {
+    const merged: Record<string, any> = { ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }
+
+    return {
+        markRequired: merged.markRequired === true,
+    }
+}))
 
 const messageContext = useFormMessages()
 

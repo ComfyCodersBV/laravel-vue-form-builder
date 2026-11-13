@@ -4,6 +4,8 @@ import type { Field } from '../../types/form-builder'
 import { DEFAULT_THEME, mergeTheme, themeKey, type FormTheme } from '../../lib/theme'
 import { layoutKey, type FormLayout } from '../../lib/layout'
 import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
+import { useFieldMeta } from '../../lib/field-meta'
+import RequiredMark from './RequiredMark.vue'
 
 interface BaseFieldProps extends Field {
     theme?: Partial<FormTheme>
@@ -14,6 +16,7 @@ const props = withDefaults(defineProps<BaseFieldProps>(), {
     className: undefined,
     error: undefined,
     help: undefined,
+    markRequired: undefined,
     label: undefined,
     name: undefined,
     theme: undefined,
@@ -36,6 +39,8 @@ const layout = inject(layoutKey, computed((): FormLayout => 'stacked'))
 
 const labelHidden = useHiddenLabel(() => props.hideLabel)
 
+const meta = useFieldMeta(() => ({ markRequired: props.markRequired }))
+
 const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(props.label) && !labelHidden.value)
 
 const alignsWithControls = computed(() => layout.value === 'horizontal' && props.inlineLabel && !props.label)
@@ -43,7 +48,7 @@ const alignsWithControls = computed(() => layout.value === 'horizontal' && props
 
 <template>
     <div v-if="isHorizontal" :class="[wrapperClass, 'sm:flex sm:items-start sm:gap-3']">
-        <label :for="name" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}</label>
+        <label :for="name" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div class="min-w-0 flex-1">
             <slot />
             <div v-if="help" :class="theme.help" v-html="help"></div>
@@ -55,7 +60,7 @@ const alignsWithControls = computed(() => layout.value === 'horizontal' && props
     </div>
 
     <div v-else :class="[wrapperClass, alignsWithControls ? 'sm:pl-[10.75rem]' : '']">
-        <label v-if="label" :for="name" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}</label>
+        <label v-if="label" :for="name" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div>
             <slot />
         </div>

@@ -17,6 +17,13 @@ Topics covered:
 - [Date & Time, including the touch picker and `TouchTimePicker`](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/date-time)
 - [Configuration](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/configuration)
 
+## Required fields
+
+The label of every field whose rules contain `required` gets an asterisk, with a hidden "(required)" for screen
+readers. It is on by default; switch it off app-wide with `'required_indicator' => false` in
+`config/form-builder.php`, and override a single field with `->markRequired()` or `->markRequired(false)`. See
+[Common options](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#the-required-asterisk).
+
 ## CrudBuilder
 
 Want a complete CRUD solution? Our **[CrudBuilder](https://docs.comfycoders.nl/laravel-vue-crud-builder)** builds on top

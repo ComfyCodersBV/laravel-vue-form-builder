@@ -47,6 +47,7 @@ export interface Field {
     label?: string
     condition?: string
     help?: string
+    markRequired?: boolean
     fullWidth?: boolean
     placeholder?: string
     readonly?: boolean

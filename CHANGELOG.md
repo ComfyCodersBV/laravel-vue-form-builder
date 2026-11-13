@@ -6,6 +6,12 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * The date picker always shows six weeks, filled with the muted days of the months around it, so paging to a month
   of five weeks no longer moves the month buttons and a second click lands on the button instead of a date. This holds
   for the single date, the period and the date and time picker, and for the touch picker.
+* A field with `markRequired` (laravel-form-builder 1.16 sends it for every field whose rules contain `required`)
+  shows an asterisk after its label, hidden from screen readers, followed by a visually hidden "(required)" /
+  "(verplicht)" from the new `required` message. This holds for every field with a label, also radio and checkbox
+  groups, toggles and single checkboxes, and for the required locales of a stacked translatable field. The asterisk
+  uses the new `required` theme key (`ml-0.5 text-red-600`). `fieldOverrides` takes `markRequired` too. See
+  `docs/fields/common-options.md`.
 
 ## 1.20.0 - 2026-11-07
 * A select with `optionCode` (`Select::optionCode()` from laravel-form-builder 1.15) shows the code of each option in

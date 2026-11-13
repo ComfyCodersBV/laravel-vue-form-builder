@@ -1,10 +1,10 @@
 # Theming
 
 Every field renders the same chrome around its own control: a wrapper, a label, help text and an
-error message. Those four are themeable from PHP, and any field can be replaced outright with a
+error message, plus the asterisk of a required field. Those are themeable from PHP, and any field can be replaced outright with a
 slot when classes are not enough.
 
-## The four elements
+## The elements
 
 | Key | Element | Default |
 |---|---|---|
@@ -12,6 +12,7 @@ slot when classes are not enough.
 | `label` | the `<label>` | `block text-sm font-medium text-neutral-800 dark:text-neutral-200` |
 | `help` | the help text under the control | `mt-1 text-xs text-neutral-500 dark:text-neutral-400` |
 | `error` | the validation message | `text-sm text-red-600` |
+| `required` | the asterisk after the label of a required field | `ml-0.5 text-red-600` |
 
 ## Application-wide
 

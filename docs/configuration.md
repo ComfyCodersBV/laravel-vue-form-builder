@@ -22,6 +22,18 @@ renders around its control. See [Theming](theming.md).
 
 ---
 
+## Required indicator
+
+```php
+'required_indicator' => true,
+```
+
+On by default: the label of every field whose rules contain `required` gets an asterisk. Set it to `false` to switch
+that off app-wide; a field with `->markRequired()` is still marked. See
+[Common options](fields/common-options.md#the-required-asterisk).
+
+---
+
 ## Dates
 
 ```php

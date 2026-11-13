@@ -54,6 +54,7 @@ export interface FormMessages {
     save: string;
     checkingStep: string;
     stepCheckFailed: string;
+    required: string;
 }
 
 export const en: FormMessages = {
@@ -110,6 +111,7 @@ export const en: FormMessages = {
     save: 'Save',
     checkingStep: 'Checking...',
     stepCheckFailed: 'Checking this step failed, try again',
+    required: 'required',
 };
 
 export const nl: FormMessages = {
@@ -166,6 +168,7 @@ export const nl: FormMessages = {
     save: 'Opslaan',
     checkingStep: 'Controleren...',
     stepCheckFailed: 'Controleren van deze stap is mislukt, probeer het opnieuw',
+    required: 'verplicht',
 };
 
 export const DEFAULT_LOCALE = 'en';

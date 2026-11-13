@@ -59,6 +59,37 @@ Text::make('nickname')
     ->required(false)
 ```
 
+### The required asterisk
+
+Every field whose rules contain `required` gets an asterisk after its label, with a hidden "(required)" /
+"(verplicht)" for screen readers (the `required` message, see [Translations](../vue-usage.md#translations)). This holds
+for `->required()` and `->rules('required|...')` alike, also for radio and checkbox groups, toggles and single
+checkboxes. A `Rule::requiredIf()` counts only when its condition is a plain `true`; a closure, `required_if`,
+`required_with` and the like are not marked, because the field is not always required. Sections and steps get no
+asterisk. A translatable field marks the locales that are required.
+
+Override it per field:
+
+```php
+Text::make('phone')
+    ->rules('required_if:contact,phone')
+    ->markRequired()        // marked although the rule is conditional
+
+Text::make('reference')
+    ->required()
+    ->markRequired(false)   // never marked
+```
+
+The asterisk is on by default for the whole app. Switch the derived marking off in `config/form-builder.php`;
+`->markRequired()` on a field still applies then:
+
+```php
+'required_indicator' => false,
+```
+
+In Vue, `fieldOverrides` takes `markRequired` too, for example `{ phone: { markRequired: true } }`. The classes of the
+asterisk are the `required` theme key, see [Theming](../theming.md).
+
 ## Validation rules
 
 Add any Laravel validation rules. Rules can be passed as separate string arguments, a pipe-separated string, or an array:

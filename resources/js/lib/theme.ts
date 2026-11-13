@@ -3,7 +3,7 @@ import { cn } from './utils';
 
 /**
  * Classes for the chrome every field renders around its own control: the
- * wrapper, the label, the help text and the error message.
+ * wrapper, the label, the help text, the error message and the required mark.
  *
  * Three layers, each overriding the one before it: these defaults, the theme
  * the PHP core carries in the schema (`config('form-builder.theme')`), and a
@@ -15,6 +15,7 @@ export interface FormTheme {
     label: string;
     help: string;
     error: string;
+    required: string;
 }
 
 export const DEFAULT_THEME: FormTheme = {
@@ -22,6 +23,7 @@ export const DEFAULT_THEME: FormTheme = {
     label: 'block text-sm font-medium text-neutral-800 dark:text-neutral-200',
     help: 'mt-1 text-xs text-neutral-500 dark:text-neutral-400',
     error: 'text-sm text-red-600',
+    required: 'ml-0.5 text-red-600',
 };
 
 export const themeKey: InjectionKey<Ref<FormTheme>> = Symbol('form-builder-theme');
