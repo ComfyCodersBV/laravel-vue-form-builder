@@ -39,6 +39,26 @@ Submit::make()
     ->confirmMessage('This will update the record with the current values.')
 ```
 
+### A label and disabled state that follow the form
+
+`->labelExpression()` computes the label and `->disabledIf()` disables the button, both from an expression in the
+language of [`->if()`](common-options.md#on-an-expression):
+
+```php
+Submit::make()
+    ->label('Rebook')
+    ->labelExpression("`\${action === 'return' ? 'Return to stock' : 'Rebook'} (\${ids.length})`")
+    ->disabledIf('ids.length === 0')
+```
+
+- They update while the form changes, also on the submit button of the last [step](../steps.md).
+- An expression that throws, or a label expression that gives an empty value, falls back to `->label()`. A
+  `->disabledIf()` that throws disables the button, as a failing condition hides its field. During development the
+  console shows a warning with the error.
+- `->disabled()` keeps the button disabled whatever `->disabledIf()` says.
+- A label given as an `HtmlString` is shown as it is: `->labelExpression()` does not replace markup.
+- Both work on a `Button` and a `DeleteButton` as well.
+
 ---
 
 ## Button
@@ -62,6 +82,25 @@ PHP, which refuses `@click`:
 ```
 
 See [Click and other event handlers](../vue-usage.md#click-and-other-event-handlers).
+
+### Emitting an event
+
+`->emit('make-rows')` makes the button fire [`@button`](../vue-usage.md#button) on `<Form>` with that name, so the
+form class shows what the button does and the page only handles the event:
+
+```php
+Button::make('make_rows')
+    ->label('Make rows')
+    ->emit('make-rows')
+```
+
+```vue
+<Form :schema="form" @button="(event, { form }) => event === 'make-rows' && makeRows(form)" />
+```
+
+A button that asks for confirmation emits after the confirmation. An `onClick` from `fieldOverrides` keeps working
+next to it. `Submit::emit()` and `DeleteButton::emit()` throw an `InvalidArgumentException`, and so does serializing a
+`Button` with both `->emit()` and `->deleteUrl()`: those buttons submit or delete themselves and never emit.
 
 ### Variants
 
@@ -132,16 +171,19 @@ DeleteButton::make()
 
 All button types (`Button`, `Submit`, `DeleteButton`) support these methods:
 
-| Method                     | Description                                                                              |
-|----------------------------|------------------------------------------------------------------------------------------|
-| `->label(string)`          | Button label text                                                                        |
-| `->label(HtmlString)`      | Button label as markup, e.g. an icon (rendered as-is)                                    |
-| `->ariaLabel(string)`      | Accessible name, for icon-only buttons                                                   |
-| `->variant(string)`        | Button style variant (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`) |
-| `->confirmTitle(string)`   | Title shown in the confirmation dialog                                                   |
-| `->confirmMessage(string)` | Body text of the confirmation dialog                                                     |
-| `->cancelLabel(string)`    | Label of the cancel button in the dialog                                                 |
-| `->deleteUrl(string)`      | URL for a `DELETE` request (sent via Inertia on confirm)                                 |
+| Method                      | Description                                                                              |
+|-----------------------------|------------------------------------------------------------------------------------------|
+| `->label(string)`           | Button label text                                                                        |
+| `->label(HtmlString)`       | Button label as markup, e.g. an icon (rendered as-is)                                    |
+| `->ariaLabel(string)`       | Accessible name, for icon-only buttons                                                   |
+| `->variant(string)`         | Button style variant (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`) |
+| `->confirmTitle(string)`    | Title shown in the confirmation dialog                                                   |
+| `->confirmMessage(string)`  | Body text of the confirmation dialog                                                     |
+| `->cancelLabel(string)`     | Label of the cancel button in the dialog                                                 |
+| `->deleteUrl(string)`       | URL for a `DELETE` request (sent via Inertia on confirm)                                 |
+| `->labelExpression(string)` | Label computed from the form                                                             |
+| `->disabledIf(string)`      | Disables the button while the expression holds                                           |
+| `->emit(string)`            | Fires `@button` on `<Form>` with this name on click (`Button` only)                      |
 
 ## Translations
 

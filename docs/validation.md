@@ -17,6 +17,10 @@ Select::make('role')
 
 Rules can be passed as separate string arguments or as a single array — both work.
 
+A field that is only needed for one value of another field takes `->if('action', 'rebook')`: its rules get
+`exclude_unless:action,rebook` in front, so the server skips the field while it is hidden and `<Form>` does not send
+it. See [Conditional visibility](fields/common-options.md#on-a-field-and-its-values).
+
 ## Convenience rule methods
 
 Some fields have shorthand methods that both configure the UI and add the matching validation rule:

@@ -5,6 +5,8 @@ import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
+import { buttonEventKey, type ButtonEventPayload } from '../lib/button-events'
+import { withoutHiddenValues } from '../lib/conditions'
 import { carriesValue, flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
@@ -48,7 +50,11 @@ const props = withDefaults(defineProps<{
     stepParam: undefined,
 })
 
-const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
+const emit = defineEmits<{
+    (e: 'success'): void
+    (e: 'error'): void
+    (e: 'button', event: string, payload: ButtonEventPayload): void
+}>()
 
 assertSupportedSchemaVersion(props.schema.schemaVersion)
 
@@ -237,8 +243,16 @@ function currentPath(): string {
     return typeof window === 'undefined' ? '' : window.location.pathname
 }
 
+function withoutHidden(data: Record<string, any>): Record<string, any> {
+    return withoutHiddenValues(props.schema.fields, data)
+}
+
 function transformWith(own: FormTransform): void {
-    form.transform((data: Record<string, any>) => (props.transform ? props.transform(own(data)) : own(data)))
+    form.transform((data: Record<string, any>) => {
+        const transformed = own(withoutHidden(data))
+
+        return props.transform ? props.transform(transformed) : transformed
+    })
 }
 
 function submitInertia(method: FormMethod, action: string, options: Record<string, any>) {
@@ -323,6 +337,8 @@ const submitForm = () => {
     }
 
     if (props.transport === 'http') {
+        form.transform(withoutHidden)
+
         return form[method](action, options)
     }
 
@@ -369,6 +385,14 @@ const hasFormErrors = computed(() => Object.keys(formErrors.value).length > 0)
 
 const slots = useSlots()
 
+provide(buttonEventKey, (event: string, field: string | undefined, values: any) => {
+    emit('button', event, {
+        field,
+        form,
+        ...(values && values !== form ? { row: values } : {}),
+    })
+})
+
 const steps = computed(() => props.schema.fields
     .filter((field) => field.type === 'step')
     .map((field, index) => ({ ...field, name: field.name || `step-${index + 1}` })))
@@ -377,7 +401,7 @@ const usesSteps = computed(() => steps.value.length > 0)
 
 const fieldsBesideSteps = computed(() => props.schema.fields.filter((field) => field.type !== 'step' && field.type !== 'submit'))
 
-const submitLabel = computed(() => props.schema.fields.find((field) => field.type === 'submit')?.label)
+const submitField = computed(() => props.schema.fields.find((field) => field.type === 'submit'))
 
 const stepSlotNames = computed(() => Object.keys(slots).filter((name) => name.startsWith('step-')))
 
@@ -435,7 +459,7 @@ defineExpose({ submit: submitForm, form, formErrors, wizard })
             :extra-fields="fieldsBesideSteps"
             :all-fields="fields"
             :form="form"
-            :submit-label="submitLabel"
+            :submit-field="submitField"
             :columns="columns ?? schema.columns ?? 1"
             :on-field-change="onFieldChange || shouldSubmitOnChange ? handleFieldChange : undefined"
             :field-overrides="fieldOverrides"

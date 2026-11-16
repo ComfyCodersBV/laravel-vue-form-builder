@@ -32,6 +32,14 @@ same field on one page keep their labels apart. Field names that Inertia's `useF
 `reset`, `query`, `transform`, ...) are refused when the form is serialized. See
 [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage#field-ids).
 
+## Conditions that validate
+
+`->if('action', 'rebook')` shows a field only while `action` is `rebook`, adds `exclude_unless:action,rebook` to its
+rules and leaves it out of the payload while it is hidden, in sections, steps and repeater rows too. A submit button
+takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` `Rebook (${ids.length})` ``. See
+[Conditional visibility](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#conditional-visibility) and
+[Buttons](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/buttons#a-label-and-disabled-state-that-follow-the-form).
+
 ## CrudBuilder
 
 Want a complete CRUD solution? Our **[CrudBuilder](https://docs.comfycoders.nl/laravel-vue-crud-builder)** builds on top
@@ -245,6 +253,13 @@ them through `fieldOverrides`, and they land on the button or input itself:
 
 ```vue
 <Form :schema="form" :field-overrides="{ preview: { onClick: () => (previewOpen = true) } }" />
+```
+
+A `Button` with `->emit('preview')` in the form class fires `@button` on `<Form>` instead, so the wiring stays visible
+in PHP:
+
+```vue
+<Form :schema="form" @button="(event) => event === 'preview' && (previewOpen = true)" />
 ```
 
 See [Click and other event handlers](docs/vue-usage.md#click-and-other-event-handlers).

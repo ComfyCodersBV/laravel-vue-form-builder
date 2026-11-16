@@ -49,8 +49,10 @@ are fine. Rename the field, for example `q` instead of `query`, and map it in yo
 
 ## Adjusting the payload
 
-`<Form>` sets `form.transform()` itself on every Inertia submit: a `GET` form drops blank values, an upload with
-`PUT`, `PATCH` or `DELETE` adds `_method`. Pass a `transform` prop to change the payload after that:
+`<Form>` sets `form.transform()` itself on every Inertia submit: it leaves out the fields hidden by an
+[`->if('field', 'value')` condition](fields/common-options.md#on-a-field-and-its-values), a `GET` form drops blank
+values, an upload with `PUT`, `PATCH` or `DELETE` adds `_method`. Pass a `transform` prop to change the payload after
+that:
 
 ```vue
 <Form :schema="form" :transform="(data) => ({ ...data, source: 'wizard' })" />
@@ -58,7 +60,7 @@ are fine. Rename the field, for example `q` instead of `query`, and map it in yo
 
 It receives the data after the form's own transform, so it sees `_method` on an upload and no blank values on a `GET`
 form, and returns the data to send. It applies to the Inertia transport. With `transport="http"`, shape the data in
-your `submitter`.
+your `submitter`; it also receives the data without the hidden fields.
 
 ## Events
 
@@ -90,6 +92,30 @@ Fired when submission returns validation errors:
 <script setup lang="ts">
 function handleError(errors: Record<string, string>) {
     console.log(errors);
+}
+</script>
+```
+
+### `@button`
+
+Fired when a [`Button` with `->emit()`](fields/buttons.md#emitting-an-event) is clicked, after its confirmation when it
+asks for one. It receives the event name and `{ field, form, row }`: the button's name, the form, and for a button
+inside a repeater the row it sits in (writing to `row` changes that row).
+
+```php
+Button::make('make_rows')->label('Make rows')->emit('make-rows')
+```
+
+```vue
+<template>
+    <Form :schema="form" @button="onButton" />
+</template>
+
+<script setup lang="ts">
+function onButton(event: string, { form }: { form: any }) {
+    if (event === 'make-rows') {
+        makeRows(form)
+    }
 }
 </script>
 ```
@@ -151,6 +177,10 @@ The listener lands on the element itself, not on the wrapper around it: the butt
 number, money, colour, time, file and tags fields, the `<textarea>`, the trigger of a select or date field, the checkbox
 and the switch of a toggle. A field's own handlers keep running next to yours. On fields made of several controls
 (checkboxes, radios, key-value, repeater, translatable, wysiwyg) a listener stays on the wrapper around them.
+
+For a button, `->emit('preview')` in the form class is the alternative: the form fires
+[`@button`](#button) with that name, so the form class shows which buttons the page has to handle. An `onClick`
+through `fieldOverrides` keeps working next to it.
 
 ## Custom layouts with `FormRenderer`
 

@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { useFieldListeners } from '../../lib/listeners';
+import { buttonEventKey } from '../../lib/button-events';
+import { conditionData, expressionHolds, expressionValue, formValues } from '../../lib/conditions';
+import { formFieldsKey } from '../../lib/fields';
 import {
     Dialog,
     DialogClose,
@@ -28,6 +31,11 @@ interface Props {
     deleteUrl?: string
     variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
     type?: 'button' | 'submit'
+    disabled?: boolean | string
+    labelExpression?: string
+    disabledIf?: string
+    emit?: string
+    form?: any
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -43,6 +51,11 @@ const props = withDefaults(defineProps<Props>(), {
     deleteUrl: undefined,
     variant: 'default',
     type: 'button',
+    disabled: undefined,
+    labelExpression: undefined,
+    disabledIf: undefined,
+    emit: undefined,
+    form: undefined,
 })
 
 const testId = computed(() => props.name ? `field-${props.name}` : undefined)
@@ -52,6 +65,36 @@ const emit = defineEmits<{
 }>()
 
 const hasConfirm = computed(() => !!props.confirmTitle || !!props.confirmMessage)
+
+const formFields = inject(formFieldsKey, [])
+
+const expressionData = computed(() => conditionData(formValues(props.form), formFields))
+
+const shownLabel = computed(() => {
+    const computedLabel = props.labelExpression && props.form ? expressionValue(props.labelExpression, expressionData.value) : ''
+
+    return computedLabel || props.label
+})
+
+const isDisabled = computed(() => {
+    if (props.disabled === true || (typeof props.disabled === 'string' && props.disabled !== '')) {
+        return true
+    }
+
+    if (!props.disabledIf) {
+        return false
+    }
+
+    return props.form ? expressionHolds(props.disabledIf, expressionData.value, true) : true
+})
+
+const emitButtonEvent = inject(buttonEventKey, undefined)
+
+function announce(): void {
+    if (props.emit && props.type !== 'submit' && !props.deleteUrl) {
+        emitButtonEvent?.(props.emit, props.name, props.form)
+    }
+}
 
 const showDialog = ref(false)
 const hiddenSubmit = ref<HTMLButtonElement | null>(null)
@@ -75,6 +118,7 @@ function handleConfirmAction() {
     }
 
     emit('confirm');
+    announce();
     showDialog.value = false;
 }
 
@@ -92,12 +136,13 @@ const { listeners } = useFieldListeners()
                     v-bind="listeners()"
                     :variant="variant"
                     type="button"
+                    :disabled="isDisabled"
                     :data-testid="testId"
                     :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className, inputClassName)"
                     :aria-label="ariaLabel"
                 >
                     <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />
-                    <template v-else>{{ label }}</template>
+                    <template v-else>{{ shownLabel }}</template>
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -119,7 +164,7 @@ const { listeners } = useFieldListeners()
                         :data-testid="testId ? `${testId}-confirm` : undefined"
                         @click="handleConfirmAction"
                     >
-                        {{ label || ariaLabel }}
+                        {{ shownLabel || ariaLabel }}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -130,12 +175,14 @@ const { listeners } = useFieldListeners()
             v-bind="$attrs"
             :variant="variant"
             :type="type"
+            :disabled="isDisabled"
             :data-testid="testId"
             :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className, inputClassName)"
             :aria-label="ariaLabel"
+            @click="announce"
         >
             <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />
-            <template v-else>{{ label }}</template>
+            <template v-else>{{ shownLabel }}</template>
         </Button>
     </template>
 </template>

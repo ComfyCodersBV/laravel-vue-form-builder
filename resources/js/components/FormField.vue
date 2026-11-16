@@ -86,7 +86,7 @@ provide(fieldMetaKey, computed(() => {
 const messageContext = useFormMessages()
 
 function extraProps(): Record<string, any> {
-    if (field.type === 'translatable' || field.type === 'display') {
+    if (['translatable', 'display', 'button', 'submit', 'delete'].includes(field.type ?? '')) {
         return { form }
     }
 

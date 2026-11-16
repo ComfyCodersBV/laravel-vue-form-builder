@@ -67,7 +67,9 @@ Repeater::make('barrels')
 - An error of a row, such as `barrels.3.number`, shows under that cell.
 - Hidden sub-fields get no column; they sit in the actions cell of their row.
 - A sub-field whose `->if()` does not hold leaves its cell in that row empty; the column and its header stay, so the
-  other columns keep their place. The condition sees the other sub-fields of the same row.
+  other columns keep their place. The condition sees the other sub-fields of the same row. With
+  `->if('kind', 'full')` the hidden value is also left out of that row in the payload, and the rule becomes
+  `exclude_unless:barrels.*.kind,full`, so the server checks each row against its own `kind`.
 - `->table()` wins over `->inline()`. Without rows there is no table, only the empty text and the add button.
 
 ### Row keys
