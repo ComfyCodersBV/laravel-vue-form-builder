@@ -274,7 +274,9 @@ throw ValidationException::withMessages([
 ```
 
 Keys of a field's nested values (`lines.0.amount` for a repeater `lines`, `title.nl` for a translatable `title`) and of
-remove flags count as that field's own. Replace the block with the `form-errors` slot:
+remove flags count as that field's own. An error on an element of an array field, such as `ids.0` for checkboxes
+`ids` or `period.start` for a date period, shows under that field; an error on `ids` itself takes precedence. Replace
+the block with the `form-errors` slot:
 
 ```vue
 <Form :schema="form">

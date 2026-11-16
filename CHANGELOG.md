@@ -10,6 +10,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   See `docs/vue-usage.md#field-ids`.
 * Warning: field ids changed. A selector on `#fieldname` in CSS, Playwright, Dusk or `document.querySelector()` no
   longer finds the field. Use `#{formId}-{name}` (for example `#login-email`), `[name="email"]` or the label.
+* An error on an element of an array field, such as `ids.0` for checkboxes `ids` or `period.start` for a date period,
+  shows under that field instead of nowhere. An error on the field itself takes precedence. Repeater, tags, file and
+  translatable fields keep showing their entry errors as before.
 * `docs/vue-usage.md` lists the field names laravel-form-builder 1.17 refuses because Inertia's `useForm()` uses them.
 
 ## 1.21.1 - 2026-11-13

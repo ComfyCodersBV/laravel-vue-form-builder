@@ -120,6 +120,20 @@ function entryErrorsFor(name: string): Record<string, string | string[]> {
     )
 }
 
+const ENTRY_ERROR_TYPES = ['repeater', 'tags', 'file', 'translatable']
+
+function errorFor(name: string): string | string[] | undefined {
+    const own = form.errors?.[name]
+
+    if (own || ENTRY_ERROR_TYPES.includes(field.type ?? '')) {
+        return own
+    }
+
+    const prefix = `${name}.`
+
+    return Object.entries(form.errors ?? {}).find(([key, message]) => key.startsWith(prefix) && Boolean(message))?.[1] as string | string[] | undefined
+}
+
 function updateFormValue(name: string, value: any): void {
     form[name] = value
     onFieldChange?.(name, value)
@@ -139,7 +153,7 @@ function slotPropsFor() {
     return {
         field,
         form,
-        error: form.errors?.[name],
+        error: errorFor(name),
         modelValue: form[name],
         'onUpdate:modelValue': (value: any) => {
             form[name] = value
@@ -187,7 +201,7 @@ function updateValue(value: any): void {
         :is="componentFor()"
         v-bind="boundProps()"
         :model-value="form[field.name!]"
-        :error="form.errors[field.name!]"
+        :error="errorFor(field.name ?? '')"
         @update:modelValue="updateValue"
         @update:formValue="updateFormValue"
     />
