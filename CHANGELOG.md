@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.24.0 - 2026-11-16
+* A select option with `disabled: true` is shown but cannot be picked, in the plain dropdown, the searchable combobox
+  and the multi-select. A row with `separator: true` (`Select::separator()`) shows a divider line, which is hidden
+  while searching. Option rows without the field's `optionValue` and `optionLabel` keys fall back to `value` and
+  `label`, and a map takes an object as its value. See `docs/fields/selection-fields.md#disabled-options-and-separators`.
+* The label of a multi-select points at its trigger button instead of an id that did not exist.
+
 ## 1.23.0 - 2026-11-16
 * Every repeater row has a key of its own, so its inputs stay with the row when another row is removed or the rows are
   reordered. Before, the rows were keyed by position and the state of an input could end up on the next row. The key

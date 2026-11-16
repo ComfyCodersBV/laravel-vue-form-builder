@@ -28,6 +28,7 @@ export interface FieldOption {
     label: string
     group?: string
     code?: string
+    separator?: boolean
     help?: string
     description?: string
     disabled?: boolean

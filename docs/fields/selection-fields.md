@@ -90,6 +90,39 @@ markup of an HTML label. The multi-select shows the column too.
 
 Requires `tranquil-tools/laravel-form-builder` 1.15 and `laravel-vue-form-builder` 1.20 or newer.
 
+### Disabled options and separators
+
+An option given as an array with `'disabled' => true` is shown but cannot be picked, in the plain dropdown, the
+searchable combobox and the multi-select alike. Rows take `value` and `label` (as a [Radio](#radio--radios) does) or
+the field's `optionValue` and `optionLabel` keys; a map takes an array as its value. `Select::separator()` puts a
+divider line between two options. It has no value and is hidden while searching.
+
+```php
+Select::make('caliber')
+    ->label('Caliber')
+    ->options([
+        ['value' => '22/24', 'label' => '22/24'],
+        ['value' => '24/26', 'label' => '24/26', 'disabled' => true],
+        Select::separator(),
+        ['value' => 'other', 'label' => 'Other'],
+    ])
+
+Select::make('unit')->options([
+    1 => 'Main hall',
+    2 => ['label' => 'Attic', 'disabled' => true],
+])
+```
+
+The field adds a `DisabledOption` rule (`TranquilTools\FormBuilder\Rules\DisabledOption`) that refuses a disabled
+value, for a multiple select every value, from `->options()` and `->optionGroups()`. With `->optionsFor()` the
+`DependentOption` rule refuses a value that is disabled in the list of the submitted other value; the same value may be
+enabled in another list. A stored
+value that has become disabled still shows as the chosen option, but saving the form with it fails validation: give
+such a value its own enabled option when it has to stay. A select with a `searchUrl` has no options up front and gets
+no such rule.
+
+Requires `tranquil-tools/laravel-form-builder` 1.19 and `laravel-vue-form-builder` 1.24 or newer.
+
 ### Options that depend on another field
 
 `->optionsFor(string $field, array $optionsPerValue)` shows the options listed for the current value of another field.
@@ -383,6 +416,9 @@ with `/`. Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-fo
 Descriptions and link labels are rendered as text, never as HTML. A link only renders for a relative URL or an
 `http`, `https`, `mailto` or `tel` URL; anything else (`javascript:`, `data:`, …) is dropped by the core and ignored by
 the renderer. A link starting with `/` navigates through Inertia, unless it has a target.
+
+An option given as an array with `'disabled' => true` is shown but cannot be chosen. A [Select](#disabled-options-and-separators)
+takes the same option shape.
 
 `Radios` is an alias for `Radio` — both behave identically.
 
