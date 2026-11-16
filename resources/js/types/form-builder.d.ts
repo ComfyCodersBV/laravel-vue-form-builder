@@ -126,6 +126,7 @@ export interface Field {
     expression?: string
     labelExpression?: string
     disabledIf?: string
+    emit?: string
 }
 
 export interface CurrentFile {

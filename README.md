@@ -255,4 +255,11 @@ them through `fieldOverrides`, and they land on the button or input itself:
 <Form :schema="form" :field-overrides="{ preview: { onClick: () => (previewOpen = true) } }" />
 ```
 
+A `Button` with `->emit('preview')` in the form class fires `@button` on `<Form>` instead, so the wiring stays visible
+in PHP:
+
+```vue
+<Form :schema="form" @button="(event) => event === 'preview' && (previewOpen = true)" />
+```
+
 See [Click and other event handlers](docs/vue-usage.md#click-and-other-event-handlers).

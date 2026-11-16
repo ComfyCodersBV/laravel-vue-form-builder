@@ -96,6 +96,30 @@ function handleError(errors: Record<string, string>) {
 </script>
 ```
 
+### `@button`
+
+Fired when a [`Button` with `->emit()`](fields/buttons.md#emitting-an-event) is clicked, after its confirmation when it
+asks for one. It receives the event name and `{ field, form, row }`: the button's name, the form, and for a button
+inside a repeater the row it sits in (writing to `row` changes that row).
+
+```php
+Button::make('make_rows')->label('Make rows')->emit('make-rows')
+```
+
+```vue
+<template>
+    <Form :schema="form" @button="onButton" />
+</template>
+
+<script setup lang="ts">
+function onButton(event: string, { form }: { form: any }) {
+    if (event === 'make-rows') {
+        makeRows(form)
+    }
+}
+</script>
+```
+
 ## Reacting to field changes
 
 Use `@onFieldChange` to run logic whenever any field value changes. This is useful for cross-field reactivity — for example, showing extra fields when a toggle is enabled, or fetching related data.
@@ -153,6 +177,10 @@ The listener lands on the element itself, not on the wrapper around it: the butt
 number, money, colour, time, file and tags fields, the `<textarea>`, the trigger of a select or date field, the checkbox
 and the switch of a toggle. A field's own handlers keep running next to yours. On fields made of several controls
 (checkboxes, radios, key-value, repeater, translatable, wysiwyg) a listener stays on the wrapper around them.
+
+For a button, `->emit('preview')` in the form class is the alternative: the form fires
+[`@button`](#button) with that name, so the form class shows which buttons the page has to handle. An `onClick`
+through `fieldOverrides` keeps working next to it.
 
 ## Custom layouts with `FormRenderer`
 

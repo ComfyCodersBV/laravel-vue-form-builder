@@ -83,6 +83,25 @@ PHP, which refuses `@click`:
 
 See [Click and other event handlers](../vue-usage.md#click-and-other-event-handlers).
 
+### Emitting an event
+
+`->emit('make-rows')` makes the button fire [`@button`](../vue-usage.md#button) on `<Form>` with that name, so the
+form class shows what the button does and the page only handles the event:
+
+```php
+Button::make('make_rows')
+    ->label('Make rows')
+    ->emit('make-rows')
+```
+
+```vue
+<Form :schema="form" @button="(event, { form }) => event === 'make-rows' && makeRows(form)" />
+```
+
+A button that asks for confirmation emits after the confirmation. An `onClick` from `fieldOverrides` keeps working
+next to it. `Submit::emit()` and `DeleteButton::emit()` throw an `InvalidArgumentException`, and so does serializing a
+`Button` with both `->emit()` and `->deleteUrl()`: those buttons submit or delete themselves and never emit.
+
 ### Variants
 
 Control the button style using `variant()`:
@@ -164,6 +183,7 @@ All button types (`Button`, `Submit`, `DeleteButton`) support these methods:
 | `->deleteUrl(string)`       | URL for a `DELETE` request (sent via Inertia on confirm)                                 |
 | `->labelExpression(string)` | Label computed from the form                                                             |
 | `->disabledIf(string)`      | Disables the button while the expression holds                                           |
+| `->emit(string)`            | Fires `@button` on `<Form>` with this name on click (`Button` only)                      |
 
 ## Translations
 

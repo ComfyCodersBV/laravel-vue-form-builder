@@ -15,6 +15,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   `disabledIf` is disabled while the expression holds, also the submit button on the last step of a wizard. A label
   expression that fails or gives an empty value falls back to the label, and a `disabledIf` that fails disables the
   button. A disabled button stays disabled.
+* A `Button` with `emit` makes `<Form>` fire `@button` with the event name and `{ field, form, row }`, where `row` is
+  the repeater row the button sits in. A button with a confirmation emits after the confirmation. An `onClick` from
+  `fieldOverrides` keeps working next to it.
 * `useHttpForm()` has `transform()`, as Inertia's form has.
 
 ## 1.24.0 - 2026-11-16

@@ -4,6 +4,7 @@ import { router } from '@inertiajs/vue3';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { useFieldListeners } from '../../lib/listeners';
+import { buttonEventKey } from '../../lib/button-events';
 import { conditionData, expressionHolds, expressionValue, formValues } from '../../lib/conditions';
 import { formFieldsKey } from '../../lib/fields';
 import {
@@ -33,6 +34,7 @@ interface Props {
     disabled?: boolean | string
     labelExpression?: string
     disabledIf?: string
+    emit?: string
     form?: any
 }
 
@@ -52,6 +54,7 @@ const props = withDefaults(defineProps<Props>(), {
     disabled: undefined,
     labelExpression: undefined,
     disabledIf: undefined,
+    emit: undefined,
     form: undefined,
 })
 
@@ -85,6 +88,14 @@ const isDisabled = computed(() => {
     return props.form ? expressionHolds(props.disabledIf, expressionData.value, true) : true
 })
 
+const emitButtonEvent = inject(buttonEventKey, undefined)
+
+function announce(): void {
+    if (props.emit && props.type !== 'submit' && !props.deleteUrl) {
+        emitButtonEvent?.(props.emit, props.name, props.form)
+    }
+}
+
 const showDialog = ref(false)
 const hiddenSubmit = ref<HTMLButtonElement | null>(null)
 
@@ -107,6 +118,7 @@ function handleConfirmAction() {
     }
 
     emit('confirm');
+    announce();
     showDialog.value = false;
 }
 
@@ -167,6 +179,7 @@ const { listeners } = useFieldListeners()
             :data-testid="testId"
             :class="cn('inline-flex items-center rounded px-4 py-2 text-sm font-medium', className, inputClassName)"
             :aria-label="ariaLabel"
+            @click="announce"
         >
             <span v-if="labelHtml" class="inline-flex items-center gap-1.5" v-html="labelHtml" />
             <template v-else>{{ shownLabel }}</template>

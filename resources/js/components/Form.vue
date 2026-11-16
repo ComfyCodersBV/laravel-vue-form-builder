@@ -5,6 +5,7 @@ import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
+import { buttonEventKey, type ButtonEventPayload } from '../lib/button-events'
 import { withoutHiddenValues } from '../lib/conditions'
 import { carriesValue, flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
@@ -49,7 +50,11 @@ const props = withDefaults(defineProps<{
     stepParam: undefined,
 })
 
-const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
+const emit = defineEmits<{
+    (e: 'success'): void
+    (e: 'error'): void
+    (e: 'button', event: string, payload: ButtonEventPayload): void
+}>()
 
 assertSupportedSchemaVersion(props.schema.schemaVersion)
 
@@ -379,6 +384,14 @@ const formErrors = computed<Record<string, string>>(() => {
 const hasFormErrors = computed(() => Object.keys(formErrors.value).length > 0)
 
 const slots = useSlots()
+
+provide(buttonEventKey, (event: string, field: string | undefined, values: any) => {
+    emit('button', event, {
+        field,
+        form,
+        ...(values && values !== form ? { row: values } : {}),
+    })
+})
 
 const steps = computed(() => props.schema.fields
     .filter((field) => field.type === 'step')
