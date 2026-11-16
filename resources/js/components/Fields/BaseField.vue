@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
-import { useFieldId } from '../../lib/field-id'
+import { errorIdOf, helpIdOf, useFieldId } from '../../lib/field-id'
 import type { Field } from '../../types/form-builder'
 import { DEFAULT_THEME, mergeTheme, themeKey, type FormTheme } from '../../lib/theme'
 import { layoutKey, type FormLayout } from '../../lib/layout'
@@ -56,6 +56,10 @@ const inputId = useFieldId(() => props.name)
 const labelId = computed(() => props.group && inputId.value ? `${inputId.value}--label` : undefined)
 
 const labelFor = computed(() => props.group ? undefined : inputId.value)
+
+const helpId = computed(() => helpIdOf(inputId.value))
+
+const errorId = computed(() => errorIdOf(inputId.value))
 </script>
 
 <template>
@@ -64,10 +68,10 @@ const labelFor = computed(() => props.group ? undefined : inputId.value)
         <div class="min-w-0 flex-1">
             <slot />
             <template v-if="hasHelp">
-                <div v-if="meta.helpText" :class="[theme.help, 'whitespace-pre-line']" data-help-text>{{ meta.helpText }}</div>
-                <div v-else :class="theme.help" v-html="help"></div>
+                <div v-if="meta.helpText" :id="helpId" :class="[theme.help, 'whitespace-pre-line']" data-help-text>{{ meta.helpText }}</div>
+                <div v-else :id="helpId" :class="theme.help" v-html="help"></div>
             </template>
-            <p v-if="error" :class="theme.error">
+            <p v-if="error" :id="errorId" :class="theme.error">
                 <span v-if="Array.isArray(error)">{{ error[0] }}</span>
                 <span v-else>{{ error }}</span>
             </p>
@@ -80,10 +84,10 @@ const labelFor = computed(() => props.group ? undefined : inputId.value)
             <slot />
         </div>
         <template v-if="hasHelp">
-            <div v-if="meta.helpText" :class="[theme.help, 'whitespace-pre-line']" data-help-text>{{ meta.helpText }}</div>
-            <div v-else :class="theme.help" v-html="help"></div>
+            <div v-if="meta.helpText" :id="helpId" :class="[theme.help, 'whitespace-pre-line']" data-help-text>{{ meta.helpText }}</div>
+            <div v-else :id="helpId" :class="theme.help" v-html="help"></div>
         </template>
-        <p v-if="error" :class="theme.error">
+        <p v-if="error" :id="errorId" :class="theme.error">
             <span v-if="Array.isArray(error)">{{ error[0] }}</span>
             <span v-else>{{ error }}</span>
         </p>

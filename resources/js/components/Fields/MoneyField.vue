@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
@@ -110,11 +111,15 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
-const describedBy = computed(() => [listeners()['aria-describedby'], inputId.value ? `${inputId.value}-currency` : undefined]
-    .filter(Boolean)
-    .join(' ') || undefined)
-
 const inputId = useFieldId(() => props.name)
+
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby'], inputId.value ? `${inputId.value}-currency` : undefined],
+}))
 </script>
 
 <template>

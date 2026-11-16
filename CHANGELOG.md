@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.26.0 - 2026-11-16
+* The help text of a field renders with the id `{id}-help` and its error with `{id}-error`, and the built-in fields
+  point `aria-describedby` at the ones that are shown. A repeater table column's help text and the currency of a
+  `Money` field stay in the list. A checkbox or radio group carries it on the group.
+
 ## 1.25.0 - 2026-11-16
 * A field with `when: {field, values}` (`->if('action', 'rebook')`) shows while the other field holds one of the values,
   compared as text as the server compares them. Inside a repeater the other field is a sub-field of the same row. It

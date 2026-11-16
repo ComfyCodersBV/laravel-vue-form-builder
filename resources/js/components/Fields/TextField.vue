@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
@@ -108,6 +109,14 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}))
+
 const inputId = useFieldId(() => props.name)
 
 const suggestionsId = computed(() => props.suggestions.length && inputId.value ? `${inputId.value}-suggestions` : undefined)
@@ -125,6 +134,7 @@ const suggestionsId = computed(() => props.suggestions.length && inputId.value ?
 
       <Input
         v-bind="listeners()"
+        :aria-describedby="describedBy"
         :id="inputId"
         :name="name"
         :disabled="disabled"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
@@ -67,6 +68,14 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}))
+
 const inputId = useFieldId(() => props.name)
 </script>
 
@@ -76,6 +85,7 @@ const inputId = useFieldId(() => props.name)
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox
                 v-bind="listeners()"
+                :aria-describedby="describedBy"
                 :id="`${inputId}-cb`"
                 :name="name"
                 :value="String(value ?? '1')"

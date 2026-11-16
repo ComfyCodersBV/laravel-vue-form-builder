@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useFieldId } from '../../lib/field-id'
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import { Textarea } from '../ui/textarea'
 import type { Field } from '../../types/form-builder'
@@ -25,6 +26,14 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}))
+
 const inputId = useFieldId(() => props.name)
 </script>
 
@@ -32,6 +41,7 @@ const inputId = useFieldId(() => props.name)
     <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
         <Textarea
             v-bind="listeners()"
+            :aria-describedby="describedBy"
             :id="inputId"
             :name="name"
             v-model="model"
