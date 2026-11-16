@@ -30,6 +30,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id
   that did not exist.
 * The label of a multi-select points at its trigger button instead of an id that did not exist.
+* Requires laravel-form-builder 1.19 and supports schema version 1.17.
 
 ## 1.23.0 - 2026-11-16
 * Every repeater row has a key of its own, so its inputs stay with the row when another row is removed or the rows are
