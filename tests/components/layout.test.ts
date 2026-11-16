@@ -63,6 +63,35 @@ describe('form layout', () => {
         expect(wrapper.find('form > div').classes()).toContain('md:grid-cols-3');
     });
 
+    it.each([
+        [5, ['md:grid-cols-3', 'lg:grid-cols-5']],
+        [6, ['md:grid-cols-3', 'lg:grid-cols-6']],
+        [9, ['md:grid-cols-3', 'lg:grid-cols-6']],
+        [12, ['md:grid-cols-6', 'lg:grid-cols-12']],
+        [20, ['md:grid-cols-6', 'lg:grid-cols-12']],
+    ])('falls back from %i columns to fewer on a medium screen', (columns, classes) => {
+        const wrapper = mount(Form, { props: { schema: schemaWith([textField]), columns } })
+
+        expect(wrapper.find('form > div').classes()).toEqual(expect.arrayContaining(classes))
+    })
+
+    it('scales the span of a field in a wide grid down to the medium grid', () => {
+        const schema = schemaWith([
+            { ...textField, columnSpan: 1 },
+            { name: 'street', type: 'text', columnSpan: 3 },
+            { name: 'notes', type: 'text', columnSpan: 8 },
+            { name: 'body', type: 'textarea' },
+        ])
+        const wrapper = mount(Form, { props: { schema, columns: 12 } })
+
+        const cells = wrapper.findAll('form > div > div')
+
+        expect(cells[0].classes()).toEqual([])
+        expect(cells[1].classes()).toEqual(['md:col-span-2', 'lg:col-span-3'])
+        expect(cells[2].classes()).toEqual(['md:col-span-4', 'lg:col-span-8'])
+        expect(cells[3].classes()).toEqual(['md:col-span-6', 'lg:col-span-12'])
+    })
+
     it('lets the columns prop win over the schema', () => {
         const wrapper = mount(Form, { props: { schema: { ...schemaWith([textField]), columns: 3 }, columns: 1 } });
 

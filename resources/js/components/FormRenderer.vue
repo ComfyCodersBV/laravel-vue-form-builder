@@ -6,7 +6,7 @@
     import { provideFieldIdPrefix } from '../lib/field-id'
     import { formFieldsKey } from '../lib/fields'
     import { conditionData, formValues, meetsCondition } from '../lib/conditions'
-    import { normalizeColumns, spanOf, type FormColumns } from '../lib/layout'
+    import { mediumColumnsOf, normalizeColumns, responsiveSpanOf, spanOf, type FormColumns } from '../lib/layout'
 
     const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1, layoutFromForm = false, idPrefix } = defineProps<{
         fields: Field[]
@@ -29,19 +29,44 @@
         2: 'grid gap-x-6 gap-y-4 md:grid-cols-2',
         3: 'grid gap-x-6 gap-y-4 md:grid-cols-3',
         4: 'grid gap-x-6 gap-y-4 md:grid-cols-4',
+        5: 'grid gap-x-6 gap-y-4 md:grid-cols-3 lg:grid-cols-5',
+        6: 'grid gap-x-6 gap-y-4 md:grid-cols-3 lg:grid-cols-6',
+        12: 'grid gap-x-6 gap-y-4 md:grid-cols-6 lg:grid-cols-12',
     }
 
-    const SPAN_CLASSES: Record<FormColumns, string> = {
+    const MEDIUM_SPAN_CLASSES: Record<number, string> = {
         1: '',
         2: 'md:col-span-2',
         3: 'md:col-span-3',
         4: 'md:col-span-4',
+        5: 'md:col-span-5',
+        6: 'md:col-span-6',
+    }
+
+    const LARGE_SPAN_CLASSES: Record<number, string> = {
+        1: '',
+        2: 'lg:col-span-2',
+        3: 'lg:col-span-3',
+        4: 'lg:col-span-4',
+        5: 'lg:col-span-5',
+        6: 'lg:col-span-6',
+        7: 'lg:col-span-7',
+        8: 'lg:col-span-8',
+        9: 'lg:col-span-9',
+        10: 'lg:col-span-10',
+        11: 'lg:col-span-11',
+        12: 'lg:col-span-12',
     }
 
     function cellClass(field: Field): string {
         const span = spanOf({ ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }, columns.value)
+        const { medium, large } = responsiveSpanOf(span, columns.value)
 
-        return SPAN_CLASSES[normalizeColumns(span)]
+        if (mediumColumnsOf(columns.value) === columns.value) {
+            return MEDIUM_SPAN_CLASSES[medium]
+        }
+
+        return [MEDIUM_SPAN_CLASSES[medium], LARGE_SPAN_CLASSES[large]].filter(Boolean).join(' ')
     }
 
     const form = propForm ?? useFormContext()

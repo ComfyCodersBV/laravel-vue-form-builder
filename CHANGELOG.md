@@ -19,6 +19,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * A repeater collects the errors of its rows once per change instead of once per cell, which keeps long tables quick.
 * `columnWidth` on a sub-field sets the width of its column in a repeater table. Columns without it share the rest
   and get at least `8rem`.
+* Forms and sections take `5`, `6` and `12` columns. They are a single column below `md`; `5` and `6` show 3 columns
+  and `12` shows 6 up to `lg`, and spans shrink along. `7` to `11` columns become `6`, more than `12` becomes `12`.
+  Before, everything above `4` became `4`. See `docs/columns.md#breakpoints`.
 
 ## 1.22.0 - 2026-11-16
 * Every field id carries the id of its form: `{form id}-{field name}`, and inside a repeater
