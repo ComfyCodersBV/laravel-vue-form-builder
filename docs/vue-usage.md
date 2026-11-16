@@ -19,6 +19,30 @@ defineProps<{ form: FormSchema }>();
 
 The component uses Inertia's `useForm()` internally and handles submission, error display, and loading state automatically.
 
+## Field ids
+
+Every field gets the id `{form id}-{field name}`, and its label, option and help ids follow. A field `email` in a form
+with `->id('login')` gets `id="login-email"`, so two forms with the same field on one page keep their labels apart.
+Inside a repeater the row comes in between: `{form id}-{repeater}-{row}-{field}`, for example `order-lines-0-amount`.
+
+The form id is the one from `->id()`. A form class without it uses its class name in snake case (`ContactForm` becomes
+`contact_form`). A bare `FormConfig::make()` without an id gets an id Vue generates (`useId()`), which differs per form
+on the page and stays the same across renders. Give such a form an `->id()` when a test or a stylesheet must find its
+fields.
+
+> **Warning:** since 1.22 a selector on `#fieldname` in CSS, Playwright, Dusk or `document.querySelector()` no longer
+> finds the field. Use `#{formId}-{name}` (for example `#login-email`), `[name="email"]` or the label. The `name`
+> attribute does not change.
+
+## Reserved field names
+
+`<Form>` keeps every value directly on Inertia's `useForm()` object, next to its own properties and methods. A field
+named `data`, `errors`, `reset`, `submit`, `get`, `post`, `delete`, `processing`, `transform`, `query`, `only`,
+`validate`, `touch`, `setErrors` and the like would show and send that property instead of its value. The schema
+refuses such a field: serializing the form throws an `InvalidArgumentException` that names the field. The full list is
+`FormConfig::RESERVED_FIELD_NAMES` in laravel-form-builder. A dotted name (`data.street`) and a sub-field of a repeater
+are fine. Rename the field, for example `q` instead of `query`, and map it in your controller.
+
 ## Events
 
 ### `@success`
@@ -355,4 +379,4 @@ function errorAdapter(error: any) {
 </template>
 ```
 
-> The form exposes its own API under the names `data`, `errors`, `processing`, `recentlySuccessful`, `reset`, `clearErrors`, `submit`, `get`, `post`, `put`, `patch` and `delete`. A field with one of those names throws on setup rather than silently overwriting the method.
+> The form exposes its own API under the names `data`, `errors`, `processing`, `recentlySuccessful`, `reset`, `clearErrors`, `submit`, `get`, `post`, `put`, `patch` and `delete`. A field with one of those names throws on setup rather than silently overwriting the method. laravel-form-builder 1.17 refuses these and the other [reserved field names](#reserved-field-names) already when it serializes the form.

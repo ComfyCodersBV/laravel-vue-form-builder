@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { cn } from '../../lib/utils'
 
 interface ColorFieldProps extends Field {
@@ -42,6 +43,8 @@ function selectSwatch(swatch: string): void {
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -50,7 +53,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
             <div class="flex w-full">
                 <input
                     type="color"
-                    :id="name ? `${name}_picker` : undefined"
+                    :id="inputId ? `${inputId}_picker` : undefined"
                     :disabled="disabled || readonly"
                     :value="pickerValue"
                     class="h-9 w-12 shrink-0 cursor-pointer rounded-l-md border border-input bg-background p-1 disabled:cursor-not-allowed"
@@ -59,7 +62,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 
                 <Input
                     v-bind="listeners()"
-                    :id="name"
+                    :id="inputId"
                     :name="name"
                     :disabled="disabled"
                     :readonly="readonly"

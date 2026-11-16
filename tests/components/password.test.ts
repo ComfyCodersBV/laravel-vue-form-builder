@@ -18,14 +18,14 @@ describe('password with a stored value', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith({ stored: true }) } })
 
         expect(wrapper.find('[data-stored-value]').text()).toContain('A value is stored')
-        expect(wrapper.find('input#api_key').attributes('placeholder')).toBe('••••••••')
+        expect(wrapper.find('input#password-api_key').attributes('placeholder')).toBe('••••••••')
         expect(formOf(wrapper).api_key).toBe('')
     })
 
     it('keeps its own placeholder', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith({ stored: true, placeholder: 'Paste a new key' }) } })
 
-        expect(wrapper.find('input#api_key').attributes('placeholder')).toBe('Paste a new key')
+        expect(wrapper.find('input#password-api_key').attributes('placeholder')).toBe('Paste a new key')
     })
 
     it('says nothing when no value is stored', () => {

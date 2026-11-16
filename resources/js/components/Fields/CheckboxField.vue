@@ -5,6 +5,7 @@ import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import type { FormTheme } from '../../lib/theme'
 import { computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
 import { useFieldMeta } from '../../lib/field-meta'
 import RequiredMark from './RequiredMark.vue'
@@ -65,6 +66,8 @@ const isChecked = computed({
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -73,14 +76,14 @@ const { listeners, wrapperAttrs } = useFieldListeners()
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Checkbox
                 v-bind="listeners()"
-                :id="`${name}-cb`"
+                :id="`${inputId}-cb`"
                 :name="name"
                 :value="String(value ?? '1')"
                 v-model="isChecked"
                 :disabled="disabled"
                 :class="inputClassName"
             />
-            <Label v-if="inlineLabel" :for="`${name}-cb`" :class="labelHidden && !checkboxLabel ? VISUALLY_HIDDEN : undefined">{{ inlineLabel }}<RequiredMark v-if="meta.markRequired && !groupLabel" :theme="theme" /></Label>
+            <Label v-if="inlineLabel" :for="`${inputId}-cb`" :class="labelHidden && !checkboxLabel ? VISUALLY_HIDDEN : undefined">{{ inlineLabel }}<RequiredMark v-if="meta.markRequired && !groupLabel" :theme="theme" /></Label>
         </div>
     </BaseField>
 </template>

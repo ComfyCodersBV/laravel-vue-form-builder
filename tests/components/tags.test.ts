@@ -62,7 +62,7 @@ describe('tags field', () => {
     it('splits a pasted list into separate tags', async () => {
         const wrapper = mount(Form, { props: { schema: schemaWith({ emails: true }) } })
 
-        paste(wrapper.find('input[id="to"]').element as HTMLInputElement, 'jane@example.com; john@example.com\nmary@example.com')
+        paste(wrapper.find('input[id="tags-to"]').element as HTMLInputElement, 'jane@example.com; john@example.com\nmary@example.com')
         await nextTick()
 
         expect(formOf(wrapper).to).toEqual(['jane@example.com', 'john@example.com', 'mary@example.com'])
@@ -74,7 +74,7 @@ describe('tags field', () => {
     it('adds a tag when a separator is typed', async () => {
         const wrapper = mount(Form, { props: { schema: schemaWith({}) } })
 
-        await type(wrapper.find('input[id="to"]').element as HTMLInputElement, 'urgent,')
+        await type(wrapper.find('input[id="tags-to"]').element as HTMLInputElement, 'urgent,')
 
         expect(formOf(wrapper).to).toEqual(['urgent'])
     })
@@ -82,7 +82,7 @@ describe('tags field', () => {
     it('does not add more tags than the maximum', async () => {
         const wrapper = mount(Form, { props: { schema: schemaWith({ max: 2 }) } })
 
-        paste(wrapper.find('input[id="to"]').element as HTMLInputElement, 'a, b, c')
+        paste(wrapper.find('input[id="tags-to"]').element as HTMLInputElement, 'a, b, c')
         await nextTick()
 
         expect(formOf(wrapper).to).toEqual(['a', 'b'])
@@ -91,7 +91,7 @@ describe('tags field', () => {
     it('keeps the input focusable but read-only once the maximum is reached', async () => {
         const wrapper = mount(Form, { props: { schema: schemaWith({ max: 2 }, { to: ['a', 'b'] }) } })
 
-        const input = wrapper.find('input[id="to"]')
+        const input = wrapper.find('input[id="tags-to"]')
 
         expect((input.element as HTMLInputElement).style.display).not.toBe('none')
         expect(input.attributes()).toHaveProperty('readonly')
@@ -99,7 +99,7 @@ describe('tags field', () => {
         await wrapper.findAll('[data-tag] button')[1].trigger('click')
 
         expect(formOf(wrapper).to).toEqual(['a'])
-        expect(wrapper.find('input[id="to"]').attributes()).not.toHaveProperty('readonly')
+        expect(wrapper.find('input[id="tags-to"]').attributes()).not.toHaveProperty('readonly')
     })
 
     it('marks an entry that is no e-mail address in email mode', () => {
@@ -158,7 +158,7 @@ describe('tags field with suggestions', () => {
             attachTo: document.body,
         })
 
-        const input = wrapper.find('input[id="to"]').element as HTMLInputElement
+        const input = wrapper.find('input[id="tags-to"]').element as HTMLInputElement
 
         await type(input, 'j')
         await type(input, 'ja')

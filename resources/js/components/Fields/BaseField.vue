@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import type { Field } from '../../types/form-builder'
 import { DEFAULT_THEME, mergeTheme, themeKey, type FormTheme } from '../../lib/theme'
 import { layoutKey, type FormLayout } from '../../lib/layout'
@@ -47,11 +48,13 @@ const hasHelp = computed(() => Boolean(meta.value.helpText || props.help))
 const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(props.label) && !labelHidden.value)
 
 const alignsWithControls = computed(() => layout.value === 'horizontal' && props.inlineLabel && !props.label)
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
     <div v-if="isHorizontal" :class="[wrapperClass, 'sm:flex sm:items-start sm:gap-3']">
-        <label :for="name" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
+        <label :for="inputId" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div class="min-w-0 flex-1">
             <slot />
             <template v-if="hasHelp">
@@ -66,7 +69,7 @@ const alignsWithControls = computed(() => layout.value === 'horizontal' && props
     </div>
 
     <div v-else :class="[wrapperClass, alignsWithControls ? 'sm:pl-[10.75rem]' : '']">
-        <label v-if="label" :for="name" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
+        <label v-if="label" :for="inputId" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div>
             <slot />
         </div>

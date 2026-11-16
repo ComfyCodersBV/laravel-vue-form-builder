@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Field } from '../../types/form-builder'
 import { computed, onMounted, onBeforeUnmount } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { useRecaptcha } from '../../composables/useRecaptcha'
 
 interface RecaptchaFieldProps extends Field {
@@ -32,7 +33,7 @@ let formElement: HTMLFormElement | null = null
 let submitHandler: ((e: Event) => void) | null = null
 
 onMounted(() => {
-    const inputElement = document.getElementById(props.name || 'g-recaptcha-response')
+    const inputElement = document.getElementById(inputId.value || 'g-recaptcha-response')
     formElement = inputElement?.closest('form') ?? null
 
     if (!formElement) {
@@ -75,11 +76,13 @@ onBeforeUnmount(() => {
         formElement.removeEventListener('submit', submitHandler)
     }
 })
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
     <div>
-        <input type="hidden" :name="name" :id="name" v-model="model" />
+        <input type="hidden" :name="name" :id="inputId" v-model="model" />
         <p v-if="error" class="text-sm text-red-600">
             <span v-if="Array.isArray(error)">{{ error[0] }}</span>
             <span v-else>{{ error }}</span>

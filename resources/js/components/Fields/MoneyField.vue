@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
 import { computed, ref, watch } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { cn } from '../../lib/utils'
 import { useFormMessages } from '../../lib/messages'
 import { formatMinorUnits, moneyFormat, parseMinorUnits } from '../../lib/money'
@@ -108,6 +109,8 @@ function onBeforeInput(event: InputEvent) {
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -127,13 +130,13 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 type="text"
                 inputmode="decimal"
                 autocomplete="off"
-                :id="name"
+                :id="inputId"
                 :model-value="text"
                 :placeholder="placeholder ?? display(0)"
                 :disabled="disabled"
                 :readonly="readonly"
                 :aria-invalid="invalid || Boolean(error) ? 'true' : undefined"
-                :aria-describedby="name ? `${name}-currency` : undefined"
+                :aria-describedby="inputId ? `${inputId}-currency` : undefined"
                 :class="cn('flex-1 text-right tabular-nums', format.symbolFirst ? 'rounded-l-none' : 'rounded-r-none', inputClassName)"
                 @update:model-value="onInput"
                 @beforeinput="onBeforeInput"
@@ -149,7 +152,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 {{ format.symbol }}
             </span>
 
-            <span v-if="name" :id="`${name}-currency`" class="sr-only">{{ currency }}</span>
+            <span v-if="name" :id="`${inputId}-currency`" class="sr-only">{{ currency }}</span>
 
             <input v-if="name" type="hidden" :name="name" :value="typeof modelValue === 'number' ? String(modelValue) : ''" />
         </div>

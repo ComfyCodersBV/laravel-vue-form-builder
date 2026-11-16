@@ -7,6 +7,7 @@ import { Input } from '../ui/input'
 import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover'
 import { Clock, X } from '@lucide/vue'
 import { computed, nextTick, ref, watch } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { buildTimeSlots, closestSlotIndex, currentMinutes, minutesOf, normalizeTime, stepTime } from '../../lib/time'
 import { useFormMessages } from '../../lib/messages'
 
@@ -46,7 +47,7 @@ const highlighted = ref(-1)
 const anchor = ref<HTMLElement | null>(null)
 const list = ref<HTMLElement | null>(null)
 
-const listId = computed(() => `${props.name ?? 'time'}-options`)
+const listId = computed(() => `${inputId.value ?? 'time'}-options`)
 const slots = computed(() => buildTimeSlots(props.step, props.min, props.max))
 const isLocked = computed(() => Boolean(props.disabled) || Boolean(props.readonly))
 const isClearable = computed(() => props.clearable && !isLocked.value && text.value !== '')
@@ -198,6 +199,8 @@ function clear(): void {
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -208,7 +211,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                     <Clock class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         v-bind="listeners()"
-                        :id="name"
+                        :id="inputId"
                         :name="name"
                         :model-value="text"
                         :disabled="!!disabled"

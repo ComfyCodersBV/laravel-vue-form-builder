@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners'
 import type { Field } from '../../types/form-builder'
 import { DatePicker, TouchDatePicker } from '../ui/date-picker'
 import { ref, watch, computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import type { DisabledDate } from '../../lib/dates'
 
 interface DateFieldProps extends Field {
@@ -56,6 +57,8 @@ const rangeEnd = computed(() => (internal.value?.end ?? ''))
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -63,7 +66,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
     <TouchDatePicker
       v-bind="listeners()"
       v-if="props.touch && !props.range"
-      :id="props.name"
+      :id="inputId"
       :class="props.inputClassName"
       v-model="internal"
       :enable-time="props.enableTime"
@@ -88,7 +91,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
     <DatePicker
       v-bind="listeners()"
       v-else
-      :id="props.name"
+      :id="inputId"
       :class="props.inputClassName"
       v-model="internal"
       :enable-time="props.enableTime"

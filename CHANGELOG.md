@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.22.0 - 2026-11-16
+* Every field id carries the id of its form: `{form id}-{field name}`, and inside a repeater
+  `{form id}-{repeater}-{row}-{field}`. Labels, option, checkbox, toggle, tab and help ids follow, so two forms with the
+  same field on one page no longer share ids and a label no longer focuses the field of the other form. A form without
+  an id gets one from Vue's `useId()`, which is also set on the `<form>` element. The `name` attributes do not change.
+  See `docs/vue-usage.md#field-ids`.
+* Warning: field ids changed. A selector on `#fieldname` in CSS, Playwright, Dusk or `document.querySelector()` no
+  longer finds the field. Use `#{formId}-{name}` (for example `#login-email`), `[name="email"]` or the label.
+* `docs/vue-usage.md` lists the field names laravel-form-builder 1.17 refuses because Inertia's `useForm()` uses them.
+
 ## 1.21.1 - 2026-11-13
 * A single checkbox rendered outside the field renderer, for example from a field slot, now shows the required
   asterisk of the field it belongs to. Before, its `markRequired` prop fell back to `false` instead of the field.

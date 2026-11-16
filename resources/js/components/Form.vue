@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, useId, useSlots, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
+import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
@@ -49,6 +50,12 @@ const emit = defineEmits<{ (e: 'success'): void; (e: 'error'): void }>()
 assertSupportedSchemaVersion(props.schema.schemaVersion)
 
 const fields = flattenFields(props.schema.fields)
+
+const generatedId = useId()
+
+const formId = computed(() => props.schema.id || generatedId)
+
+provideFieldIdPrefix(() => formId.value)
 
 provide(themeKey, computed(() => mergeTheme(DEFAULT_THEME, props.schema.theme)))
 provide(fieldSlotsKey, useSlots())
@@ -392,7 +399,7 @@ defineExpose({ submit: submitForm, form, formErrors, wizard })
 
 <template>
     <form
-        :id="schema.id"
+        :id="formId"
         :class="schema.formClass || ''"
         @submit.prevent="onSubmit"
     >

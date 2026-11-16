@@ -10,6 +10,7 @@ import {ArrowDown, ArrowUp, Plus, Trash2} from '@lucide/vue'
 // time, so a static import is safe here.
 import FormRenderer from '../FormRenderer.vue'
 import { useFormMessages } from '../../lib/messages'
+import { useFieldId } from '../../lib/field-id'
 
 interface RepeaterProps extends Field {
     fields?: Field[]
@@ -47,6 +48,12 @@ const emit = defineEmits<{ 'update:modelValue': [Array<Record<string, any>>] }>(
 
 const messageContext = useFormMessages()
 const messages = computed(() => messageContext.value.messages)
+
+const repeaterId = useFieldId(() => props.name)
+
+function rowIdPrefix(index: number): string | undefined {
+    return repeaterId.value ? `${repeaterId.value}-${index}` : undefined
+}
 
 const rows = ref<Record<string, any>[]>([])
 const isInternalUpdate = ref(false)
@@ -186,7 +193,7 @@ function moveDown(idx: number) {
                      class="flex flex-col gap-3 rounded-md border border-neutral-200 p-3 sm:flex-row sm:items-start sm:border-0 sm:p-0 dark:border-neutral-700"
                      data-repeater-row>
                     <div class="grid min-w-0 flex-1 gap-3 sm:auto-cols-fr sm:grid-flow-col">
-                        <FormRenderer :fields="fields" :form="rowForm(row)" layout-from-form/>
+                        <FormRenderer :fields="fields" :form="rowForm(row)" :id-prefix="rowIdPrefix(i)" layout-from-form/>
                     </div>
                     <div class="flex items-center justify-end gap-1" :class="{ 'sm:pt-6': hasLabels }">
                         <Button v-if="reorderable" type="button" size="icon" variant="outline"
@@ -230,7 +237,7 @@ function moveDown(idx: number) {
                     </div>
 
                     <div class="space-y-3">
-                        <FormRenderer :fields="fields" :form="rowForm(row)"/>
+                        <FormRenderer :fields="fields" :form="rowForm(row)" :id-prefix="rowIdPrefix(i)"/>
                     </div>
                 </div>
             </template>

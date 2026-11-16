@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { cn } from '../../lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { Info } from '@lucide/vue'
@@ -83,6 +84,8 @@ function leftRoundClass() {
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -97,7 +100,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 
       <Input
         v-bind="listeners()"
-        :id="name"
+        :id="inputId"
         :name="name"
         :disabled="disabled"
         :maxlength="maxlength"

@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { computed } from 'vue';
+import { useFieldId } from '../../lib/field-id';
 import type { Field } from '../../types/form-builder'
 import { cn } from '../../lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
@@ -123,6 +124,8 @@ function onBeforeInput(e: InputEvent) {
 defineOptions({ inheritAttrs: false });
 
 const { listeners, wrapperAttrs } = useFieldListeners();
+
+const inputId = useFieldId(() => props.name);
 </script>
 
 <template>
@@ -154,7 +157,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                     inputmode="numeric"
                     v-model="model"
                     @beforeinput="onBeforeInput"
-                    :id="name"
+                    :id="inputId"
                     :name="name"
                     :placeholder="placeholder"
                     :disabled="disabled"
