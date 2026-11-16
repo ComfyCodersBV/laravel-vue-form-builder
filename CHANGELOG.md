@@ -18,6 +18,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   `maxlength`, `min`, `max`, `step`, `multiple`, `clearable`, `range`, `enableTime`, `accept` and the `Button`,
   `KeyValue` and `Repeater` options, so a slot component no longer extends the type. `options` also takes the editor
   options object of a `Wysiwyg` field (`WysiwygEditorOptions`).
+* The docs list the fields that take the whole row in a form or section with columns, and `dates.display_format` of
+  `tranquil-tools/laravel-form-builder` 1.21.
 
 ## 1.25.0 - 2026-11-16
 * A field with `when: {field, values}` (`->if('action', 'rebook')`) shows while the other field holds one of the values,

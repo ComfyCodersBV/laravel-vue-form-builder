@@ -243,6 +243,18 @@ DateTime::make('starts_at')
 | `d` | `0` (Sunday) to `6` | `SSS` | `000` |
 | `dd` / `ddd` / `dddd` | `Su` / `Sun` / `Sunday` | `[text]` | `text`, as is |
 
+Set a display format for every date field of the app with `dates.display_format` in `config/form-builder.php`. A
+`Date`, `DateTime` or `range()` field without its own `->format()` uses it; `->format()` on a field wins, and
+`->format('locale')` brings back the browser's own display for that field:
+
+```php
+'dates' => [
+    'display_format' => 'DD-MM-YYYY',
+],
+```
+
+The configured format needs `tranquil-tools/laravel-form-builder` 1.21; the renderer only sees the resulting `format`.
+
 Month and day names follow the field's `->locale()`, or the form's locale (`4 oktober` in Dutch). A field with a time
 whose format shows no hour gets ` HH:mm` appended. Only the display changes: the field still submits `Y-m-d` (or
 `Y-m-d H:i`), and it also reads a value stored in its own format, such as `04/10/2026` for `DD/MM/YYYY`.

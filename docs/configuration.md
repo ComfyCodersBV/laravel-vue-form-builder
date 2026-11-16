@@ -38,10 +38,15 @@ that off app-wide; a field with `->markRequired()` is still marked. See
 
 ```php
 'dates' => [
+    'display_format' => null,
     'timezone' => null,
     'validate_bounds' => false,
 ],
 ```
+
+`display_format` is the display format of every `Date` and `DateTime` field without its own `->format()`, in
+[Day.js tokens](fields/date-time.md#date-format) such as `'DD-MM-YYYY'`. `null` shows the date the way the browser does
+for its locale. Only the display changes; the field still submits `Y-m-d`.
 
 The timezone date fields with a time show and send their value in. `null` keeps the wall-clock value without timezone;
 an IANA name such as `'Europe/Amsterdam'`, or `'browser'` for the user's own timezone, sends ISO 8601 with an offset.
