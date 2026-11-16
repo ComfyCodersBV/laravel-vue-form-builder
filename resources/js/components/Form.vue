@@ -5,6 +5,7 @@ import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
+import { withoutHiddenValues } from '../lib/conditions'
 import { carriesValue, flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
@@ -237,8 +238,16 @@ function currentPath(): string {
     return typeof window === 'undefined' ? '' : window.location.pathname
 }
 
+function withoutHidden(data: Record<string, any>): Record<string, any> {
+    return withoutHiddenValues(props.schema.fields, data)
+}
+
 function transformWith(own: FormTransform): void {
-    form.transform((data: Record<string, any>) => (props.transform ? props.transform(own(data)) : own(data)))
+    form.transform((data: Record<string, any>) => {
+        const transformed = own(withoutHidden(data))
+
+        return props.transform ? props.transform(transformed) : transformed
+    })
 }
 
 function submitInertia(method: FormMethod, action: string, options: Record<string, any>) {
@@ -323,6 +332,8 @@ const submitForm = () => {
     }
 
     if (props.transport === 'http') {
+        form.transform(withoutHidden)
+
         return form[method](action, options)
     }
 

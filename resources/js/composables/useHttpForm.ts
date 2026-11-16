@@ -259,6 +259,8 @@ export function useHttpForm(initial: Record<string, any>, options: HttpFormOptio
 
     let successTimeout: ReturnType<typeof setTimeout> | undefined
 
+    let transformer: (data: Record<string, any>) => Record<string, any> = (data) => data
+
     const form = reactive({
         ...initial,
         errors: {} as Record<string, string>,
@@ -267,6 +269,10 @@ export function useHttpForm(initial: Record<string, any>, options: HttpFormOptio
 
         data(): Record<string, any> {
             return Object.fromEntries(Object.keys(defaults).map((key) => [key, (form as any)[key]]))
+        },
+
+        transform(callback: (data: Record<string, any>) => Record<string, any>): void {
+            transformer = callback
         },
 
         reset(...fields: string[]): void {
@@ -291,7 +297,7 @@ export function useHttpForm(initial: Record<string, any>, options: HttpFormOptio
             form.errors = {}
             form.recentlySuccessful = false
 
-            return submitter({ method, url, data: form.data() })
+            return submitter({ method, url, data: transformer(form.data()) })
                 .then((response) => {
                     form.recentlySuccessful = true
                     successTimeout = setTimeout(() => {

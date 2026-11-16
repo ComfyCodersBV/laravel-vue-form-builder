@@ -191,3 +191,45 @@ export function visibleValueFields(fields: Field[], data: Record<string, any>): 
             return field.name ? [field] : []
         })
 }
+
+function visibleRow(fields: Field[], row: unknown): unknown {
+    if (typeof row !== 'object' || row === null || Array.isArray(row)) {
+        return row
+    }
+
+    return withoutHiddenValues(fields, row as Record<string, any>)
+}
+
+function hiddenNames(field: Field): string[] {
+    if (field.type === 'section' || field.type === 'step') {
+        return flattenFields(field.fields ?? []).flatMap(hiddenNames)
+    }
+
+    return [field.name, field.removeFlag].filter((name): name is string => typeof name === 'string' && name !== '')
+}
+
+export function withoutHiddenValues(fields: Field[], data: Record<string, any>): Record<string, any> {
+    const values = { ...data }
+
+    const visit = (field: Field): void => {
+        if (field.when && !meetsVisibility(field.when, data)) {
+            hiddenNames(field).forEach((name) => delete values[name])
+
+            return
+        }
+
+        if (field.type === 'section' || field.type === 'step') {
+            (field.fields ?? []).forEach(visit)
+
+            return
+        }
+
+        if (field.type === 'repeater' && field.name && Array.isArray(values[field.name])) {
+            values[field.name] = values[field.name].map((row: unknown) => visibleRow(field.fields ?? [], row))
+        }
+    }
+
+    fields.forEach(visit)
+
+    return values
+}

@@ -7,6 +7,11 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   compared as text as the server compares them. Inside a repeater the other field is a sub-field of the same row. It
   takes precedence over the `condition` expression that comes with it for older renderers. The conditions under
   `when.also` must hold as well, so a field that depends on a hidden field is hidden too.
+* `<Form>` leaves fields hidden by `when` out of the payload, with their remove flag, also every field of a hidden
+  section or step and a hidden sub-field in its own repeater row. It does this before the `transform` prop, and on the
+  `http` transport before the submitter. Fields hidden by a `condition` expression are still submitted. A wizard step
+  checks only its visible fields, as before.
+* `useHttpForm()` has `transform()`, as Inertia's form has.
 
 ## 1.24.0 - 2026-11-16
 * A select option with `disabled: true` is shown but cannot be picked, in the plain dropdown, the searchable combobox
