@@ -212,7 +212,58 @@ Event listeners and Vue bindings cannot come from PHP. A key starting with `@`, 
 
 ## Conditional visibility
 
-Show or hide a field based on the current form state. Pass a JavaScript expression that is evaluated in the Vue component. The expression has access to each field's value by its name:
+A field can depend on another field in two ways:
+
+- `->if('action', 'rebook')`: a field name and one or more values. The renderer shows the field while the other field
+  holds one of the values, the server validates it only then, and `<Form>` leaves it out of the payload while it is
+  hidden. Use this form whenever the condition is "field X has value Y".
+- `->if('...')`: a JavaScript expression, for anything else. It only shows or hides the field in the renderer.
+
+### On a field and its values
+
+```php
+Radio::make('action')
+    ->options(['rebook' => 'Rebook', 'return' => 'Return to stock'])
+
+Text::make('destination')
+    ->if('action', 'rebook')
+    ->rules(['required'])
+
+// Any of several values
+Text::make('carrier')
+    ->if('action', ['rebook', 'split'])
+
+// A checkbox or toggle
+Text::make('extra_number')
+    ->if('extra', true)
+```
+
+- The rules of the field get `exclude_unless:action,rebook` in front, in `FormConfig::getRules()`,
+  `FormConfig::validate()` and a form request that uses the form through `UsesForm`. While the condition does not
+  hold, Laravel skips the other rules and leaves the field out of the validated data. You no longer write that rule
+  yourself.
+- The values are compared as the server compares them: as text, so `3` and `'3'` are equal. `true` matches `'true'`
+  and `'1'`, `false` matches `'false'` and `'0'`, which covers a checkbox or toggle that sends its default `1` and `0`
+  or a boolean. A checkbox with another value (`->value('yes')`) is matched by that value: `->if('extra', 'yes')`.
+  `null` matches an empty or missing field. A field that holds a list, such as `Checkboxes` or a multiple `Select`, never
+  matches.
+- A field that depends on a field hidden by a field and value condition of its own, or by one on its section, is hidden too,
+  in the renderer, in the payload and on the server. The schema then lists the conditions of that chain under
+  `when.also`, and the rules get one `exclude_unless` per condition. A condition expression is not followed, nor is a
+  name that two fields share. Conditions that depend on each other in a circle stop where the circle closes.
+- On a `Section` or `Step`, the condition covers every field inside it, nested rules such as `tags.*` or the locales of a
+  `Translatable` too. A field inside such a section can have a condition of its own, and then both must hold.
+- Inside a `Repeater` the other field is a sub-field of the same row: `->if('kind', 'full')` on a sub-field becomes
+  `exclude_unless:barrels.*.kind,full`, so each row is checked against its own `kind`.
+- `<Form>` leaves the field out of the submitted data while it is hidden, inside sections, steps and repeater rows too. The
+  payload then matches what the server validates.
+- The schema carries the condition as `when: { field, values }`. For a renderer older than schema version 1.18 it also
+  carries an equivalent expression in `condition`, so such a renderer still hides the field.
+- A field has one condition: a later `->if()` replaces an earlier one, in either form.
+
+### On an expression
+
+Pass a JavaScript expression that is evaluated in the Vue component. The expression has access to each field's value by its name:
 
 ```php
 // Show when the 'active' toggle is true
@@ -241,4 +292,5 @@ development the console shows a warning with the error.
 A [Display](display.md) field takes an expression in the same language through `->expression()` to show a
 computed value.
 
-Fields with an unsatisfied condition are hidden in the UI. Their values are not included in the form submission.
+A field hidden by an expression is only hidden in the UI. Its value is still submitted and validated as usual, so a
+required field needs a rule of its own, such as `exclude_unless`, or the field and value form above.

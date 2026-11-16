@@ -42,11 +42,18 @@ export interface LocaleOption {
     label: string
 }
 
+export interface FieldVisibility {
+    field: string
+    values: string[]
+    also?: Array<{ field: string; values: string[] }>
+}
+
 export interface Field {
     name?: string
     type?: string
     label?: string
     condition?: string
+    when?: FieldVisibility
     rules?: string[]
     help?: string
     helpText?: string

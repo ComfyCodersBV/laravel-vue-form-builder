@@ -33,7 +33,8 @@ public function fields(): array
   `getRules()` and `validate()`, and `fill()` fills them.
 - `->description()` escapes a string; pass an `HtmlString` for markup, like `->help()`.
 - A section without fields is a plain heading between other fields.
-- Sections can be nested, and conditions (`->if()`) work on a section and across sections.
+- Sections can be nested, and conditions (`->if()`) work on a section and across sections. A section with
+  `->if('action', 'rebook')` excludes every field inside it from validation and from the payload while it is hidden.
 - In a two-column form a section spans both columns and lays out its own fields in two columns, unless it sets its own
   `->columns()`.
 - `->wrapperClass('...')` (or the older `->class('...')`) replaces the classes of the section element (default

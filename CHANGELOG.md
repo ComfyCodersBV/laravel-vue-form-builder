@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.25.0 - 2026-11-16
+* A field with `when: {field, values}` (`->if('action', 'rebook')`) shows while the other field holds one of the values,
+  compared as text as the server compares them. Inside a repeater the other field is a sub-field of the same row. It
+  takes precedence over the `condition` expression that comes with it for older renderers. The conditions under
+  `when.also` must hold as well, so a field that depends on a hidden field is hidden too.
+
 ## 1.24.0 - 2026-11-16
 * A select option with `disabled: true` is shown but cannot be picked, in the plain dropdown, the searchable combobox
   and the multi-select. A row with `separator: true` (`Select::separator()`) shows a divider line, which is hidden

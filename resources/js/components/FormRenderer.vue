@@ -74,7 +74,7 @@
     const formFields = inject(formFieldsKey, [])
 
     function isVisible(field: Field): boolean {
-        if (! field.condition) {
+        if (! field.condition && ! field.when) {
             return true
         }
 

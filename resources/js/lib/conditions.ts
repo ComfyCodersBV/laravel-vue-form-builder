@@ -1,4 +1,4 @@
-import type { Field } from '../types/form-builder'
+import type { Field, FieldVisibility } from '../types/form-builder'
 import { flattenFields } from './fields'
 
 const BOOLEAN_FIELD_TYPES = ['checkbox', 'toggle']
@@ -19,8 +19,12 @@ export function formValues(form: any): Record<string, any> {
     return typeof form?.data === 'function' ? form.data() : { ...form }
 }
 
+const submittedValues = new WeakMap<Record<string, any>, Record<string, any>>()
+
 export function conditionData(data: Record<string, any>, fields: Field[]): Record<string, any> {
     const normalized = { ...data }
+
+    submittedValues.set(normalized, data)
 
     flattenFields(fields).forEach((field: any) => {
         if (!field?.name || !BOOLEAN_FIELD_TYPES.includes(field.type) || !(field.name in normalized)) {
@@ -104,7 +108,49 @@ function reportFailure(expression: string, error: unknown): void {
     }
 }
 
+function valueAt(data: Record<string, any>, path: string): unknown {
+    if (Object.hasOwn(data, path)) {
+        return data[path]
+    }
+
+    return path.split('.').reduce<unknown>((current, segment) => {
+        if (UNSAFE_SEGMENTS.includes(segment) || typeof current !== 'object' || current === null) {
+            return undefined
+        }
+
+        return (current as Record<string, unknown>)[segment]
+    }, data)
+}
+
+function comparableValue(value: unknown): string | undefined {
+    if (value === undefined || value === null || value === '') {
+        return 'null'
+    }
+
+    if (typeof value === 'object') {
+        return undefined
+    }
+
+    return String(value)
+}
+
+function holds(condition: { field: string; values: string[] }, values: Record<string, any>): boolean {
+    const value = comparableValue(valueAt(values, condition.field))
+
+    return value !== undefined && (condition.values ?? []).map(String).includes(value)
+}
+
+export function meetsVisibility(when: FieldVisibility, data: Record<string, any>): boolean {
+    const values = submittedValues.get(data) ?? data
+
+    return [when, ...(when.also ?? [])].every((condition) => holds(condition, values))
+}
+
 export function meetsCondition(field: Field, data: Record<string, any>): boolean {
+    if (field.when) {
+        return meetsVisibility(field.when, data)
+    }
+
     if (!field.condition) {
         return true
     }
