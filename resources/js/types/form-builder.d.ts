@@ -114,6 +114,7 @@ export interface Field {
     charset?: string
     uppercase?: boolean
     suggestions?: string[]
+    rows?: number
 }
 
 export interface CurrentFile {

@@ -5,10 +5,12 @@ import BaseField from './BaseField.vue'
 import { useFieldListeners } from '../../lib/listeners'
 import { Textarea } from '../ui/textarea'
 import type { Field } from '../../types/form-builder'
+import { cn } from '../../lib/utils'
 
 interface Props extends Field {
     name: string
     modelValue?: string
+    rows?: number
 }
 
 const props = defineProps<Props>()
@@ -36,7 +38,8 @@ const inputId = useFieldId(() => props.name)
             :placeholder="placeholder"
             :disabled="disabled"
             :readonly="readonly"
-            :class="inputClassName"
+            :rows="rows"
+            :class="cn(rows ? 'min-h-0' : '', inputClassName)"
         />
     </BaseField>
 </template>

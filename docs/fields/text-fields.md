@@ -163,7 +163,10 @@ Textarea::make('description')
     ->label('Description')
     ->placeholder('Write a short description...')
     ->rules('nullable', 'string', 'max:2000')
+    ->rows(4)
 ```
+
+`->rows(4)` sets the height of the textarea in lines (at least `1`). Without it the textarea is at least `5rem` high.
 
 ## Color
 

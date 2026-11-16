@@ -15,6 +15,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   in place. `uppercase` turns the text into capitals as it is typed, before the charset is applied.
 * A text field with `suggestions` gets a `<datalist>` with the id `{field id}-suggestions`, unique per form and per
   repeater row.
+* A textarea takes `rows`.
 * Checkboxes read the value and label of an option row from `optionValue` and `optionLabel`, as documented, and fall
   back to `value` / `id` and `label` / `name`. Before, they only read `value` and `label`.
 * The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id
