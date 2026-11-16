@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.27.1 - 2026-11-16
+* `Checkboxes` without a value or a default, or with a stored `null`, start as an empty list instead of an empty
+  string, also in a new repeater row, so a rule `array` no longer fails with a 422 when nothing is ticked. Laravel
+  turned the empty string into `null`. A multiple `Select` in a new repeater row starts as an empty list too, instead
+  of `null`.
+
 ## 1.27.0 - 2026-11-16
 * A submit button is disabled while the form is processing, with the Inertia transport and with `transport="http"`, so
   a double click no longer submits twice. A `DeleteButton` and a `Button` with a `deleteUrl` are disabled while the

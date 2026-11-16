@@ -17,4 +17,8 @@ export function carriesValue(field: Field): boolean {
     return !PRESENTATIONAL_TYPES.includes(field?.type ?? '');
 }
 
+export function holdsList(field: Field): boolean {
+    return field?.type === 'checkboxes' || field?.multiple === true;
+}
+
 export const formFieldsKey: InjectionKey<Field[]> = Symbol('form-builder-fields');

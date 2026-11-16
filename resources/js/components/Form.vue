@@ -7,7 +7,7 @@ import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { buttonEventKey, type ButtonEventPayload } from '../lib/button-events'
 import { withoutHiddenValues } from '../lib/conditions'
-import { carriesValue, flattenFields, formFieldsKey } from '../lib/fields'
+import { carriesValue, flattenFields, formFieldsKey, holdsList } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
 import { normalizeTags } from '../lib/tags'
@@ -114,7 +114,7 @@ function initialValue(field: any, formData: Record<string, any>): any {
         return normalizeTags(hasExplicit ? formData[field.name] : field.default)
     }
 
-    if (hasExplicit) {
+    if (hasExplicit && !(holdsList(field) && isBlank(formData[field.name]))) {
         return formData[field.name]
     }
 
@@ -122,7 +122,7 @@ function initialValue(field: any, formData: Record<string, any>): any {
         return field.default
     }
 
-    return field.multiple === true ? [] : ''
+    return holdsList(field) ? [] : ''
 }
 
 function translatableValue(field: Field, value: any): Record<string, any> {

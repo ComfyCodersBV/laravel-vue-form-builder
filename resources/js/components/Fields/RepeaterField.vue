@@ -11,7 +11,7 @@ import {ArrowDown, ArrowUp, Plus, Trash2} from '@lucide/vue'
 import FormRenderer from '../FormRenderer.vue'
 import { useFormMessages } from '../../lib/messages'
 import { useFieldId } from '../../lib/field-id'
-import { carriesValue, formFieldsKey } from '../../lib/fields'
+import { carriesValue, formFieldsKey, holdsList } from '../../lib/fields'
 import { DEFAULT_THEME, mergeTheme, themeKey } from '../../lib/theme'
 import RequiredMark from './RequiredMark.vue'
 
@@ -85,7 +85,7 @@ function blankRow(): Record<string, any> {
     const row: Record<string, any> = {}
     for (const field of props.fields) {
         if (field.name && carriesValue(field)) {
-            row[field.name] = field.default ?? null
+            row[field.name] = field.default ?? (holdsList(field) ? [] : null)
         }
     }
     return row
@@ -99,7 +99,7 @@ function normalizeToRows(input: any): Record<string, any>[] {
         const row: Record<string, any> = {}
         for (const field of props.fields) {
             if (field.name && carriesValue(field)) {
-                row[field.name] = item?.[field.name] ?? null
+                row[field.name] = item?.[field.name] ?? (holdsList(field) ? [] : null)
             }
         }
         return row

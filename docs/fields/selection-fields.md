@@ -308,6 +308,9 @@ Checkboxes::make('permissions')
     ->rules('array')
 ```
 
+Without a value, with a stored `null` or without a `->default()`, the field starts as an empty list, also in a new repeater row. With nothing ticked
+it submits `[]`, so `->rules('array')` passes.
+
 **Methods:**
 
 | Method | Description |

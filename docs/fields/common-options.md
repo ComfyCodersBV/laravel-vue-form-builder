@@ -55,6 +55,9 @@ Number::make('quantity')
     ->default(1)
 ```
 
+Without a default a field starts empty: an empty string, the false value for a checkbox or toggle, and an empty list for
+`Checkboxes` and a multiple `Select`.
+
 ## Required
 
 Marks the field as required in the UI and adds the `required` validation rule:
