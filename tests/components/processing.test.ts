@@ -116,3 +116,51 @@ describe('buttons while the form is processing', () => {
         expect(confirm().disabled).toBe(false)
     })
 })
+
+describe('$processing in expressions', () => {
+    it('lets labels, disabled states and conditions follow the submit', async () => {
+        let finish: () => void = () => undefined
+        vi.spyOn(router, 'post').mockImplementation((_url: any, _data: any, options: any = {}) => {
+            options.onStart?.({})
+            finish = () => options.onFinish?.({})
+        })
+        const wrapper = mount(Form, {
+            props: {
+                schema: schemaWith([
+                    { name: 'title', type: 'text', default: 'Order' },
+                    { name: 'busy', type: 'display', expression: '"Saving"', condition: '$processing' },
+                    { name: 'preview', type: 'button', label: 'Preview', disabledIf: '$processing || !title' },
+                    { name: 'save', type: 'submit', label: 'Save', labelExpression: '$processing ? "Saving…" : "Save"' },
+                ]),
+            },
+        })
+        const preview = () => wrapper.get('[data-testid="field-preview"]')
+        const save = () => wrapper.get('[data-testid="field-save"]')
+
+        expect(save().text()).toBe('Save')
+        expect(preview().attributes('disabled')).toBeUndefined()
+        expect(wrapper.text()).not.toContain('Saving')
+
+        await (wrapper.vm as any).submit()
+        await nextTick()
+
+        expect(save().text()).toBe('Saving…')
+        expect(preview().attributes('disabled')).toBeDefined()
+        expect(wrapper.text()).toContain('Saving')
+
+        finish()
+        await nextTick()
+
+        expect(save().text()).toBe('Save')
+        expect(preview().attributes('disabled')).toBeUndefined()
+    })
+
+    it('keeps $processing out of the submitted values', async () => {
+        const post = vi.spyOn(router, 'post').mockImplementation(() => undefined)
+        const wrapper = mount(Form, { props: { schema: schemaWith(fields) } })
+
+        await (wrapper.vm as any).submit()
+
+        expect(post.mock.calls[0]![1]).not.toHaveProperty('$processing')
+    })
+})

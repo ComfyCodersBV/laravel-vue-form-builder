@@ -7,6 +7,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   a double click no longer submits twice. A `DeleteButton` and a `Button` with a `deleteUrl` are disabled while the
   form is processing too, and while their own `DELETE` request is on its way, the confirm button in their dialog
   included. Other buttons stay enabled.
+* `$processing` in an expression of `->if()`, `labelExpression`, `disabledIf` or a `Display` field is `true` while the
+  form is processing, such as `disabledIf('$processing || !ids.length')`. It is read-only and never submitted, and its
+  `$` keeps it apart from field names.
 
 ## 1.26.0 - 2026-11-16
 * An `#input-{name}` slot on `<Form>` replaces only the control of a field. The label with its `for`, the required

@@ -289,6 +289,15 @@ such as `class`, is only reachable through `form`. `form` always means the form 
 `form`. A condition that throws counts as false and hides its field; during
 development the console shows a warning with the error.
 
+`$processing` is `true` while the form is on its way to the server, with either transport. The `$` keeps it apart
+from your field names, and it is never submitted. Assigning to it changes nothing:
+
+```php
+Display::make('saving')
+    ->expression('"Saving…"')
+    ->if('$processing')
+```
+
 A [Display](display.md) field takes an expression in the same language through `->expression()` to show a
 computed value.
 

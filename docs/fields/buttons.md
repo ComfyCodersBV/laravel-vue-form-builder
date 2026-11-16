@@ -59,6 +59,8 @@ Submit::make()
 ```
 
 - They update while the form changes, also on the submit button of the last [step](../steps.md).
+- `$processing` is `true` while the form is submitting, for a label such as `$processing ? 'Saving…' : 'Save'` or a
+  button that waits for the form: `->disabledIf('$processing || !ids.length')`.
 - An expression that throws, or a label expression that gives an empty value, falls back to `->label()`. A
   `->disabledIf()` that throws disables the button, as a failing condition hides its field. During development the
   console shows a warning with the error.
