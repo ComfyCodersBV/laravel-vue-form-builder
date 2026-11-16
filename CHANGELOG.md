@@ -19,6 +19,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   the repeater row the button sits in. A button with a confirmation emits after the confirmation. An `onClick` from
   `fieldOverrides` keeps working next to it.
 * `useHttpForm()` has `transform()`, as Inertia's form has.
+* `SUPPORTED_SCHEMA_VERSION` is now `1.18`. Requires laravel-form-builder 1.20.
 
 ## 1.24.0 - 2026-11-16
 * A select option with `disabled: true` is shown but cannot be picked, in the plain dropdown, the searchable combobox
