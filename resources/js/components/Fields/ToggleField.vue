@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import { Switch } from '../ui/switch'
 import type { Field } from '../../types/form-builder'
@@ -62,6 +63,14 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}))
+
 const inputId = useFieldId(() => props.name)
 </script>
 
@@ -71,6 +80,7 @@ const inputId = useFieldId(() => props.name)
             <input type="hidden" :name="name" :value="String(falseValue ?? '0')" />
             <Switch
                 v-bind="listeners()"
+                :aria-describedby="describedBy"
                 :model-value="model"
                 @update:model-value="(v) => model = v"
                 :id="`${inputId}-tgl`" :name="name"

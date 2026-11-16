@@ -21,3 +21,23 @@ export interface FieldSlotProps {
     modelValue: any;
     'onUpdate:modelValue': (value: any) => void;
 }
+
+export interface InputSlotProps {
+    id: string | undefined;
+    name: string | undefined;
+    describedby: string | undefined;
+    invalid: boolean;
+    required: boolean;
+    disabled: boolean;
+    readonly: boolean;
+    field: Field;
+    form: any;
+    error: string | string[] | undefined;
+    modelValue: any;
+    update: (value: any) => void;
+    'onUpdate:modelValue': (value: any) => void;
+}
+
+export function inputSlotName(fieldName: string): string {
+    return `input-${fieldName}`;
+}

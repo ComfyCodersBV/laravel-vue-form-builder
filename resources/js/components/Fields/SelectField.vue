@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
+import { useDescribedBy } from '../../lib/described-by';
 import { useFieldListeners } from '../../lib/listeners';
 import { cn } from '../../lib/utils';
 import type { Field } from '../../types/form-builder';
@@ -351,6 +352,14 @@ defineOptions({ inheritAttrs: false });
 
 const { listeners, wrapperAttrs } = useFieldListeners();
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}));
+
 const inputId = useFieldId(() => props.name);
 </script>
 
@@ -362,6 +371,7 @@ const inputId = useFieldId(() => props.name);
                     <PopoverTrigger as-child>
                         <Button
                             v-bind="listeners()"
+                            :aria-describedby="describedBy"
                             type="button"
                             variant="outline"
                             :id="inputId"
@@ -455,7 +465,7 @@ const inputId = useFieldId(() => props.name);
                     :disabled="props.disabled || props.readonly"
                     @update:model-value="onUpdateInternal"
                 >
-                    <SelectTrigger v-bind="listeners()" :id="inputId" :class="cn('w-full min-w-0 justify-between', props.inputClassName)">
+                    <SelectTrigger v-bind="listeners()" :id="inputId" :aria-describedby="describedBy" :class="cn('w-full min-w-0 justify-between', props.inputClassName)">
                         <span class="truncate" :class="{ 'mr-8': isClearable }">
                             <OptionContent v-if="selectedOption" :option="selectedOption" :code-width="triggerCodeWidth" html />
                             <span v-else class="text-muted-foreground">
@@ -512,6 +522,7 @@ const inputId = useFieldId(() => props.name);
             <input type="hidden" :name="props.name" value="" />
             <MultiSelect
                 v-bind="listeners()"
+                :aria-describedby="describedBy"
                 :id="inputId"
                 :class="props.inputClassName"
                 v-model="selectedLocal"

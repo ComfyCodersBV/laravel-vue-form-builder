@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import type { Field } from '../../types/form-builder'
 import { DatePicker, TouchDatePicker } from '../ui/date-picker'
@@ -58,6 +59,14 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}))
+
 const inputId = useFieldId(() => props.name)
 </script>
 
@@ -65,6 +74,7 @@ const inputId = useFieldId(() => props.name)
   <BaseField v-bind="wrapperAttrs()" :label="props.label" :name="props.name" :error="props.error" :help="props.help" :class-name="(props as any).className" :theme="props.theme">
     <TouchDatePicker
       v-bind="listeners()"
+      :aria-describedby="describedBy"
       v-if="props.touch && !props.range"
       :id="inputId"
       :class="props.inputClassName"
@@ -90,6 +100,7 @@ const inputId = useFieldId(() => props.name)
     />
     <DatePicker
       v-bind="listeners()"
+      :aria-describedby="describedBy"
       v-else
       :id="inputId"
       :class="props.inputClassName"

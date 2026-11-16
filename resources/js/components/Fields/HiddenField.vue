@@ -17,14 +17,14 @@ const model = computed<string | number>({
 })
 
 const inputId = useFieldId(() => props.name)
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
-    <div>
-        <input type="hidden" :name="name" :id="inputId" v-model="model" />
-        <p v-if="error" class="text-sm text-red-600">
-            <span v-if="Array.isArray(error)">{{ error[0] }}</span>
-            <span v-else>{{ error }}</span>
-        </p>
-    </div>
+    <input type="hidden" :name="name" :id="inputId" v-model="model" />
+    <p v-if="error" class="text-sm text-red-600">
+        <span v-if="Array.isArray(error)">{{ error[0] }}</span>
+        <span v-else>{{ error }}</span>
+    </p>
 </template>

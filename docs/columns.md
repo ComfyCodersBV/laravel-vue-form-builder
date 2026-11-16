@@ -58,8 +58,14 @@ stacks its fields again. See [Sections](fields/sections.md#columns).
 | `->columnSpan(n)` | the field takes `n` columns (up to `12`); more than there are means the whole row |
 | `->columnSpanFull()` | the field takes the whole row |
 
-Textareas, WYSIWYG editors, repeaters, key-value fields, buttons, hidden fields and sections take the whole row unless
-they set a `->columnSpan()`. From the Vue side, `fullWidth` and `columnSpan` in `field-overrides` do the same:
+These fields take the whole row by default: `Textarea`, `Wysiwyg`, `Repeater`, `KeyValue`, `Button`, `Submit`,
+`DeleteButton` and `Section`. Every other field, `Display` included, takes one column. A `Hidden` field takes no cell
+at all: it adds no row, no gap and no row break between the fields around it. `->columnSpan(n)`
+overrides the default either way, so `Textarea::make('notes')->columnSpan(1)` sits next to another field;
+`->columnSpanFull()` and `fullWidth` always take the whole row. A section spans the whole row and lays out its own
+fields in the columns of the form, or of the section around it, unless it sets `->columns()`.
+
+From the Vue side, `fullWidth` and `columnSpan` in `field-overrides` do the same:
 
 ```vue
 <Form :schema="form" :columns="2" :field-overrides="{ notes: { fullWidth: true } }" />

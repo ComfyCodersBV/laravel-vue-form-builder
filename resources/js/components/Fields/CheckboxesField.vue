@@ -5,6 +5,7 @@ import { Label } from '../ui/label'
 import { Button } from '../ui/button'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldId } from '../../lib/field-id'
 import { useFormMessages } from '../../lib/messages'
 import { VISUALLY_HIDDEN } from '../../lib/label'
@@ -159,6 +160,13 @@ const inputId = useFieldId(() => props.name)
 
 const groupLabelId = computed(() => props.label && inputId.value ? `${inputId.value}--label` : undefined)
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+}))
+
 function optionId(option: Option): string {
     return `${inputId.value}-${String(option.value)}`
 }
@@ -175,7 +183,7 @@ function optionId(option: Option): string {
             </Button>
         </div>
 
-        <div v-if="buttons" class="flex flex-wrap gap-2" role="group" :aria-labelledby="groupLabelId">
+        <div v-if="buttons" class="flex flex-wrap gap-2" role="group" :aria-labelledby="groupLabelId" :aria-describedby="describedBy">
             <button v-for="option in optionsList" :key="String(option.value)" type="button"
                     :disabled="option.disabled || disabled"
                     class="rounded-full border px-3 py-1 text-xs uppercase tracking-wide transition disabled:opacity-50"
@@ -191,7 +199,7 @@ function optionId(option: Option): string {
         </div>
 
         <div v-else-if="showsTable" class="overflow-x-auto rounded-md border border-input" data-checkbox-table>
-            <table class="w-full text-sm" :aria-labelledby="groupLabelId">
+            <table class="w-full text-sm" :aria-labelledby="groupLabelId" :aria-describedby="describedBy">
                 <thead>
                     <tr class="border-b border-input bg-muted/50 text-left">
                         <th scope="col" class="w-10 px-3 py-2"><span :class="VISUALLY_HIDDEN">{{ messages.selectOption }}</span></th>
@@ -219,7 +227,7 @@ function optionId(option: Option): string {
             </table>
         </div>
 
-        <div v-else :class="inline ? 'flex flex-wrap items-center gap-4' : 'grid gap-2'" role="group" :aria-labelledby="groupLabelId">
+        <div v-else :class="inline ? 'flex flex-wrap items-center gap-4' : 'grid gap-2'" role="group" :aria-labelledby="groupLabelId" :aria-describedby="describedBy">
             <div v-for="option in optionsList" :key="String(option.value)"
                  :class="inline ? 'inline-flex items-center gap-2' : 'flex items-center gap-2'">
                 <Checkbox :id="optionId(option)" :name="`${name}[]`" :value="String(option.value)"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue';
+import { useDescribedBy } from '../../lib/described-by';
 import { useFieldListeners } from '../../lib/listeners';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -125,6 +126,14 @@ defineOptions({ inheritAttrs: false });
 
 const { listeners, wrapperAttrs } = useFieldListeners();
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}));
+
 const inputId = useFieldId(() => props.name);
 </script>
 
@@ -153,6 +162,7 @@ const inputId = useFieldId(() => props.name);
 
                 <Input
                     v-bind="listeners()"
+                    :aria-describedby="describedBy"
                     type="text"
                     inputmode="numeric"
                     v-model="model"

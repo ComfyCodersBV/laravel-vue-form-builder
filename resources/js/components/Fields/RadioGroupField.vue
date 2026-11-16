@@ -7,6 +7,7 @@ import { RadioGroupItem as RadioGroupTile } from 'reka-ui'
 import { Label } from '../ui/label'
 import { Link } from '@inertiajs/vue3'
 import { computed, ref, watch } from 'vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldId } from '../../lib/field-id'
 import { isInternalHref, isSafeHref } from '../../lib/links'
 
@@ -115,6 +116,13 @@ function tileClass(option: FieldOption): string {
 }
 
 const inputId = useFieldId(() => props.name)
+
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+}))
 </script>
 
 <template>
@@ -125,6 +133,7 @@ const inputId = useFieldId(() => props.name)
       @update:model-value="onUpdateInternal"
       :class="groupClass"
       :aria-label="props.label || undefined"
+      :aria-describedby="describedBy"
       :data-tiles="props.tiles ? '' : undefined"
     >
       <input type="hidden" :name="props.name" value="" />

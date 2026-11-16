@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseField from './BaseField.vue'
+import { useDescribedBy } from '../../lib/described-by'
 import { useFieldListeners } from '../../lib/listeners'
 import { cn } from '../../lib/utils'
 import type { Field } from '../../types/form-builder'
@@ -200,6 +201,14 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = useDescribedBy(() => ({
+    name: props.name,
+    help: props.help,
+    helpText: props.helpText,
+    error: props.error,
+    extra: [listeners()['aria-describedby']],
+}))
+
 const inputId = useFieldId(() => props.name)
 </script>
 
@@ -211,6 +220,7 @@ const inputId = useFieldId(() => props.name)
                     <Clock class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         v-bind="listeners()"
+                        :aria-describedby="describedBy"
                         :id="inputId"
                         :name="name"
                         :model-value="text"

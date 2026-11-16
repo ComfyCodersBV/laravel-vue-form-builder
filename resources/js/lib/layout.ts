@@ -10,7 +10,7 @@ export type MediumColumns = 1 | 2 | 3 | 4 | 6;
 
 export const columnsKey: InjectionKey<Ref<FormColumns>> = Symbol('form-builder-columns');
 
-const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden', 'section', 'step'];
+const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'section', 'step'];
 
 const MAX_COLUMNS = 12;
 

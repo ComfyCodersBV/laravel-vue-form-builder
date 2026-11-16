@@ -23,3 +23,11 @@ export function useFieldId(name: () => string | undefined): ComputedRef<string |
 
     return computed(() => fieldId(prefix.value, name()));
 }
+
+export function helpIdOf(id: string | undefined): string | undefined {
+    return id ? `${id}-help` : undefined;
+}
+
+export function errorIdOf(id: string | undefined): string | undefined {
+    return id ? `${id}-error` : undefined;
+}
