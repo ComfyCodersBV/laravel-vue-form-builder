@@ -11,6 +11,10 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   section or step and a hidden sub-field in its own repeater row. It does this before the `transform` prop, and on the
   `http` transport before the submitter. Fields hidden by a `condition` expression are still submitted. A wizard step
   checks only its visible fields, as before.
+* A `Button`, `Submit` or `DeleteButton` with `labelExpression` computes its label from the form, and with
+  `disabledIf` is disabled while the expression holds, also the submit button on the last step of a wizard. A label
+  expression that fails or gives an empty value falls back to the label, and a `disabledIf` that fails disables the
+  button. A disabled button stays disabled.
 * `useHttpForm()` has `transform()`, as Inertia's form has.
 
 ## 1.24.0 - 2026-11-16

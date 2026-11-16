@@ -164,6 +164,16 @@ export function meetsCondition(field: Field, data: Record<string, any>): boolean
     }
 }
 
+export function expressionHolds(expression: string, data: Record<string, any>, fallback: boolean): boolean {
+    try {
+        return !!evaluate(expression, data)
+    } catch (error) {
+        reportFailure(expression, error)
+
+        return fallback
+    }
+}
+
 export function expressionValue(expression: string, data: Record<string, any>): string {
     try {
         const value = evaluate(expression, data)

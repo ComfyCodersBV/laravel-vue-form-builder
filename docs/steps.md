@@ -39,9 +39,11 @@ public function fields(): array
   form's `rules()` as usual. The name (`when`) identifies the step for the slots below; without one the steps are
   called `step-1`, `step-2` and so on.
 - Fields outside the steps are shown on the last step, below its own fields. A `Submit` field outside the steps is not
-  rendered as such: its label becomes the label of the submit button on the last step.
+  rendered as such: its label becomes the label of the submit button on the last step, and its `->labelExpression()`
+  and `->disabledIf()` apply to that button.
 - A step whose fields are all hidden by their `->if()` condition is skipped, and the step indicator counts it out. A
-  `Step` can have an `->if()` of its own as well.
+  `Step` can have an `->if()` of its own as well. With `->if('field', 'value')` the fields of a hidden step are also
+  left out of validation and of the payload.
 - Pressing Enter in a field moves to the next step instead of submitting the form.
 - When the submit fails with validation errors, the form jumps back to the first step that has one, and that step is
   marked red in the indicator.

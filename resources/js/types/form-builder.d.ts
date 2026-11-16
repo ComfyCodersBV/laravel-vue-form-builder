@@ -124,6 +124,8 @@ export interface Field {
     rows?: number
     content?: string
     expression?: string
+    labelExpression?: string
+    disabledIf?: string
 }
 
 export interface CurrentFile {

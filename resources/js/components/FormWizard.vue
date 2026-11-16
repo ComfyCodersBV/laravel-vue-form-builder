@@ -3,7 +3,7 @@ import { Check } from '@lucide/vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import { Button } from './ui/button'
-import { conditionData, formValues, meetsCondition, visibleValueFields } from '../lib/conditions'
+import { conditionData, expressionHolds, expressionValue, formValues, meetsCondition, visibleValueFields } from '../lib/conditions'
 import { carriesValue, flattenFields } from '../lib/fields'
 import { normalizeColumns, type FormColumns } from '../lib/layout'
 import { useFormMessages } from '../lib/messages'
@@ -15,7 +15,7 @@ const props = defineProps<{
     extraFields: Field[]
     allFields: Field[]
     form: any
-    submitLabel?: string
+    submitField?: Field
     columns?: FormColumns
     onFieldChange?: (field: string, value: any) => void
     fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
@@ -34,6 +34,23 @@ const data = computed(() => conditionData(formValues(props.form), props.allField
 function hasVisibleContent(step: Field): boolean {
     return visibleValueFields(step.fields ?? [], data.value).some((field) => field.type !== 'hidden')
 }
+
+const submitLabel = computed(() => {
+    const field = props.submitField
+    const computedLabel = field?.labelExpression ? expressionValue(field.labelExpression, data.value) : ''
+
+    return computedLabel || field?.label || messages.value.save
+})
+
+const submitDisabled = computed(() => {
+    const field = props.submitField
+
+    if (props.form.processing || field?.disabled) {
+        return true
+    }
+
+    return field?.disabledIf ? expressionHolds(field.disabledIf, data.value, true) : false
+})
 
 const visibleSteps = computed(() => props.steps.filter((step) => meetsCondition(step, data.value) && hasVisibleContent(step)))
 
@@ -278,10 +295,10 @@ defineExpose({ next, previous, jumpToFirstError, isLast, currentIndex, currentSt
                 v-else
                 type="submit"
                 class="h-12 flex-1 text-base"
-                :disabled="!!form.processing"
+                :disabled="submitDisabled"
                 data-step-submit
             >
-                {{ submitLabel ?? messages.save }}
+                {{ submitLabel }}
             </Button>
         </div>
     </div>

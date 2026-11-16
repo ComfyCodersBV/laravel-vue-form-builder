@@ -388,7 +388,7 @@ const usesSteps = computed(() => steps.value.length > 0)
 
 const fieldsBesideSteps = computed(() => props.schema.fields.filter((field) => field.type !== 'step' && field.type !== 'submit'))
 
-const submitLabel = computed(() => props.schema.fields.find((field) => field.type === 'submit')?.label)
+const submitField = computed(() => props.schema.fields.find((field) => field.type === 'submit'))
 
 const stepSlotNames = computed(() => Object.keys(slots).filter((name) => name.startsWith('step-')))
 
@@ -446,7 +446,7 @@ defineExpose({ submit: submitForm, form, formErrors, wizard })
             :extra-fields="fieldsBesideSteps"
             :all-fields="fields"
             :form="form"
-            :submit-label="submitLabel"
+            :submit-field="submitField"
             :columns="columns ?? schema.columns ?? 1"
             :on-field-change="onFieldChange || shouldSubmitOnChange ? handleFieldChange : undefined"
             :field-overrides="fieldOverrides"

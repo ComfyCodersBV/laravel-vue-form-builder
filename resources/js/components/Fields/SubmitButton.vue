@@ -13,6 +13,10 @@ interface Props {
     confirmMessage?: string
     className?: string
     inputClassName?: string
+    disabled?: boolean | string
+    labelExpression?: string
+    disabledIf?: string
+    form?: any
 }
 
 const props = defineProps<Props>();
@@ -31,6 +35,10 @@ const mergedClassName = computed(() => cn('w-fit', props.className));
         :confirm-message="confirmMessage"
         :class-name="mergedClassName"
         :input-class-name="inputClassName"
+        :disabled="disabled"
+        :label-expression="labelExpression"
+        :disabled-if="disabledIf"
+        :form="form"
         type="submit"
     />
 </template>
