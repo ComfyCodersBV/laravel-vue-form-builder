@@ -5,7 +5,7 @@ import FormRenderer from './FormRenderer.vue'
 import FormWizard from './FormWizard.vue'
 import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
-import { flattenFields, formFieldsKey } from '../lib/fields'
+import { carriesValue, flattenFields, formFieldsKey } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
 import { normalizeTags } from '../lib/tags'
@@ -144,6 +144,12 @@ function buildFormData(overrides: Record<string, any> = {}): Record<string, any>
 
     fields.forEach((field: any) => {
         if (!field?.name) {
+            return
+        }
+
+        if (!carriesValue(field)) {
+            delete formData[field.name]
+
             return
         }
 

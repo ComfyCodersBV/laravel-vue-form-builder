@@ -115,6 +115,8 @@ export interface Field {
     uppercase?: boolean
     suggestions?: string[]
     rows?: number
+    content?: string
+    expression?: string
 }
 
 export interface CurrentFile {

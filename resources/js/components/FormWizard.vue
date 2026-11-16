@@ -4,7 +4,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import FormRenderer from './FormRenderer.vue'
 import { Button } from './ui/button'
 import { conditionData, formValues, meetsCondition, visibleValueFields } from '../lib/conditions'
-import { flattenFields } from '../lib/fields'
+import { carriesValue, flattenFields } from '../lib/fields'
 import { normalizeColumns, type FormColumns } from '../lib/layout'
 import { useFormMessages } from '../lib/messages'
 import type { StepValidation } from '../lib/precognition'
@@ -125,7 +125,7 @@ async function next(): Promise<void> {
     }
 
     const names = visibleValueFields(current.value?.fields ?? [], data.value)
-        .filter((field) => field.type !== 'file')
+        .filter((field) => field.type !== 'file' && carriesValue(field))
         .map((field) => field.name as string)
 
     props.form.clearErrors?.(...stepFieldNames(current.value))

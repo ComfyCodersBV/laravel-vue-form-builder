@@ -11,7 +11,8 @@ Hidden::make('user_id')
     ->default(auth()->id())
 ```
 
-Hidden fields do not render any visible UI. Their value is submitted with the form.
+Hidden fields do not render any visible UI. Their value is submitted with the form. To show a value without
+submitting it, use a [Display](display.md) field.
 
 ---
 

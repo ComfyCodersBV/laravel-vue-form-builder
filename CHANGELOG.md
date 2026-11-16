@@ -16,6 +16,15 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * A text field with `suggestions` gets a `<datalist>` with the id `{field id}-suggestions`, unique per form and per
   repeater row.
 * A textarea takes `rows`.
+* New `display` field: shows its `content`, or the result of its `expression` (the language of `->if()`, inside a
+  repeater on its own row) as text in an `<output>` with the field id. It is left out of the form data, also when the
+  defaults carry its name, out of repeater rows and out of remembered values. See `docs/fields/display.md`.
+* A `->if()` condition or Display expression that throws now counts as false and hides its field, with a warning in
+  the console during development. Before, a failing condition showed the field.
+* Conditions and expressions work on forms with dotted field names. `address.city` reads the field
+  `address.city` as a nested value, and `form['address.city']` reads it by its full name. Before, one such field made
+  every condition of the form throw and show its field. Field names that are no JavaScript identifier, or are a reserved word such as
+  `class`, are only reachable through `form`, and `form` always means the form itself.
 * Checkboxes read the value and label of an option row from `optionValue` and `optionLabel`, as documented, and fall
   back to `value` / `id` and `label` / `name`. Before, they only read `value` and `label`.
 * The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id

@@ -1,5 +1,5 @@
 import type { Field } from '../types/form-builder'
-import { flattenFields } from './fields'
+import { carriesValue, flattenFields } from './fields'
 import { withoutParam } from './step-param'
 
 export interface RememberedForm {
@@ -37,7 +37,7 @@ export function rememberKey(remember: boolean | string | undefined, formId: stri
 
 export function rememberedFieldNames(fields: Field[]): string[] {
     return flattenFields(fields)
-        .filter((field) => typeof field.name === 'string' && field.name !== '' && !FORGOTTEN_TYPES.includes(field.type ?? ''))
+        .filter((field) => typeof field.name === 'string' && field.name !== '' && carriesValue(field) && !FORGOTTEN_TYPES.includes(field.type ?? ''))
         .map((field) => field.name as string)
 }
 
