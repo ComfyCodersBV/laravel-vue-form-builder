@@ -14,6 +14,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * The help text of a field renders with the id `{id}-help` and its error with `{id}-error`, and the built-in fields
   point `aria-describedby` at the ones that are shown. A repeater table column's help text and the currency of a
   `Money` field stay in the list. A checkbox or radio group carries it on the group.
+* Hidden fields take no cell in a form, section, step or repeater row: they add no gap, no empty row and no row break
+  between the fields around them. Their error, if any, shows above the other fields.
 * The `Field` type has the options the PHP fields send for their own type as optional props, such as `checkboxLabel`,
   `maxlength`, `min`, `max`, `step`, `multiple`, `clearable`, `range`, `enableTime`, `accept` and the `Button`,
   `KeyValue` and `Repeater` options, so a slot component no longer extends the type. `options` also takes the editor

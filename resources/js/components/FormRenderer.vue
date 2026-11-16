@@ -80,11 +80,25 @@
 
         return meetsCondition(field, conditionData(formValues(form), [...formFields, ...fields]))
     }
+
+    const hiddenFields = computed(() => fields.filter((field) => field.type === 'hidden'))
+
+    const laidOutFields = computed(() => fields.filter((field) => field.type !== 'hidden'))
     </script>
 
     <template>
-        <div v-if="columns > 1" :class="GRID_CLASSES[columns]">
-            <template v-for="(field, i) in fields" :key="field.name ?? i">
+        <template v-for="(field, i) in hiddenFields" :key="field.name ?? `hidden-${i}`">
+            <FormField
+                v-if="isVisible(field)"
+                :field="field"
+                :form="form"
+                :on-field-change="onFieldChange"
+                :field-overrides="fieldOverrides"
+            />
+        </template>
+
+        <div v-if="columns > 1 && laidOutFields.length" :class="GRID_CLASSES[columns]">
+            <template v-for="(field, i) in laidOutFields" :key="field.name ?? i">
                 <div v-if="isVisible(field)" :class="cellClass(field)">
                     <FormField
                         :field="field"
@@ -97,7 +111,7 @@
         </div>
 
         <template v-else-if="layoutFromForm">
-            <template v-for="(field, i) in fields" :key="field.name ?? i">
+            <template v-for="(field, i) in laidOutFields" :key="field.name ?? i">
                 <FormField
                     v-if="isVisible(field)"
                     :field="field"
@@ -108,8 +122,8 @@
             </template>
         </template>
 
-        <div v-else class="space-y-4">
-            <template v-for="(field, i) in fields" :key="field.name ?? i">
+        <div v-else-if="laidOutFields.length" class="space-y-4">
+            <template v-for="(field, i) in laidOutFields" :key="field.name ?? i">
                 <FormField
                     v-if="isVisible(field)"
                     :field="field"

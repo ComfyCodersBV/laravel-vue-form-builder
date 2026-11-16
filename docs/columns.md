@@ -59,7 +59,8 @@ stacks its fields again. See [Sections](fields/sections.md#columns).
 | `->columnSpanFull()` | the field takes the whole row |
 
 These fields take the whole row by default: `Textarea`, `Wysiwyg`, `Repeater`, `KeyValue`, `Button`, `Submit`,
-`DeleteButton`, `Hidden` and `Section`. Every other field, `Display` included, takes one column. `->columnSpan(n)`
+`DeleteButton` and `Section`. Every other field, `Display` included, takes one column. A `Hidden` field takes no cell
+at all: it adds no row, no gap and no row break between the fields around it. `->columnSpan(n)`
 overrides the default either way, so `Textarea::make('notes')->columnSpan(1)` sits next to another field;
 `->columnSpanFull()` and `fullWidth` always take the whole row. A section spans the whole row and lays out its own
 fields in the columns of the form, or of the section around it, unless it sets `->columns()`.

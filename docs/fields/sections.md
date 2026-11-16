@@ -61,8 +61,9 @@ Section::make()
 ```
 
 - A span larger than the number of columns is cut back to the full row.
-- `Textarea`, `Wysiwyg`, `Repeater`, `KeyValue`, `Button`, `Submit`, `DeleteButton`, `Hidden` and nested sections take
-  the full row unless they set a `->columnSpan()` of their own. `Display` and every other field take one column.
+- `Textarea`, `Wysiwyg`, `Repeater`, `KeyValue`, `Button`, `Submit`, `DeleteButton` and nested sections take the full
+  row unless they set a `->columnSpan()` of their own. `Display` and every other field take one column. A `Hidden`
+  field takes no cell.
 - A nested section without `->columns()` uses the columns of the section around it; `->columns(1)` stacks its fields
   again.
 

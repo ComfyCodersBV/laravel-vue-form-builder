@@ -220,7 +220,7 @@ Pass `columns="2"` to lay the fields out in a responsive two-column grid (`3` to
 </template>
 ```
 
-Fields that need the full width get it automatically: `wysiwyg`, `textarea`, `repeater`, `keyvalue`, `hidden`, `section` and the button types (`button`, `submit`, `delete`). A `columnSpan` in the schema overrides that. Any other field can ask for the full width with `fullWidth` in its schema:
+Fields that need the full width get it automatically: `wysiwyg`, `textarea`, `repeater`, `keyvalue`, `section` and the button types (`button`, `submit`, `delete`). A `columnSpan` in the schema overrides that. A `hidden` field takes no cell at all, so it adds no gap or row break. Any other field can ask for the full width with `fullWidth` in its schema:
 
 ```vue
 <template>
