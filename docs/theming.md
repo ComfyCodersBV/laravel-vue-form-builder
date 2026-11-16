@@ -133,7 +133,9 @@ A component of your own takes the same props, so `v-bind` hands it everything at
 
 The help text renders with the id `{id}-help` and the error with `{id}-error`, on built-in fields as well.
 
-Type the props with `InputSlotProps` from `@form-builder/types/form-builder`.
+Type the props with `InputSlotProps` from `@form-builder/types/form-builder`. Its `field` is a `Field`, which carries the
+options the PHP fields send for their own type as optional props, such as `checkboxLabel`, `maxlength`, `min`, `max`,
+`step`, `multiple`, `clearable`, `range` and `enableTime`, so a slot component reads them without extending the type.
 
 An input slot works wherever the field is: inside a section, in a wizard step and in every repeater row, where `id`,
 `modelValue`, `error` and `update` belong to that row; in a [repeater table](fields/repeater.md#table) `describedby` also

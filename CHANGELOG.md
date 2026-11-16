@@ -14,6 +14,10 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * The help text of a field renders with the id `{id}-help` and its error with `{id}-error`, and the built-in fields
   point `aria-describedby` at the ones that are shown. A repeater table column's help text and the currency of a
   `Money` field stay in the list. A checkbox or radio group carries it on the group.
+* The `Field` type has the options the PHP fields send for their own type as optional props, such as `checkboxLabel`,
+  `maxlength`, `min`, `max`, `step`, `multiple`, `clearable`, `range`, `enableTime`, `accept` and the `Button`,
+  `KeyValue` and `Repeater` options, so a slot component no longer extends the type. `options` also takes the editor
+  options object of a `Wysiwyg` field (`WysiwygEditorOptions`).
 
 ## 1.25.0 - 2026-11-16
 * A field with `when: {field, values}` (`->if('action', 'rebook')`) shows while the other field holds one of the values,

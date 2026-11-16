@@ -85,7 +85,7 @@ is enough for the public types and the date helpers:
 
 | Import | Holds |
 |---|---|
-| `@form-builder/types/form-builder` | `FormSchema`, `Field`, `FieldValue`, `DisabledDate`, `FormColumns`, `FormLayout`, `FormTheme`, `FieldSlotProps`, `InputSlotProps`, `FormMessages`, `FormMessagesConfig` and the `HttpForm*` types |
+| `@form-builder/types/form-builder` | `FormSchema`, `Field`, `FieldValue`, `DisabledDate`, `FormColumns`, `FormLayout`, `FormTheme`, `FieldSlotProps`, `InputSlotProps`, `WysiwygEditorOptions`, `FormMessages`, `FormMessagesConfig` and the `HttpForm*` types |
 | `@form-builder/types/dates` | `isUnavailableDate()`, `calendarDateOf()`, `formatDate()`, `formatHasTime()`, `parseFormattedDate()` and `DisabledDate` |
 
 ```ts

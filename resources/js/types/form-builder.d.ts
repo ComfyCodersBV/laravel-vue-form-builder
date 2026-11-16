@@ -23,6 +23,8 @@ export type FieldValue =
     | { start?: string | null; end?: string | null }
     | null
 
+export type WysiwygEditorOptions = Record<string, any>
+
 export interface FieldOption {
     value: string | number
     label: string
@@ -69,7 +71,7 @@ export interface Field {
     modelValue?: FieldValue
     default?: FieldValue
     error?: string | string[]
-    options?: Record<string, string> | Array<FieldOption> | Array<string | number>
+    options?: Record<string, string> | Array<FieldOption> | Array<string | number> | WysiwygEditorOptions
     optionOrder?: Array<string | number>
     dependentOptions?: { field: string; options: Record<string, Array<unknown>> | Array<Array<unknown>> }
     fields?: Field[]
@@ -127,6 +129,59 @@ export interface Field {
     labelExpression?: string
     disabledIf?: string
     emit?: string
+    checkboxLabel?: string
+    value?: string | number | boolean
+    falseValue?: string | number | boolean
+    maxlength?: number
+    minlength?: number
+    autocomplete?: boolean | string
+    min?: number | string
+    max?: number | string
+    step?: number | string
+    stepper?: boolean
+    incrementLabel?: string
+    decrementLabel?: string
+    multiple?: boolean
+    searchable?: boolean
+    clearable?: boolean
+    clearLabel?: string
+    choosePlaceholder?: string
+    searchPlaceholder?: string
+    noResultsLabel?: string
+    optionLabel?: string
+    optionValue?: string
+    inline?: boolean
+    buttons?: boolean
+    linksInNewTab?: boolean
+    range?: boolean
+    enableTime?: boolean
+    minDate?: string
+    maxDate?: string
+    weekStartsOn?: number
+    accept?: string[]
+    table?: boolean
+    itemLabel?: string
+    addable?: boolean
+    deletable?: boolean
+    reorderable?: boolean
+    addActionLabel?: string
+    keyLabel?: string
+    valueLabel?: string
+    keyPlaceholder?: string
+    valuePlaceholder?: string
+    maskedKeyPattern?: string
+    maskedValuePlaceholder?: string
+    editableKeys?: boolean
+    editableValues?: boolean
+    readonlyValueKeys?: string[]
+    editor?: string
+    variant?: string
+    labelHtml?: string
+    ariaLabel?: string
+    confirmTitle?: string
+    confirmMessage?: string
+    cancelLabel?: string
+    deleteUrl?: string
 }
 
 export interface CurrentFile {
