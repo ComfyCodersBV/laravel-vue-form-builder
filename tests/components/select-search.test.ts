@@ -15,7 +15,7 @@ const schemaWith = (defaults: Record<string, unknown> = {}) => ({
 const formOf = (wrapper: ReturnType<typeof mount>): any => (wrapper.vm as any).form
 
 async function open(wrapper: ReturnType<typeof mount>): Promise<HTMLInputElement> {
-    await wrapper.find('button[id="brand_id"]').trigger('click')
+    await wrapper.find('button[id$="-brand_id"]').trigger('click')
     await flushPromises()
 
     return document.body.querySelector('[data-slot="popover-content"] input, [role="dialog"] input') as HTMLInputElement
@@ -71,7 +71,7 @@ describe('select with a remote search', () => {
         await flushPromises()
 
         expect(formOf(wrapper).brand_id).toBe('b1')
-        expect(wrapper.find('button[id="brand_id"]').text()).toContain('12 - Acme')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).toContain('12 - Acme')
     })
 
     it('keeps a stored value that is not among the results and shows its selected label', async () => {
@@ -86,7 +86,7 @@ describe('select with a remote search', () => {
         await flushPromises()
 
         expect(formOf(wrapper).brand_id).toBe('b9')
-        expect(wrapper.find('button[id="brand_id"]').text()).toContain('99 - Stored')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).toContain('99 - Stored')
     })
 
     it('renders remote labels as text and forgets the results once the dropdown closes', async () => {
@@ -103,7 +103,7 @@ describe('select with a remote search', () => {
         expect(document.body.querySelector('.max-h-64 img')).toBeNull()
         expect(optionButtons()[0].textContent).toContain('<img')
 
-        await wrapper.find('button[id="brand_id"]').trigger('click')
+        await wrapper.find('button[id$="-brand_id"]').trigger('click')
         await flushPromises()
         await open(wrapper)
 
@@ -135,10 +135,10 @@ describe('select with a remote search', () => {
         await type(await open(wrapper), 'acme')
         await vi.advanceTimersByTimeAsync(300)
         await flushPromises()
-        await wrapper.find('button[id="brand_id"]').trigger('click')
+        await wrapper.find('button[id$="-brand_id"]').trigger('click')
         await flushPromises()
 
-        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Acme')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).toContain('Acme')
     })
 })
 
@@ -198,7 +198,7 @@ describe('select with a search url', () => {
         await flushPromises()
 
         expect(formOf(wrapper).brand_id).toBe(7)
-        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Acme')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).toContain('Acme')
     })
 
     it('shows the label of the selected value without searching', async () => {
@@ -212,7 +212,7 @@ describe('select with a search url', () => {
         await flushPromises()
 
         expect(formOf(wrapper).brand_id).toBe(9)
-        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Stored brand')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).toContain('Stored brand')
         expect(fetch).not.toHaveBeenCalled()
     })
 
@@ -223,7 +223,7 @@ describe('select with a search url', () => {
             props: { schema: urlSchema({ optionCode: 'code', selected: { value: 9, label: 'Bar', code: '8100' } }, { brand_id: 9 }) },
         })
 
-        expect(wrapper.find('button[id="brand_id"] [data-option-code]').text()).toBe('8100')
+        expect(wrapper.find('button[id$="-brand_id"] [data-option-code]').text()).toBe('8100')
 
         await type(await open(wrapper), 'rent')
         await vi.advanceTimersByTimeAsync(300)
@@ -234,7 +234,7 @@ describe('select with a search url', () => {
         optionButtons()[0].click()
         await flushPromises()
 
-        expect(wrapper.find('button[id="brand_id"] [data-option-code]').text()).toBe('8010')
+        expect(wrapper.find('button[id$="-brand_id"] [data-option-code]').text()).toBe('8010')
     })
 
     it('does not show the selected label once another value is chosen', async () => {
@@ -250,8 +250,8 @@ describe('select with a search url', () => {
         optionButtons()[0].click()
         await flushPromises()
 
-        expect(wrapper.find('button[id="brand_id"]').text()).toContain('Other brand')
-        expect(wrapper.find('button[id="brand_id"]').text()).not.toContain('Stored brand')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).toContain('Other brand')
+        expect(wrapper.find('button[id$="-brand_id"]').text()).not.toContain('Stored brand')
     })
 
     it('says the search failed when the url answers with an error', async () => {

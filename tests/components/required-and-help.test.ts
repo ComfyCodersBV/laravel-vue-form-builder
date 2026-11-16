@@ -12,7 +12,7 @@ const schemaWith = (fields: Record<string, unknown>[], extra: Record<string, unk
     ...extra,
 })
 
-const labelFor = (wrapper: ReturnType<typeof mount>, id: string) => wrapper.find(`label[for="${id}"]`)
+const labelFor = (wrapper: ReturnType<typeof mount>, id: string) => wrapper.find(`label[for="required-${id}"]`)
 
 describe('required indicator', () => {
     it('puts a hidden asterisk and a screen reader text after the label of a marked field', () => {

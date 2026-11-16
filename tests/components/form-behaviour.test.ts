@@ -52,7 +52,7 @@ describe('reset on success', () => {
 
         expect(formOf(wrapper).description).toBe('')
         expect(formOf(wrapper).quantity).toBe(1)
-        expect((wrapper.find('input#description').element as HTMLInputElement).value).toBe('')
+        expect((wrapper.find('input#behaviour-description').element as HTMLInputElement).value).toBe('')
     })
 
     it('keeps the inputs by default', async () => {
@@ -226,8 +226,8 @@ describe('GET filter forms', () => {
         const wrapper = mount(Form, { props: { schema: { ...schema, submitOnChange: true } } })
         const get = vi.spyOn(formOf(wrapper), 'get').mockImplementation(() => undefined)
 
-        await wrapper.find('input#q').setValue('ha')
-        await wrapper.find('input#q').setValue('hall')
+        await wrapper.find('input#behaviour-q').setValue('ha')
+        await wrapper.find('input#behaviour-q').setValue('hall')
 
         expect(get).not.toHaveBeenCalled()
 
@@ -242,7 +242,7 @@ describe('GET filter forms', () => {
         const wrapper = mount(Form, { props: { schema } })
         const get = vi.spyOn(formOf(wrapper), 'get').mockImplementation(() => undefined)
 
-        await wrapper.find('input#q').setValue('hall')
+        await wrapper.find('input#behaviour-q').setValue('hall')
         vi.advanceTimersByTime(1000)
 
         expect(get).not.toHaveBeenCalled()

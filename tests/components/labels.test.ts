@@ -19,7 +19,7 @@ describe('labels of a single checkbox and toggle', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith([{ name: 'active', type: 'checkbox', label: 'Active' }]) } })
 
         expect(labelsOf(wrapper, 'Active')).toHaveLength(1)
-        expect(labelsOf(wrapper, 'Active')[0]!.attributes('for')).toBe('active-cb')
+        expect(labelsOf(wrapper, 'Active')[0]!.attributes('for')).toBe('labels-active-cb')
     })
 
     it('keeps the label above when the checkbox has a label of its own', () => {
@@ -35,7 +35,7 @@ describe('labels of a single checkbox and toggle', () => {
         const wrapper = mount(Form, { props: { schema: schemaWith([{ name: 'on', type: 'toggle', label: 'On duty' }]) } })
 
         expect(labelsOf(wrapper, 'On duty')).toHaveLength(1)
-        expect(labelsOf(wrapper, 'On duty')[0]!.attributes('for')).toBe('on-tgl')
+        expect(labelsOf(wrapper, 'On duty')[0]!.attributes('for')).toBe('labels-on-tgl')
     })
 })
 
@@ -46,7 +46,7 @@ describe('hidden labels', () => {
         const label = labelsOf(wrapper, 'Search')[0]!
 
         expect(label.classes()).toEqual(['sr-only'])
-        expect(label.attributes('for')).toBe('q')
+        expect(label.attributes('for')).toBe('labels-q')
     })
 
     it('hides the inline label of a checkbox', () => {

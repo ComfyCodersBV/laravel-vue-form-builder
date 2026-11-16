@@ -36,7 +36,7 @@ describe('radio tiles', () => {
         expect(wrapper.findAll('[data-option-tile]')).toHaveLength(3)
         expect(wrapper.find('[data-option="1"]').text()).toContain('Main hall')
         expect(wrapper.find('[data-option="1"]').text()).toContain('Up to 120 people')
-        expect(wrapper.find('[data-option="1"] [data-option-tile]').attributes('aria-describedby')).toBe('unit-1-description')
+        expect(wrapper.find('[data-option="1"] [data-option-tile]').attributes('aria-describedby')).toBe('tiles-unit-1-description')
     })
 
     it('selects an option when its tile is clicked', async () => {

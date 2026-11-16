@@ -58,7 +58,7 @@ public function configure(FormConfig $form): void
 
 | Method | Description |
 |---|---|
-| `id(string)` | HTML `id` attribute on the form element |
+| `id(string)` | HTML `id` attribute on the form element, and the prefix of every field id. See [Field ids](vue-usage.md#field-ids) |
 | `class(string\|array)` | CSS classes on the form element |
 | `action(string)` | Form submission URL |
 | `method(string)` | HTTP method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`. A `GET` form submits as a query string, see [Filter Forms](filter-forms.md) |

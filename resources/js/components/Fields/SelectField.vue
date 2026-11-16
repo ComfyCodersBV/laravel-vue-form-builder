@@ -11,6 +11,7 @@ import { Input } from '../ui/input';
 import { ChevronsUpDown, X } from '@lucide/vue';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { useFieldId } from '../../lib/field-id';
 import { useFormMessages } from '../../lib/messages'
 import { suggestionsRequestUrl } from '../../lib/tags'
 import { codeWidth, groupOptions, hasGroups, optionMatches, toOptions, type SelectOption } from '../../lib/options'
@@ -341,6 +342,8 @@ function clearValue() {
 defineOptions({ inheritAttrs: false });
 
 const { listeners, wrapperAttrs } = useFieldListeners();
+
+const inputId = useFieldId(() => props.name);
 </script>
 
 <template>
@@ -353,7 +356,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                             v-bind="listeners()"
                             type="button"
                             variant="outline"
-                            :id="props.name"
+                            :id="inputId"
                             :disabled="props.disabled || props.readonly"
                             :class="cn('w-full min-w-0 justify-between font-normal', props.inputClassName)"
                         >
@@ -440,7 +443,7 @@ const { listeners, wrapperAttrs } = useFieldListeners();
                     :disabled="props.disabled || props.readonly"
                     @update:model-value="onUpdateInternal"
                 >
-                    <SelectTrigger v-bind="listeners()" :id="props.name" :class="cn('w-full min-w-0 justify-between', props.inputClassName)">
+                    <SelectTrigger v-bind="listeners()" :id="inputId" :class="cn('w-full min-w-0 justify-between', props.inputClassName)">
                         <span class="truncate" :class="{ 'mr-8': isClearable }">
                             <OptionContent v-if="selectedOption" :option="selectedOption" :code-width="triggerCodeWidth" html />
                             <span v-else class="text-muted-foreground">

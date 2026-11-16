@@ -62,14 +62,14 @@ describe('money field', () => {
     it('shows stored cents as a localised amount with the symbol', () => {
         const wrapper = mount(Form, { props: { schema: schema({}, { amount_cents: 123450 }) } })
 
-        expect((wrapper.find('input#amount_cents').element as HTMLInputElement).value).toBe('1.234,50')
+        expect((wrapper.find('input#money-amount_cents').element as HTMLInputElement).value).toBe('1.234,50')
         expect(wrapper.find('[data-money-symbol]').text()).toBe('€')
     })
 
     it('stores what is typed as whole cents', async () => {
         const wrapper = mount(Form, { props: { schema: schema() } })
 
-        await wrapper.find('input#amount_cents').setValue('12,5')
+        await wrapper.find('input#money-amount_cents').setValue('12,5')
 
         expect(formOf(wrapper).amount_cents).toBe(1250)
         expect(wrapper.find('input[type="hidden"][name="amount_cents"]').attributes('value')).toBe('1250')
@@ -77,7 +77,7 @@ describe('money field', () => {
 
     it('tidies the amount on blur', async () => {
         const wrapper = mount(Form, { props: { schema: schema() } })
-        const input = wrapper.find('input#amount_cents')
+        const input = wrapper.find('input#money-amount_cents')
 
         await input.setValue('7')
         await input.trigger('blur')
@@ -88,7 +88,7 @@ describe('money field', () => {
     it('follows the locale of the field over the form', async () => {
         const wrapper = mount(Form, { props: { schema: schema({ locale: 'en-US', currency: 'USD' }) } })
 
-        await wrapper.find('input#amount_cents').setValue('1,234.5')
+        await wrapper.find('input#money-amount_cents').setValue('1,234.5')
 
         expect(formOf(wrapper).amount_cents).toBe(123450)
     })
@@ -96,10 +96,10 @@ describe('money field', () => {
     it('keeps invalid text as typed and marks it', async () => {
         const wrapper = mount(Form, { props: { schema: schema() } })
 
-        await wrapper.find('input#amount_cents').setValue('abc')
+        await wrapper.find('input#money-amount_cents').setValue('abc')
 
         expect(formOf(wrapper).amount_cents).toBe('abc')
-        expect(wrapper.find('input#amount_cents').attributes('aria-invalid')).toBe('true')
+        expect(wrapper.find('input#money-amount_cents').attributes('aria-invalid')).toBe('true')
     })
 
     it('empties when the form value is cleared', async () => {
@@ -108,6 +108,6 @@ describe('money field', () => {
         formOf(wrapper).amount_cents = null
         await nextTick()
 
-        expect((wrapper.find('input#amount_cents').element as HTMLInputElement).value).toBe('')
+        expect((wrapper.find('input#money-amount_cents').element as HTMLInputElement).value).toBe('')
     })
 })

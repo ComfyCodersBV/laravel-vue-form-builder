@@ -2,6 +2,22 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.22.0 - 2026-11-16
+* Every field id carries the id of its form: `{form id}-{field name}`, and inside a repeater
+  `{form id}-{repeater}-{row}-{field}`. Labels, option, checkbox, toggle, tab and help ids follow, so two forms with the
+  same field on one page no longer share ids and a label no longer focuses the field of the other form. A form without
+  an id gets one from Vue's `useId()`, which is also set on the `<form>` element. The `name` attributes do not change.
+  See `docs/vue-usage.md#field-ids`.
+* Warning: field ids changed. A selector on `#fieldname` in CSS, Playwright, Dusk or `document.querySelector()` no
+  longer finds the field. Use `#{formId}-{name}` (for example `#login-email`), `[name="email"]` or the label.
+* An error on an element of an array field, such as `ids.0` for checkboxes `ids` or `period.start` for a date period,
+  shows under that field instead of nowhere. An error on the field itself takes precedence. Repeater, tags, file and
+  translatable fields keep showing their entry errors as before.
+* `<Form>` takes a `transform` prop, a function that adjusts the payload of an Inertia submit after the form's own
+  transform (blank values dropped on `GET`, `_method` added on an upload). Before, `<Form>` overwrote any transform a
+  page set on the form.
+* `docs/vue-usage.md` lists the field names laravel-form-builder 1.17 refuses because Inertia's `useForm()` uses them.
+
 ## 1.21.1 - 2026-11-13
 * A single checkbox rendered outside the field renderer, for example from a field slot, now shows the required
   asterisk of the field it belongs to. Before, its `markRequired` prop fell back to `false` instead of the field.

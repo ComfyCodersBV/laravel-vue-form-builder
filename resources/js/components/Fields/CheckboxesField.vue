@@ -4,6 +4,7 @@ import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 
 interface Option {
     value: string | number;
@@ -85,6 +86,8 @@ function toggle(value: string | number) {
 
     emit('update:modelValue', current)
 }
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -107,10 +110,10 @@ function toggle(value: string | number) {
         <div v-else :class="inline ? 'flex flex-wrap items-center gap-4' : 'grid gap-2'">
             <div v-for="option in optionsList" :key="String(option.value)"
                  :class="inline ? 'inline-flex items-center gap-2' : 'flex items-center gap-2'">
-                <Checkbox :id="`${name}-${String(option.value)}`" :name="`${name}[]`" :value="String(option.value)"
+                <Checkbox :id="`${inputId}-${String(option.value)}`" :name="`${name}[]`" :value="String(option.value)"
                           :disabled="option.disabled || disabled" :class="inputClassName"
                           v-model="getCheckboxModel(option.value).value"/>
-                <Label :for="`${name}-${String(option.value)}`">{{ option.label }}</Label>
+                <Label :for="`${inputId}-${String(option.value)}`">{{ option.label }}</Label>
             </div>
         </div>
         <template v-if="name">

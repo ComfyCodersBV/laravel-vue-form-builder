@@ -24,6 +24,13 @@ readers. It is on by default; switch it off app-wide with `'required_indicator' 
 `config/form-builder.php`, and override a single field with `->markRequired()` or `->markRequired(false)`. See
 [Common options](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#the-required-asterisk).
 
+## Field ids and reserved names
+
+Field ids carry the form id: `email` in a form with `->id('login')` renders `id="login-email"`, so two forms with the
+same field on one page keep their labels apart. Field names that Inertia's `useForm()` uses itself (`data`, `errors`,
+`reset`, `query`, `transform`, ...) are refused when the form is serialized. See
+[Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage#field-ids).
+
 ## CrudBuilder
 
 Want a complete CRUD solution? Our **[CrudBuilder](https://docs.comfycoders.nl/laravel-vue-crud-builder)** builds on top

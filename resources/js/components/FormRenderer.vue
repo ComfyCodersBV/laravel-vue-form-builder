@@ -3,18 +3,24 @@
     import FormField from './FormField.vue'
     import type { Field } from '../types/form-builder'
     import { computed, inject } from 'vue'
+    import { provideFieldIdPrefix } from '../lib/field-id'
     import { formFieldsKey } from '../lib/fields'
     import { conditionData, formValues, meetsCondition } from '../lib/conditions'
     import { normalizeColumns, spanOf, type FormColumns } from '../lib/layout'
 
-    const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1, layoutFromForm = false } = defineProps<{
+    const { fields, form: propForm, onFieldChange, fieldOverrides, columns: requestedColumns = 1, layoutFromForm = false, idPrefix } = defineProps<{
         fields: Field[]
         form?: any
         onFieldChange?: (field: string, value: any) => void
         fieldOverrides?: Record<string, Partial<Field & Record<string, any>>>
         columns?: FormColumns
         layoutFromForm?: boolean
+        idPrefix?: string
     }>()
+
+    if (idPrefix !== undefined) {
+        provideFieldIdPrefix(() => idPrefix)
+    }
 
     const columns = computed((): FormColumns => normalizeColumns(requestedColumns))
 

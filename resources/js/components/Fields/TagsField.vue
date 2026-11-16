@@ -2,6 +2,7 @@
 import BaseField from './BaseField.vue'
 import { useFieldListeners } from '../../lib/listeners'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { useDebounceFn } from '@vueuse/core'
 import { X } from '@lucide/vue'
 import {
@@ -201,6 +202,8 @@ onBeforeUnmount(() => controller?.abort())
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -262,7 +265,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                     <ComboboxInput v-model="query" as-child>
                         <TagsInputInput
                             v-bind="listeners()"
-                            :id="name"
+                            :id="inputId"
                             :readonly="isFull"
                             :placeholder="tags.length === 0 ? placeholder : undefined"
                             :aria-invalid="fieldError ? true : undefined"

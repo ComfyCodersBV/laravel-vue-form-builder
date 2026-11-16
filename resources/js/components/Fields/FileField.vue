@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners'
 import { Input } from '../ui/input'
 import type { CurrentFile, Field } from '../../types/form-builder'
 import { computed, ref, watch } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { cn } from '../../lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { Info } from '@lucide/vue'
@@ -162,6 +163,8 @@ function getName() {
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -217,7 +220,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 
             <Input
                 v-bind="listeners()"
-                :id="name"
+                :id="inputId"
                 :name="getName()"
                 :disabled="disabled"
                 :placeholder="placeholder"

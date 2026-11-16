@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import BaseField from './BaseField.vue'
 import { useFieldListeners } from '../../lib/listeners'
 import { Textarea } from '../ui/textarea'
@@ -21,13 +22,15 @@ const model = computed({
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
     <BaseField v-bind="{ ...wrapperAttrs(), label, name, error, className, help, theme }">
         <Textarea
             v-bind="listeners()"
-            :id="name"
+            :id="inputId"
             :name="name"
             v-model="model"
             :placeholder="placeholder"

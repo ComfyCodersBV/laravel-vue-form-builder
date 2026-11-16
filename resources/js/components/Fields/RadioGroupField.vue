@@ -7,6 +7,7 @@ import { RadioGroupItem as RadioGroupTile } from 'reka-ui'
 import { Label } from '../ui/label'
 import { Link } from '@inertiajs/vue3'
 import { computed, ref, watch } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { isInternalHref, isSafeHref } from '../../lib/links'
 
 type Options = Record<string, string> | Array<FieldOption> | Array<string | number>
@@ -91,7 +92,7 @@ const groupClass = computed(() => {
 })
 
 function optionId(option: FieldOption): string {
-  return `${props.name}-${String(option.value)}`
+  return `${inputId.value}-${String(option.value)}`
 }
 
 function isSelected(option: FieldOption): boolean {
@@ -112,6 +113,8 @@ function tileClass(option: FieldOption): string {
     props.inputClassName,
   )
 }
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -176,10 +179,10 @@ function tileClass(option: FieldOption): string {
           :class="props.inline ? 'inline-flex items-center gap-2' : 'flex items-start gap-2'"
           :data-option="String(opt.value)"
         >
-          <RadioGroupItem :id="`${props.name}-${String(opt.value)}`" :value="String(opt.value)" :disabled="opt.disabled" :class="props.inputClassName" />
+          <RadioGroupItem :id="optionId(opt)" :value="String(opt.value)" :disabled="opt.disabled" :class="props.inputClassName" />
           <div class="flex flex-col">
             <div class="flex flex-wrap items-center gap-2">
-              <Label :for="`${props.name}-${String(opt.value)}`">{{ opt.label }}</Label>
+              <Label :for="optionId(opt)">{{ opt.label }}</Label>
               <template v-if="linkOf(opt)">
                 <Link
                   v-if="navigatesInPlace(opt)"

@@ -84,8 +84,8 @@ describe('form with steps', () => {
         const { wrapper, requests } = wizardForm(schemaWith())
 
         expect(currentStep(wrapper)).toBe('when')
-        expect(wrapper.find('input#day').exists()).toBe(true)
-        expect(wrapper.find('input#notes').exists()).toBe(false)
+        expect(wrapper.find('input#wizard-day').exists()).toBe(true)
+        expect(wrapper.find('input#wizard-notes').exists()).toBe(false)
         expect(wrapper.find('[data-step-submit]').exists()).toBe(false)
         expect(wrapper.find('[data-step-progress]').text()).toBe('Step 1 of 3')
 

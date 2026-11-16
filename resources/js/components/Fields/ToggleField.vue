@@ -4,6 +4,7 @@ import { useFieldListeners } from '../../lib/listeners'
 import { Switch } from '../ui/switch'
 import type { Field } from '../../types/form-builder'
 import { computed } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { useHiddenLabel, VISUALLY_HIDDEN } from '../../lib/label'
 import { useFieldMeta } from '../../lib/field-meta'
 import RequiredMark from './RequiredMark.vue'
@@ -60,6 +61,8 @@ const model = computed<boolean>({
 defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -70,12 +73,12 @@ const { listeners, wrapperAttrs } = useFieldListeners()
                 v-bind="listeners()"
                 :model-value="model"
                 @update:model-value="(v) => model = v"
-                :id="`${name}-tgl`" :name="name"
+                :id="`${inputId}-tgl`" :name="name"
                 :value="String(value ?? '1')"
                 :disabled="disabled"
                 :class="inputClassName"
             />
-            <label v-if="label" :class="labelHidden ? VISUALLY_HIDDEN : 'text-sm'" :for="`${name}-tgl`">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="theme" /></label>
+            <label v-if="label" :class="labelHidden ? VISUALLY_HIDDEN : 'text-sm'" :for="`${inputId}-tgl`">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="theme" /></label>
         </div>
     </BaseField>
 </template>

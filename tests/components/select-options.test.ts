@@ -16,7 +16,7 @@ const schemaWith = (fields: Array<Record<string, unknown>>, defaults: Record<str
 const formOf = (wrapper: ReturnType<typeof mount>): any => (wrapper.vm as any).form
 
 async function open(wrapper: ReturnType<typeof mount>, name: string): Promise<void> {
-    await wrapper.find(`button[id="${name}"]`).trigger('click')
+    await wrapper.find(`button[id="options-${name}"]`).trigger('click')
     await flushPromises()
 }
 
@@ -131,7 +131,7 @@ describe('select options', () => {
             },
         })
 
-        expect(wrapper.find('button[id="post_id"]').text()).toContain('Bar')
+        expect(wrapper.find('button[id="options-post_id"]').text()).toContain('Bar')
 
         await open(wrapper, 'post_id')
         expect(optionLabels()).toEqual(['Bar', 'Rent'])
@@ -209,10 +209,10 @@ describe('select options', () => {
             },
         })
 
-        expect(wrapper.find('button[id="post_id"] [data-option-code]').text()).toBe('8010')
-        expect(wrapper.find('button[id="post_id"]').text()).toContain('Rent to individuals')
-        expect(wrapper.find('button[id="plain_id"] [data-option-code]').text()).toBe('4100')
-        expect(wrapper.find('button[id="plain_id"]').text()).toContain('Energy')
+        expect(wrapper.find('button[id="options-post_id"] [data-option-code]').text()).toBe('8010')
+        expect(wrapper.find('button[id="options-post_id"]').text()).toContain('Rent to individuals')
+        expect(wrapper.find('button[id="options-plain_id"] [data-option-code]').text()).toBe('4100')
+        expect(wrapper.find('button[id="options-plain_id"]').text()).toContain('Energy')
     })
 
     it('renders a code as text', async () => {

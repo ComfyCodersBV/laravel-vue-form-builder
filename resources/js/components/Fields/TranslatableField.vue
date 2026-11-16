@@ -3,6 +3,7 @@ import BaseField from './BaseField.vue'
 import FormField from '../FormField.vue'
 import type { Field, LocaleOption } from '../../types/form-builder'
 import { computed, ref } from 'vue'
+import { useFieldId } from '../../lib/field-id'
 import { cn } from '../../lib/utils'
 import { useFormMessages } from '../../lib/messages'
 
@@ -95,6 +96,8 @@ function tabClass(locale: string): string {
         active.value === locale ? 'bg-primary/15 font-medium text-primary shadow-sm' : 'text-muted-foreground hover:bg-muted',
     )
 }
+
+const inputId = useFieldId(() => props.name)
 </script>
 
 <template>
@@ -115,9 +118,9 @@ function tabClass(locale: string): string {
                     :key="locale.value"
                     type="button"
                     role="tab"
-                    :id="`${name}-tab-${locale.value}`"
+                    :id="`${inputId}-tab-${locale.value}`"
                     :aria-selected="active === locale.value"
-                    :aria-controls="`${name}-panel-${locale.value}`"
+                    :aria-controls="`${inputId}-panel-${locale.value}`"
                     :class="tabClass(locale.value)"
                     :data-locale="locale.value"
                     @click="active = locale.value"
@@ -138,8 +141,8 @@ function tabClass(locale: string): string {
                 v-show="active === locale.value"
                 :key="locale.value"
                 role="tabpanel"
-                :id="`${name}-panel-${locale.value}`"
-                :aria-labelledby="`${name}-tab-${locale.value}`"
+                :id="`${inputId}-panel-${locale.value}`"
+                :aria-labelledby="`${inputId}-tab-${locale.value}`"
             >
                 <FormField
                     :field="fieldFor(locale)"
