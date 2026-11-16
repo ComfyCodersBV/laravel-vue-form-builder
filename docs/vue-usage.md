@@ -38,6 +38,33 @@ fields.
 > finds the field. Use `#{formId}-{name}` (for example `#login-email`), `[name="email"]` or the label. The `name`
 > attribute does not change.
 
+## Two forms with the same fields
+
+Validation errors of an Inertia visit land on every form on the page that has a field with that name. Give each form
+its own error bag in PHP, so a newsletter form in the footer does not show the errors of a contact form above it:
+
+```php
+public function configure(FormConfig $form): void
+{
+    $form->errorBag('newsletter');
+}
+```
+
+The schema carries `errorBag`, and `<Form>` sends it as the `errorBag` option of the visit. Inertia scopes the errors
+of that visit to the bag, so field errors and [errors that belong to no field](#errors-that-belong-to-no-field) only
+show on that form. `validate()` and a `FormRequest` with `UsesForm` put the errors in the same bag on the server, see
+[Validation](validation.md#an-error-bag-per-form). An `errorBag` in `:options` wins over the one in the schema:
+
+```vue
+<template>
+    <Form :schema="contact" />
+    <Form :schema="newsletter" :options="{ errorBag: 'footer-newsletter' }" />
+</template>
+```
+
+Choose a bag that no field uses as its name: the bag is a key in the errors of the page. The `http` transport reads
+the errors from its own response and ignores the bag.
+
 ## Reserved field names
 
 `<Form>` keeps every value directly on Inertia's `useForm()` object, next to its own properties and methods. A field
@@ -392,7 +419,8 @@ The built-in submitter:
   (the Inertia transport does the same: a `PUT` with a file goes out as a `POST` with `_method`)
 - spreads nested arrays and objects into `filters[status][0]=open` style parameters on a `GET`
 
-Validation errors land on the matching field. Any other failure lands under the key `form`, which no field renders — read it yourself if you want to show it:
+Validation errors land on the matching field; an [error bag](#two-forms-with-the-same-fields) plays no part here,
+since the errors come from the response of this request only. Any other failure lands under the key `form`, which no field renders — read it yourself if you want to show it:
 
 ```vue
 <template>

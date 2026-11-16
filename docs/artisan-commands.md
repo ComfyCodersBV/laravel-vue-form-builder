@@ -94,6 +94,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Forms\ProductForm;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductFormRequest extends FormRequest
@@ -112,8 +113,18 @@ class ProductFormRequest extends FormRequest
     {
         return ProductForm::attributes();
     }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        $this->errorBag = ProductForm::errorBag() ?? $this->errorBag;
+
+        parent::failedValidation($validator);
+    }
 }
 ```
+
+`failedValidation()` puts the errors in the [error bag](validation.md#an-error-bag-per-form) of the form when it has
+one. A request generated before laravel-form-builder 1.22 lacks it and keeps the default bag.
 
 `authorize()` returns `true`. Replace it with a real check, such as a policy call, before you use the request on a
 route that needs a permission.

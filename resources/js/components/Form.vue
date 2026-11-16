@@ -255,7 +255,13 @@ function transformWith(own: FormTransform): void {
     })
 }
 
-function submitInertia(method: FormMethod, action: string, options: Record<string, any>) {
+function withErrorBag(options: Record<string, any>): Record<string, any> {
+    return props.schema.errorBag ? { errorBag: props.schema.errorBag, ...options } : options
+}
+
+function submitInertia(method: FormMethod, action: string, visitOptions: Record<string, any>) {
+    const options = withErrorBag(visitOptions)
+
     if (method === 'get') {
         transformWith(withoutBlanks)
 

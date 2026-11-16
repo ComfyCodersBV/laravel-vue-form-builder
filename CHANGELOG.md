@@ -11,6 +11,10 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   form is processing, such as `disabledIf('$processing || !ids.length')`. It is read-only and never submitted, and its
   `$` keeps it apart from field names.
 * `SUPPORTED_SCHEMA_VERSION` is now `1.19`. Requires laravel-form-builder 1.22.
+* `<Form>` sends the `errorBag` of the schema (`FormConfig::errorBag()` of laravel-form-builder 1.22) as the
+  `errorBag` option of an Inertia submit, so field errors and the errors above the form only show the errors of that
+  bag. Two forms with the same field names on one page keep their errors apart. An `errorBag` in `options` wins. The
+  `http` transport ignores it. `FormSchema` has `errorBag`.
 
 ## 1.26.0 - 2026-11-16
 * An `#input-{name}` slot on `<Form>` replaces only the control of a field. The label with its `for`, the required

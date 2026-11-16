@@ -41,6 +41,12 @@ takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` 
 [Conditional visibility](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#conditional-visibility) and
 [Buttons](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/buttons#a-label-and-disabled-state-that-follow-the-form).
 
+## Two forms with the same fields
+
+`$form->errorBag('newsletter')` keeps the validation errors of a form in their own bag, on the server and in the
+renderer, so two forms with the same field names on one page each show only their own errors. See
+[Two forms with the same fields](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage#two-forms-with-the-same-fields).
+
 ## Your own input, the package's label
 
 An `#input-{name}` slot on `<Form>` replaces only the control of a field, and `#input-{type}` that of every field of a
