@@ -6,7 +6,7 @@ import Form from '../../resources/js/components/Form.vue'
 import ButtonField from '../../resources/js/components/Fields/Button.vue'
 
 const schemaWith = (fields: Array<Record<string, unknown>>) => ({
-    schemaVersion: '1.18',
+    schemaVersion: '1.19',
     id: 'order',
     action: '/orders',
     method: 'post',
