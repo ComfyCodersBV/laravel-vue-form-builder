@@ -2,7 +2,7 @@
 import BaseField from './BaseField.vue'
 import type {Field} from '../../types/form-builder'
 import {Button} from '../ui/button'
-import {computed, ref, watch} from 'vue'
+import {computed, ref, toRaw, watch} from 'vue'
 import {ArrowDown, ArrowUp, Plus, Trash2} from '@lucide/vue'
 // FormRenderer and RepeaterField reference each other (FormRenderer registers
 // RepeaterField in its component map; RepeaterField renders each row's
@@ -57,6 +57,24 @@ function rowIdPrefix(index: number): string | undefined {
 
 const rows = ref<Record<string, any>[]>([])
 const isInternalUpdate = ref(false)
+
+const rowKeys = new WeakMap<object, string>()
+let nextRowKey = 0
+
+function rowKey(row: Record<string, any>): string {
+    const raw = toRaw(row)
+    const existing = rowKeys.get(raw)
+
+    if (existing) {
+        return existing
+    }
+
+    nextRowKey += 1
+    const key = `row-${nextRowKey}`
+    rowKeys.set(raw, key)
+
+    return key
+}
 
 function blankRow(): Record<string, any> {
     const row: Record<string, any> = {}
@@ -189,7 +207,7 @@ function moveDown(idx: number) {
     <BaseField v-bind="{ label, name, error, className, help, theme }">
         <div class="space-y-3">
             <template v-if="inline">
-                <div v-for="(row, i) in rows" :key="i"
+                <div v-for="(row, i) in rows" :key="rowKey(row)"
                      class="flex flex-col gap-3 rounded-md border border-neutral-200 p-3 sm:flex-row sm:items-start sm:border-0 sm:p-0 dark:border-neutral-700"
                      data-repeater-row>
                     <div class="grid min-w-0 flex-1 gap-3 sm:auto-cols-fr sm:grid-flow-col">
@@ -213,7 +231,7 @@ function moveDown(idx: number) {
             </template>
 
             <template v-else>
-                <div v-for="(row, i) in rows" :key="i"
+                <div v-for="(row, i) in rows" :key="rowKey(row)"
                      class="rounded-md border border-neutral-200 p-3 dark:border-neutral-700"
                      data-repeater-row>
                     <div class="mb-2 flex items-center justify-between">

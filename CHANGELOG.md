@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.23.0 - 2026-11-16
+* Every repeater row has a key of its own, so its inputs stay with the row when another row is removed or the rows are
+  reordered. Before, the rows were keyed by position and the state of an input could end up on the next row. The key
+  is not part of the value and is not submitted. Field ids stay based on the row position.
+
 ## 1.22.0 - 2026-11-16
 * Every field id carries the id of its form: `{form id}-{field name}`, and inside a repeater
   `{form id}-{repeater}-{row}-{field}`. Labels, option, checkbox, toggle, tab and help ids follow, so two forms with the

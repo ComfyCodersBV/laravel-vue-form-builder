@@ -38,6 +38,13 @@ value is a plain object keyed by each sub-field `name`.
 `->inline()` renders each row as one line: the sub-fields side by side in equal columns with the row actions at the
 end, without the numbered card. On small screens a row stacks its sub-fields in a bordered card again.
 
+### Row keys
+
+Each row gets a key in the browser that stays with it when rows are added, removed or reordered, so the inputs, an open
+select and the like stay on the row they belong to. The key lives only in the renderer: it is not part of the value,
+not submitted and not validated. The field ids stay based on the position of the row (`{form id}-{repeater}-{row}-{field}`),
+so they match the error keys of the server, such as `barrels.3.number`.
+
 ### Errors per row
 
 Server errors of a row, such as `ingredients.1.name`, show under that sub-field in that row.

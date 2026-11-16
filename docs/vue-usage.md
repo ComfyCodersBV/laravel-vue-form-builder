@@ -24,6 +24,8 @@ The component uses Inertia's `useForm()` internally and handles submission, erro
 Every field gets the id `{form id}-{field name}`, and its label, option and help ids follow. A field `email` in a form
 with `->id('login')` gets `id="login-email"`, so two forms with the same field on one page keep their labels apart.
 Inside a repeater the row comes in between: `{form id}-{repeater}-{row}-{field}`, for example `order-lines-0-amount`.
+The row is its position, so after removing or moving a row the ids of the rows below it shift along. The row elements
+themselves stay with their row, see [Repeater](fields/repeater.md#row-keys).
 
 The form id is the one from `->id()`. A form class without it uses its class name in snake case (`ContactForm` becomes
 `contact_form`). A bare `FormConfig::make()` without an id gets an id Vue generates (`useId()`), which differs per form
