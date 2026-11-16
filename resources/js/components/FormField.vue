@@ -13,6 +13,7 @@ import CheckboxesField from './Fields/CheckboxesField.vue'
 import ColorField from './Fields/ColorField.vue'
 import DateField from './Fields/DateField.vue'
 import DeleteButtonField from './Fields/DeleteButtonField.vue'
+import DisplayField from './Fields/DisplayField.vue'
 import FileField from './Fields/FileField.vue'
 import HiddenField from './Fields/HiddenField.vue'
 import KeyValueField from './Fields/KeyValueField.vue'
@@ -46,6 +47,7 @@ const fieldComponents: Record<string, any> = {
     color: ColorField,
     date: DateField,
     delete: DeleteButtonField,
+    display: DisplayField,
     email: TextField,
     file: FileField,
     hidden: HiddenField,
@@ -84,7 +86,7 @@ provide(fieldMetaKey, computed(() => {
 const messageContext = useFormMessages()
 
 function extraProps(): Record<string, any> {
-    if (field.type === 'translatable') {
+    if (field.type === 'translatable' || field.type === 'display') {
         return { form }
     }
 

@@ -10,7 +10,8 @@ Topics covered:
 
 - [Installation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/installation)
 - [Creating a Form](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/creating-forms)
-- [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options)
+- [All Field Types](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options), including
+  [Display](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/display) for read-only, computed values
 - [Vue Usage](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage)
 - [Validation](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/validation)
 - [Steps (multi-step forms)](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/steps)

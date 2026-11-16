@@ -3,6 +3,8 @@ export interface SelectOption {
     label: string
     group?: string
     code?: string
+    disabled?: boolean
+    separator?: boolean
 }
 
 export interface OptionGroup {
@@ -34,24 +36,38 @@ function codeOf(item: Record<string, unknown>, key: string | undefined): string 
     return (typeof code === 'string' || typeof code === 'number') && String(code) !== '' ? String(code) : undefined
 }
 
+function isRow(item: unknown): item is Record<string, unknown> {
+    return typeof item === 'object' && item !== null && !Array.isArray(item)
+}
+
 function fromRow(item: unknown, labelKey: string, valueKey: string, codeKey?: string): SelectOption {
-    if (typeof item !== 'object' || item === null) {
+    if (!isRow(item)) {
         return { value: item as string | number, label: String(item) }
     }
 
-    const row = item as Record<string, unknown>
-    const option: SelectOption = {
-        value: (readProperty(row, valueKey) ?? String(item)) as string | number,
-        label: String(readProperty(row, labelKey) ?? String(item)),
-    }
+    const row = item
     const group = groupOf(row)
+
+    if (row.separator) {
+        return { value: '', label: '', separator: true, disabled: true, ...(group ? { group } : {}) }
+    }
+
+    const option: SelectOption = {
+        value: (readProperty(row, valueKey) ?? readProperty(row, 'value') ?? String(item)) as string | number,
+        label: String(readProperty(row, labelKey) ?? readProperty(row, 'label') ?? String(item)),
+    }
     const code = codeOf(row, codeKey)
 
     return {
         ...option,
         ...(group ? { group } : {}),
         ...(code ? { code } : {}),
+        ...(row.disabled ? { disabled: true } : {}),
     }
+}
+
+export function isSelectable(option: SelectOption): boolean {
+    return option.separator !== true && option.disabled !== true
 }
 
 export function toOptions(
@@ -73,7 +89,9 @@ export function toOptions(
     const keys = Array.isArray(order) ? order.map(String).filter((key) => key in map) : Object.keys(map)
     const remaining = Object.keys(map).filter((key) => !keys.includes(key))
 
-    return [...keys, ...remaining].map((value) => ({ value, label: String(map[value]) }))
+    return [...keys, ...remaining].map((value) => isRow(map[value])
+        ? fromRow({ [valueKey]: value, ...(map[value] as Record<string, unknown>) }, labelKey, valueKey, codeKey)
+        : { value, label: String(map[value]) })
 }
 
 export function groupOptions(options: SelectOption[]): OptionGroup[] {
@@ -136,6 +154,10 @@ function searchText(option: SelectOption, html: boolean): string {
 }
 
 export function optionMatches(option: SelectOption, query: string, html = true): boolean {
+    if (option.separator) {
+        return query.trim() === ''
+    }
+
     const text = searchText(option, html)
 
     return query.toLowerCase().split(/\s+/).filter(Boolean).every((term) => text.includes(term))

@@ -90,6 +90,39 @@ markup of an HTML label. The multi-select shows the column too.
 
 Requires `tranquil-tools/laravel-form-builder` 1.15 and `laravel-vue-form-builder` 1.20 or newer.
 
+### Disabled options and separators
+
+An option given as an array with `'disabled' => true` is shown but cannot be picked, in the plain dropdown, the
+searchable combobox and the multi-select alike. Rows take `value` and `label` (as a [Radio](#radio--radios) does) or
+the field's `optionValue` and `optionLabel` keys; a map takes an array as its value. `Select::separator()` puts a
+divider line between two options. It has no value and is hidden while searching.
+
+```php
+Select::make('caliber')
+    ->label('Caliber')
+    ->options([
+        ['value' => '22/24', 'label' => '22/24'],
+        ['value' => '24/26', 'label' => '24/26', 'disabled' => true],
+        Select::separator(),
+        ['value' => 'other', 'label' => 'Other'],
+    ])
+
+Select::make('unit')->options([
+    1 => 'Main hall',
+    2 => ['label' => 'Attic', 'disabled' => true],
+])
+```
+
+The field adds a `DisabledOption` rule (`TranquilTools\FormBuilder\Rules\DisabledOption`) that refuses a disabled
+value, for a multiple select every value, from `->options()` and `->optionGroups()`. With `->optionsFor()` the
+`DependentOption` rule refuses a value that is disabled in the list of the submitted other value; the same value may be
+enabled in another list. A stored
+value that has become disabled still shows as the chosen option, but saving the form with it fails validation: give
+such a value its own enabled option when it has to stay. A select with a `searchUrl` has no options up front and gets
+no such rule.
+
+Requires `tranquil-tools/laravel-form-builder` 1.19 and `laravel-vue-form-builder` 1.24 or newer.
+
 ### Options that depend on another field
 
 `->optionsFor(string $field, array $optionsPerValue)` shows the options listed for the current value of another field.
@@ -280,10 +313,56 @@ Checkboxes::make('permissions')
 | Method | Description |
 |---|---|
 | `->options(array\|Collection)` | List of options |
-| `->optionLabel(string)` | Property to use as label for object options (default: `'name'`) |
-| `->optionValue(string)` | Property to use as value for object options (default: `'id'`) |
+| `->optionLabel(string)` | Property to use as label for object options (falls back to `label`, then `name`) |
+| `->optionValue(string)` | Property to use as value for object options (falls back to `value`, then `id`) |
 | `->inline()` | Display checkboxes horizontally instead of stacked vertically |
 | `->buttons()` | Render options as toggle pill buttons instead of checkboxes |
+| `->columns(array)` | Show the options as rows of a table with these columns, see [Table](#table) |
+| `->selectAll()` | Add "Select all" and "Select none" buttons above the options |
+
+An option given as an array with `'disabled' => true` is shown but cannot be ticked, as with a [Radio](#radio--radios).
+That is a browser-side lock only: validate the values on the server, for example with `Rule::in()`.
+
+The field label names the group of checkboxes (`role="group"` with `aria-labelledby`), so a screen reader announces it
+when the first checkbox gets focus.
+
+### Table
+
+`->columns()` takes a map of option keys to column headings. Each option row carries those keys next to its `value`
+and `label`; the cells show them as text. The checkbox in front of each row is named after the option's `label` for
+screen readers, and clicking a cell ticks the row. A wide table scrolls sideways inside its box on a narrow screen.
+
+```php
+Checkboxes::make('barrels')
+    ->label('Barrels')
+    ->options($barrels->map(fn (Barrel $barrel): array => [
+        'value' => $barrel->id,
+        'label' => "Barrel {$barrel->number}",
+        'lot' => $barrel->lot->name,
+        'barrel' => $barrel->number,
+        'caliber' => $barrel->caliber,
+        'disabled' => ! $barrel->is_present,
+    ]))
+    ->columns([
+        'lot' => 'Lot',
+        'barrel' => 'Barrel',
+        'caliber' => 'Caliber',
+    ])
+    ->selectAll()
+    ->rules('array')
+```
+
+The schema sends the columns as `optionColumns: [{key, label}]`.
+
+### Select all
+
+`->selectAll()` adds "Select all" and "Select none" buttons, in a list, as buttons or as a table. Select all ticks
+every enabled option, select none clears them, and a disabled option keeps its state either way. A button is disabled
+while there is nothing left for it to do, or while the field is disabled or readonly. The labels are the messages
+`selectAll` and `selectNone` ("Alles kiezen", "Niets kiezen" in Dutch); the hidden heading of the checkbox column in a
+table is `selectOption`. See [Translations](../vue-usage.md#translations).
+
+Requires `tranquil-tools/laravel-form-builder` 1.19 and `laravel-vue-form-builder` 1.24 or newer.
 
 ---
 
@@ -383,6 +462,9 @@ with `/`. Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-fo
 Descriptions and link labels are rendered as text, never as HTML. A link only renders for a relative URL or an
 `http`, `https`, `mailto` or `tel` URL; anything else (`javascript:`, `data:`, …) is dropped by the core and ignored by
 the renderer. A link starting with `/` navigates through Inertia, unless it has a target.
+
+An option given as an array with `'disabled' => true` is shown but cannot be chosen. A [Select](#disabled-options-and-separators)
+takes the same option shape.
 
 `Radios` is an alias for `Radio` — both behave identically.
 

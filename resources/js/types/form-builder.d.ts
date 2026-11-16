@@ -28,6 +28,7 @@ export interface FieldOption {
     label: string
     group?: string
     code?: string
+    separator?: boolean
     help?: string
     description?: string
     disabled?: boolean
@@ -108,6 +109,14 @@ export interface Field {
     hourFrom?: number
     hourTo?: number
     tiles?: boolean
+    optionColumns?: Array<{ key: string; label: string }>
+    selectAll?: boolean
+    charset?: string
+    uppercase?: boolean
+    suggestions?: string[]
+    rows?: number
+    content?: string
+    expression?: string
 }
 
 export interface CurrentFile {

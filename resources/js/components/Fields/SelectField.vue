@@ -3,7 +3,7 @@ import BaseField from './BaseField.vue';
 import { useFieldListeners } from '../../lib/listeners';
 import { cn } from '../../lib/utils';
 import type { Field } from '../../types/form-builder';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from '../ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
@@ -14,7 +14,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useFieldId } from '../../lib/field-id';
 import { useFormMessages } from '../../lib/messages'
 import { suggestionsRequestUrl } from '../../lib/tags'
-import { codeWidth, groupOptions, hasGroups, optionMatches, toOptions, type SelectOption } from '../../lib/options'
+import { codeWidth, groupOptions, hasGroups, isSelectable, optionMatches, toOptions, type SelectOption } from '../../lib/options'
 import OptionContent from './OptionContent.vue'
 
 type Option = SelectOption;
@@ -160,7 +160,7 @@ const selectedOption = computed<Option | null>(() => {
     if (!internalKey.value) return null;
 
     const found = optionsList.value.find(
-        option => String(option.value) === String(internalKey.value)
+        option => !option.separator && String(option.value) === String(internalKey.value)
     );
 
     if (found) {
@@ -210,7 +210,7 @@ watch(optionsList, (opts) => {
         return
     }
 
-    const allowed = new Set(opts.map(o => String(o.value)))
+    const allowed = new Set(opts.filter(o => !o.separator).map(o => String(o.value)))
 
     if (props.multiple) {
         const filtered = selectedLocal.value.filter(v => allowed.has(String(v)))
@@ -235,7 +235,7 @@ watch(selectedLocal, (v, old) => {
 function onUpdateInternal(value: unknown) {
     const key = value == null ? '' : String(value);
     internalKey.value = key;
-    const found = optionsList.value.find(o => String(o.value) === key);
+    const found = optionsList.value.find(o => !o.separator && String(o.value) === key);
     remoteSelected.value = isRemote.value && found ? found : null;
     emit('update:modelValue', (found ? found.value : key) as any);
 }
@@ -324,7 +324,15 @@ const comboboxFilteredOptions = computed(() => {
 
 const comboboxGroups = computed(() => groupOptions(comboboxFilteredOptions.value));
 
+function optionKey(option: Option, index: number): string {
+    return option.separator ? `separator-${index}` : String(option.value);
+}
+
 function selectComboboxOption(option: Option) {
+    if (!isSelectable(option)) {
+        return;
+    }
+
     onUpdateInternal(option.value);
     comboboxOpen.value = false;
     comboboxQuery.value = '';
@@ -392,16 +400,20 @@ const inputId = useFieldId(() => props.name);
                                 >
                                     {{ group.label }}
                                 </div>
-                                <button
-                                    v-for="option in group.options"
-                                    :key="String(option.value)"
-                                    type="button"
-                                    class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
-                                    :class="String(option.value) === internalKey ? 'bg-accent' : ''"
-                                    @click="selectComboboxOption(option)"
-                                >
-                                    <OptionContent :option="option" :code-width="listCodeWidth" :html="!isRemote" />
-                                </button>
+                                <template v-for="(option, optionIndex) in group.options" :key="optionKey(option, optionIndex)">
+                                    <div v-if="option.separator" role="separator" class="-mx-2 my-1 h-px bg-muted" data-select-separator></div>
+                                    <button
+                                        v-else
+                                        type="button"
+                                        class="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+                                        :class="String(option.value) === internalKey ? 'bg-accent' : ''"
+                                        :disabled="option.disabled"
+                                        :data-option-disabled="option.disabled ? '' : undefined"
+                                        @click="selectComboboxOption(option)"
+                                    >
+                                        <OptionContent :option="option" :code-width="listCodeWidth" :html="!isRemote" />
+                                    </button>
+                                </template>
                             </div>
                             <div role="status" aria-live="polite">
                                 <div v-if="isBelowMinimum" class="px-2 py-3 text-xs text-muted-foreground" data-select-hint>
@@ -455,23 +467,29 @@ const inputId = useFieldId(() => props.name);
                         <template v-if="isGrouped">
                             <SelectGroup v-for="(group, groupIndex) in optionGroups" :key="`group-${groupIndex}`">
                                 <SelectLabel v-if="group.label !== null" data-select-group>{{ group.label }}</SelectLabel>
-                                <SelectItem
-                                    v-for="option in group.options"
-                                    :key="String(option.value)"
-                                    :value="String(option.value)"
-                                >
-                                    <OptionContent :option="option" :code-width="listCodeWidth" html tag="div" label-class="flex justify-between items-center w-full" />
-                                </SelectItem>
+                                <template v-for="(option, optionIndex) in group.options" :key="optionKey(option, optionIndex)">
+                                    <SelectSeparator v-if="option.separator" data-select-separator />
+                                    <SelectItem
+                                        v-else
+                                        :value="String(option.value)"
+                                        :disabled="option.disabled"
+                                    >
+                                        <OptionContent :option="option" :code-width="listCodeWidth" html tag="div" label-class="flex justify-between items-center w-full" />
+                                    </SelectItem>
+                                </template>
                             </SelectGroup>
                         </template>
                         <template v-else>
-                            <SelectItem
-                                v-for="option in optionsList"
-                                :key="String(option.value)"
-                                :value="String(option.value)"
-                            >
-                                <OptionContent :option="option" :code-width="listCodeWidth" html tag="div" label-class="flex justify-between items-center w-full" />
-                            </SelectItem>
+                            <template v-for="(option, optionIndex) in optionsList" :key="optionKey(option, optionIndex)">
+                                <SelectSeparator v-if="option.separator" data-select-separator />
+                                <SelectItem
+                                    v-else
+                                    :value="String(option.value)"
+                                    :disabled="option.disabled"
+                                >
+                                    <OptionContent :option="option" :code-width="listCodeWidth" html tag="div" label-class="flex justify-between items-center w-full" />
+                                </SelectItem>
+                            </template>
                         </template>
                     </SelectContent>
                     <input v-if="props.name" type="hidden" :name="props.name" :value="internalKey" />
@@ -494,6 +512,7 @@ const inputId = useFieldId(() => props.name);
             <input type="hidden" :name="props.name" value="" />
             <MultiSelect
                 v-bind="listeners()"
+                :id="inputId"
                 :class="props.inputClassName"
                 v-model="selectedLocal"
                 :options="optionsList"

@@ -2,6 +2,36 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.24.0 - 2026-11-16
+* A select option with `disabled: true` is shown but cannot be picked, in the plain dropdown, the searchable combobox
+  and the multi-select. A row with `separator: true` (`Select::separator()`) shows a divider line, which is hidden
+  while searching. Option rows without the field's `optionValue` and `optionLabel` keys fall back to `value` and
+  `label`, and a map takes an object as its value. See `docs/fields/selection-fields.md#disabled-options-and-separators`.
+* Checkboxes with `optionColumns` show their options as rows of a table with a column per key and a checkbox named
+  after the option label. `selectAll` adds "Select all" and "Select none" buttons that leave disabled options alone.
+  The new messages are `selectAll`, `selectNone` and `selectOption`, in English and Dutch. A map of checkbox options
+  takes an object as its value. See `docs/fields/selection-fields.md#table`.
+* A text field with `charset` drops every character outside that class while typing and on paste, and keeps the caret
+  in place. `uppercase` turns the text into capitals as it is typed, before the charset is applied.
+* A text field with `suggestions` gets a `<datalist>` with the id `{field id}-suggestions`, unique per form and per
+  repeater row.
+* A textarea takes `rows`.
+* New `display` field: shows its `content`, or the result of its `expression` (the language of `->if()`, inside a
+  repeater on its own row) as text in an `<output>` with the field id. It is left out of the form data, also when the
+  defaults carry its name, out of repeater rows and out of remembered values. See `docs/fields/display.md`.
+* A `->if()` condition or Display expression that throws now counts as false and hides its field, with a warning in
+  the console during development. Before, a failing condition showed the field.
+* Conditions and expressions work on forms with dotted field names. `address.city` reads the field
+  `address.city` as a nested value, and `form['address.city']` reads it by its full name. Before, one such field made
+  every condition of the form throw and show its field. Field names that are no JavaScript identifier, or are a reserved word such as
+  `class`, are only reachable through `form`, and `form` always means the form itself.
+* Checkboxes read the value and label of an option row from `optionValue` and `optionLabel`, as documented, and fall
+  back to `value` / `id` and `label` / `name`. Before, they only read `value` and `label`.
+* The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id
+  that did not exist.
+* The label of a multi-select points at its trigger button instead of an id that did not exist.
+* Requires laravel-form-builder 1.19 and supports schema version 1.17.
+
 ## 1.23.0 - 2026-11-16
 * Every repeater row has a key of its own, so its inputs stay with the row when another row is removed or the rows are
   reordered. Before, the rows were keyed by position and the state of an input could end up on the next row. The key

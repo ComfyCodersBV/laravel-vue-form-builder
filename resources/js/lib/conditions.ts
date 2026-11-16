@@ -33,19 +33,104 @@ export function conditionData(data: Record<string, any>, fields: Field[]): Recor
     return normalized
 }
 
+const IDENTIFIER = /^[A-Za-z_$][\w$]*$/
+
+const UNSAFE_SEGMENTS = ['__proto__', 'constructor', 'prototype']
+
+const RESERVED_WORDS = new Set([
+    'arguments', 'await', 'break', 'case', 'catch', 'class', 'const', 'continue', 'debugger', 'default', 'delete',
+    'do', 'else', 'enum', 'eval', 'export', 'extends', 'false', 'finally', 'for', 'function', 'if', 'implements',
+    'import', 'in', 'instanceof', 'interface', 'let', 'new', 'null', 'package', 'private', 'protected', 'public',
+    'return', 'static', 'super', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'var', 'void', 'while', 'with',
+    'yield',
+])
+
+function isPlainObject(value: unknown): value is Record<string, any> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export function expressionScope(data: Record<string, any>): Record<string, any> {
+    const scope: Record<string, any> = { ...data }
+    const owned = new Set<Record<string, any>>()
+
+    Object.keys(data)
+        .filter((key) => key.includes('.'))
+        .forEach((key) => {
+            const path = key.split('.')
+
+            if (path.some((segment) => UNSAFE_SEGMENTS.includes(segment))) {
+                return
+            }
+
+            let target = scope
+
+            for (const segment of path.slice(0, -1)) {
+                const current = target[segment]
+
+                if (current !== undefined && !isPlainObject(current)) {
+                    return
+                }
+
+                if (current === undefined || !owned.has(current)) {
+                    target[segment] = { ...(current ?? {}) }
+                    owned.add(target[segment])
+                }
+
+                target = target[segment]
+            }
+
+            const last = path[path.length - 1]
+
+            if (!Object.hasOwn(target, last)) {
+                target[last] = data[key]
+            }
+        })
+
+    return scope
+}
+
+function evaluate(expression: string, data: Record<string, any>): unknown {
+    const scope = expressionScope(data)
+    const keys = Object.keys(scope).filter((key) => key !== 'form' && IDENTIFIER.test(key) && !RESERVED_WORDS.has(key))
+    const values = keys.map((key) => scope[key])
+    const run = new Function('form', ...keys, `return (${expression})`)
+
+    return run(scope, ...values)
+}
+
+function reportFailure(expression: string, error: unknown): void {
+    if (import.meta.env.DEV) {
+        console.warn(`[form-builder] The expression \`${expression}\` failed and counts as false:`, error)
+    }
+}
+
 export function meetsCondition(field: Field, data: Record<string, any>): boolean {
     if (!field.condition) {
         return true
     }
 
     try {
-        const keys = Object.keys(data)
-        const values = keys.map((key) => data[key])
-        const evaluate = new Function('form', ...keys, `return !!(${field.condition})`)
+        return !!evaluate(field.condition, data)
+    } catch (error) {
+        reportFailure(field.condition, error)
 
-        return evaluate(data, ...values)
-    } catch {
-        return true
+        return false
+    }
+}
+
+export function expressionValue(expression: string, data: Record<string, any>): string {
+    try {
+        const value = evaluate(expression, data)
+
+        if (value === null || value === undefined || value === false || (typeof value === 'number' && Number.isNaN(value))) {
+            return ''
+        }
+
+        return String(value)
+    } catch (error) {
+        reportFailure(expression, error)
+
+        return ''
     }
 }
 

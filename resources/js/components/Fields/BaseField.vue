@@ -11,6 +11,7 @@ import RequiredMark from './RequiredMark.vue'
 interface BaseFieldProps extends Field {
     theme?: Partial<FormTheme>
     inlineLabel?: boolean
+    group?: boolean
 }
 
 const props = withDefaults(defineProps<BaseFieldProps>(), {
@@ -24,6 +25,7 @@ const props = withDefaults(defineProps<BaseFieldProps>(), {
     theme: undefined,
     hideLabel: false,
     inlineLabel: false,
+    group: false,
 })
 
 const formTheme = inject(themeKey, computed(() => DEFAULT_THEME))
@@ -50,11 +52,15 @@ const isHorizontal = computed(() => layout.value === 'horizontal' && Boolean(pro
 const alignsWithControls = computed(() => layout.value === 'horizontal' && props.inlineLabel && !props.label)
 
 const inputId = useFieldId(() => props.name)
+
+const labelId = computed(() => props.group && inputId.value ? `${inputId.value}--label` : undefined)
+
+const labelFor = computed(() => props.group ? undefined : inputId.value)
 </script>
 
 <template>
     <div v-if="isHorizontal" :class="[wrapperClass, 'sm:flex sm:items-start sm:gap-3']">
-        <label :for="inputId" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
+        <label :id="labelId" :for="labelFor" :class="[theme.label, 'sm:w-40 sm:shrink-0 sm:pt-2 sm:text-right']">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div class="min-w-0 flex-1">
             <slot />
             <template v-if="hasHelp">
@@ -69,7 +75,7 @@ const inputId = useFieldId(() => props.name)
     </div>
 
     <div v-else :class="[wrapperClass, alignsWithControls ? 'sm:pl-[10.75rem]' : '']">
-        <label v-if="label" :for="inputId" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
+        <label v-if="label" :id="labelId" :for="labelFor" :class="labelHidden ? VISUALLY_HIDDEN : theme.label">{{ label }}<RequiredMark v-if="meta.markRequired" :theme="props.theme" /></label>
         <div>
             <slot />
         </div>

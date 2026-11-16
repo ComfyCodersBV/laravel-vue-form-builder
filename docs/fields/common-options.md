@@ -232,4 +232,13 @@ Text::make('vat_number')
     ->if('country === "NL" && is_business === true')
 ```
 
+On a form with dotted field names, `address.city` reads the field `address.city` as a nested value and
+`form['address.city']` reads it by its full name. A field name that is no JavaScript identifier, or a reserved word
+such as `class`, is only reachable through `form`. `form` always means the form itself, also when a field is named
+`form`. A condition that throws counts as false and hides its field; during
+development the console shows a warning with the error.
+
+A [Display](display.md) field takes an expression in the same language through `->expression()` to show a
+computed value.
+
 Fields with an unsatisfied condition are hidden in the UI. Their values are not included in the form submission.

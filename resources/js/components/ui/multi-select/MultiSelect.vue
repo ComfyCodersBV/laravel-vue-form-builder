@@ -60,7 +60,7 @@ const selectedSet = computed(() => new Set(selected.value.map(String)))
 const filtered = computed(() => {
   if (!query.value) return props.options
   const q = query.value.toLowerCase()
-  return props.options.filter(o => optionMatches(o, query.value, false) || String(o.value).toLowerCase().includes(q))
+  return props.options.filter(o => optionMatches(o, query.value, false) || (!o.separator && String(o.value).toLowerCase().includes(q)))
 })
 
 const listCodeWidth = computed(() => codeWidth(props.options))
@@ -69,6 +69,7 @@ const filteredGroups = computed(() => groupOptions(filtered.value))
 
 function toggleValue(val: string | number) {
   if (props.disabled || props.readonly) return
+  if (props.options.some(o => !o.separator && o.disabled && String(o.value) === String(val))) return
   const set = new Set(selected.value.map(String))
   const key = String(val)
   if (set.has(key)) set.delete(key); else set.add(key)
@@ -143,18 +144,21 @@ defineOptions({ inheritAttrs: false })
           <div v-if="group.label !== null" class="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground" data-select-group>
             {{ group.label }}
           </div>
-          <button
-            v-for="opt in group.options"
-            :key="String(opt.value)"
-            type="button"
-            class="flex w-full items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-accent"
-            :class="selectedSet.has(String(opt.value)) ? 'bg-accent' : ''"
-            @click="toggleValue(opt.value)"
-            :disabled="props.disabled || props.readonly"
-          >
-            <OptionContent :option="opt" :code-width="listCodeWidth" label-class="truncate mr-2" />
-            <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">{{ messages.selected }}</span>
-          </button>
+          <template v-for="(opt, optIndex) in group.options" :key="opt.separator ? `separator-${optIndex}` : String(opt.value)">
+            <div v-if="opt.separator" role="separator" class="-mx-2 my-1 h-px bg-muted" data-select-separator></div>
+            <button
+              v-else
+              type="button"
+              class="flex w-full items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+              :class="selectedSet.has(String(opt.value)) ? 'bg-accent' : ''"
+              @click="toggleValue(opt.value)"
+              :disabled="props.disabled || props.readonly || opt.disabled"
+              :data-option-disabled="opt.disabled ? '' : undefined"
+            >
+              <OptionContent :option="opt" :code-width="listCodeWidth" label-class="truncate mr-2" />
+              <span v-if="selectedSet.has(String(opt.value))" class="text-muted-foreground text-xs">{{ messages.selected }}</span>
+            </button>
+          </template>
         </div>
         <div v-if="!filtered.length" class="px-2 py-3 text-xs text-muted-foreground">{{ messages.noResults }}</div>
       </div>
