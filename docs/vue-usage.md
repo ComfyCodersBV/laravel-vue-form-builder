@@ -26,6 +26,8 @@ with `->id('login')` gets `id="login-email"`, so two forms with the same field o
 Inside a repeater the row comes in between: `{form id}-{repeater}-{row}-{field}`, for example `order-lines-0-amount`.
 The row is its position, so after removing or moving a row the ids of the rows below it shift along. The row elements
 themselves stay with their row, see [Repeater](fields/repeater.md#row-keys).
+The `<datalist>` of a text field with [suggestions](fields/text-fields.md#suggestions) gets the field id with
+`-suggestions`, so it is unique per form and per repeater row as well.
 
 The form id is the one from `->id()`. A form class without it uses its class name in snake case (`ContactForm` becomes
 `contact_form`). A bare `FormConfig::make()` without an id gets an id Vue generates (`useId()`), which differs per form

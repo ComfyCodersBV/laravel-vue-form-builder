@@ -24,6 +24,7 @@ Text::make('name')
 | `->password()` | Shorthand for `->type('password')` |
 | `->charset(string)` | Only accept these characters, see [Restricting the characters](#restricting-the-characters) |
 | `->uppercase()` | Turn the text into capitals while typing |
+| `->suggestions(iterable)` | Offer these values while typing, see [Suggestions](#suggestions) |
 
 ### Restricting the characters
 
@@ -49,6 +50,20 @@ Text::make('container')
 - The class is used by PHP and by the browser (with the `u` flag). Stick to what both read the same: ranges, single
   characters and escapes such as `\-` or `\s`.
 - A `->mask()` (fixed patterns such as `99-AA-99`) is not supported.
+
+### Suggestions
+
+`->suggestions()` offers a list of values while typing, through a native `<datalist>`. Any other text is still
+accepted; add a rule when it must be one of them.
+
+```php
+Text::make('prefix')
+    ->label('Prefix')
+    ->suggestions(['AB', 'CD', 'EF'])
+```
+
+The values are sent as strings, each once; empty values are dropped. The datalist id is the field id with
+`-suggestions` (`lots-prefix-suggestions`), unique per form and per repeater row.
 
 ## Email
 

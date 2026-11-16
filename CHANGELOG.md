@@ -13,6 +13,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   takes an object as its value. See `docs/fields/selection-fields.md#table`.
 * A text field with `charset` drops every character outside that class while typing and on paste, and keeps the caret
   in place. `uppercase` turns the text into capitals as it is typed, before the charset is applied.
+* A text field with `suggestions` gets a `<datalist>` with the id `{field id}-suggestions`, unique per form and per
+  repeater row.
 * Checkboxes read the value and label of an option row from `optionValue` and `optionLabel`, as documented, and fall
   back to `value` / `id` and `label` / `name`. Before, they only read `value` and `label`.
 * The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id

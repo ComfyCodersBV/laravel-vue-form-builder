@@ -21,6 +21,7 @@ interface TextFieldProps extends Field {
     removeRequested?: boolean | string | number
     charset?: string
     uppercase?: boolean
+    suggestions?: string[]
 }
 
 const props = withDefaults(defineProps<TextFieldProps>(), {
@@ -44,6 +45,7 @@ const props = withDefaults(defineProps<TextFieldProps>(), {
     type: 'text',
     charset: undefined,
     uppercase: false,
+    suggestions: () => [],
 })
 
 const emit = defineEmits<{
@@ -108,6 +110,7 @@ const { listeners, wrapperAttrs } = useFieldListeners()
 
 const inputId = useFieldId(() => props.name)
 
+const suggestionsId = computed(() => props.suggestions.length && inputId.value ? `${inputId.value}-suggestions` : undefined)
 </script>
 
 <template>
@@ -131,11 +134,16 @@ const inputId = useFieldId(() => props.name)
         :readonly="readonly"
         :autocomplete="autocomplete ?? (showsStored ? 'new-password' : undefined)"
         :type="type"
+        :list="suggestionsId"
         v-model="model"
         @input="filterTypedValue"
         @compositionend="filterTypedValue"
         :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass(), inputClassName)"
       />
+
+      <datalist v-if="suggestionsId" :id="suggestionsId" data-suggestions>
+        <option v-for="suggestion in suggestions" :key="suggestion" :value="suggestion" />
+      </datalist>
 
       <span
         v-if="append"

@@ -113,6 +113,7 @@ export interface Field {
     selectAll?: boolean
     charset?: string
     uppercase?: boolean
+    suggestions?: string[]
 }
 
 export interface CurrentFile {
