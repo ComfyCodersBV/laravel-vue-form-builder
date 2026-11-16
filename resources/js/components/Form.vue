@@ -19,6 +19,8 @@ import { carriesFiles, useHttpForm, type HttpFormErrorAdapter, type HttpFormSubm
 
 type FormMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
+type FormTransform = (data: Record<string, any>) => Record<string, any>
+
 const props = withDefaults(defineProps<{
     schema: FormSchema
     options?: Record<string, any>
@@ -39,6 +41,7 @@ const props = withDefaults(defineProps<{
     submitDelay?: number
     remember?: boolean | string
     stepParam?: string | false
+    transform?: FormTransform
 }>(), {
     resetOnSuccess: undefined,
     submitOnChange: undefined,
@@ -228,20 +231,24 @@ function currentPath(): string {
     return typeof window === 'undefined' ? '' : window.location.pathname
 }
 
+function transformWith(own: FormTransform): void {
+    form.transform((data: Record<string, any>) => (props.transform ? props.transform(own(data)) : own(data)))
+}
+
 function submitInertia(method: FormMethod, action: string, options: Record<string, any>) {
     if (method === 'get') {
-        form.transform(withoutBlanks)
+        transformWith(withoutBlanks)
 
         return form.get(action || currentPath(), { preserveState: true, preserveScroll: true, ...options })
     }
 
     if (SPOOFED_METHODS.includes(method) && carriesFiles(form.data())) {
-        form.transform((data: Record<string, any>) => ({ ...data, _method: method }))
+        transformWith((data) => ({ ...data, _method: method }))
 
         return form.post(action, options)
     }
 
-    form.transform((data: Record<string, any>) => data)
+    transformWith((data) => data)
 
     return form[method](action, options)
 }

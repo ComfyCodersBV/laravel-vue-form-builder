@@ -13,6 +13,9 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * An error on an element of an array field, such as `ids.0` for checkboxes `ids` or `period.start` for a date period,
   shows under that field instead of nowhere. An error on the field itself takes precedence. Repeater, tags, file and
   translatable fields keep showing their entry errors as before.
+* `<Form>` takes a `transform` prop, a function that adjusts the payload of an Inertia submit after the form's own
+  transform (blank values dropped on `GET`, `_method` added on an upload). Before, `<Form>` overwrote any transform a
+  page set on the form.
 * `docs/vue-usage.md` lists the field names laravel-form-builder 1.17 refuses because Inertia's `useForm()` uses them.
 
 ## 1.21.1 - 2026-11-13
