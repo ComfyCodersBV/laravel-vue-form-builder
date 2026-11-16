@@ -1,7 +1,7 @@
 export { default as Form } from "./components/Form.vue"
 export { DEFAULT_THEME, mergeTheme } from "./lib/theme"
 export type { FormTheme } from "./lib/theme"
-export type { FieldSlotProps } from "./lib/field-slots"
+export type { FieldSlotProps, InputSlotProps } from "./lib/field-slots"
 export type { Field, FormSchema } from "./types/form-builder"
 export { default as TreeView } from "./components/TreeView.vue"
 export { default as SortableList } from "./components/SortableList.vue"

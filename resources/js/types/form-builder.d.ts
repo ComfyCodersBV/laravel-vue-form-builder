@@ -5,7 +5,7 @@ import type { FormColumns } from '../lib/layout'
 export type { DisabledDate } from '../lib/dates'
 export type { FormColumns, FormLayout } from '../lib/layout'
 export type { FormTheme } from '../lib/theme'
-export type { FieldSlotProps } from '../lib/field-slots'
+export type { FieldSlotProps, InputSlotProps } from '../lib/field-slots'
 export type { FormMessages, FormMessagesConfig } from '../lib/messages'
 export type {
     HttpFormErrorAdapter,

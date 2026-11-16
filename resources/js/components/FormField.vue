@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, provide } from 'vue'
 import { useFormMessages } from '../lib/messages'
-import { fieldSlotsKey } from '../lib/field-slots'
+import { fieldSlotsKey, inputSlotName } from '../lib/field-slots'
 import { hideLabelKey } from '../lib/label'
 import { fieldMetaKey } from '../lib/field-meta'
 import { dependentOptionsFor } from '../lib/options'
@@ -16,6 +16,7 @@ import DeleteButtonField from './Fields/DeleteButtonField.vue'
 import DisplayField from './Fields/DisplayField.vue'
 import FileField from './Fields/FileField.vue'
 import HiddenField from './Fields/HiddenField.vue'
+import InputSlotField from './Fields/InputSlotField.vue'
 import KeyValueField from './Fields/KeyValueField.vue'
 import MoneyField from './Fields/MoneyField.vue'
 import NumberField from './Fields/NumberField.vue'
@@ -146,7 +147,29 @@ function componentFor() {
 }
 
 function slotFor() {
-    return (field.name ? fieldSlots[field.name] : undefined) ?? (field.type ? fieldSlots[field.type] : undefined)
+    if (field.name && fieldSlots[field.name]) {
+        return fieldSlots[field.name]
+    }
+
+    if (inputSlotFor()) {
+        return undefined
+    }
+
+    return field.type ? fieldSlots[field.type] : undefined
+}
+
+const NO_INPUT_SLOT_TYPES = ['section', 'step', 'repeater', 'recaptcha', 'hidden', 'display', 'button', 'submit', 'delete']
+
+function inputSlotFor() {
+    if (!field.name || NO_INPUT_SLOT_TYPES.includes(field.type ?? '')) {
+        return undefined
+    }
+
+    return fieldSlots[inputSlotName(field.name)] ?? (field.type ? fieldSlots[inputSlotName(field.type)] : undefined)
+}
+
+function mergedField(): Field {
+    return { ...field, ...(fieldOverrides?.[field.name ?? ''] ?? {}) }
 }
 
 function slotPropsFor() {
@@ -198,6 +221,18 @@ function updateValue(value: any): void {
         :on-field-change="onFieldChange"
         :field-overrides="fieldOverrides"
     />
+    <InputSlotField
+        v-else-if="inputSlotFor()"
+        :field="mergedField()"
+        :form="form"
+        :model-value="form[field.name!]"
+        :error="errorFor(field.name ?? '')"
+        @update:modelValue="updateValue"
+    >
+        <template #default="scope">
+            <component :is="inputSlotFor()" v-bind="scope" />
+        </template>
+    </InputSlotField>
     <component
         v-else-if="componentFor()"
         :is="componentFor()"

@@ -40,6 +40,14 @@ takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` 
 [Conditional visibility](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#conditional-visibility) and
 [Buttons](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/buttons#a-label-and-disabled-state-that-follow-the-form).
 
+## Your own input, the package's label
+
+An `#input-{name}` slot on `<Form>` replaces only the control of a field, and `#input-{type}` that of every field of a
+type. The label, required asterisk, help text, error
+and ids stay the package's, and the slot gets `id`, `describedby`, `modelValue`, `update`, `invalid`, `disabled`,
+`field` and `form`, also inside sections, steps and repeater rows. See
+[Replacing only the input](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/theming#replacing-only-the-input).
+
 ## CrudBuilder
 
 Want a complete CRUD solution? Our **[CrudBuilder](https://docs.comfycoders.nl/laravel-vue-crud-builder)** builds on top

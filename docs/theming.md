@@ -1,8 +1,8 @@
 # Theming
 
 Every field renders the same chrome around its own control: a wrapper, a label, help text and an
-error message, plus the asterisk of a required field. Those are themeable from PHP, and any field can be replaced outright with a
-slot when classes are not enough.
+error message, plus the asterisk of a required field. Those are themeable from PHP. When classes are not enough, a slot
+replaces only the control of a field, or the field outright.
 
 ## The elements
 
@@ -80,3 +80,66 @@ exactly as a built-in field does.
 
 Slots reach fields nested inside a `Repeater` as well, so a `#title` slot applies to a `title`
 sub-field in every row.
+
+## Replacing only the input
+
+An `#input-{name}` slot replaces the control of one field and keeps everything around it: the label with its `for`, the
+required asterisk, the help text, the error message, the theme and the column span. Bind `id` to your control so the
+label points at it, and `describedby` so a screen reader reads the help text and the error with it:
+
+```vue
+<Form :schema="form">
+    <template #input-size="{ id, name, modelValue, update, describedby, invalid, required, disabled, field }">
+        <select
+            :id="id"
+            :name="name"
+            :value="modelValue ?? ''"
+            :disabled="disabled"
+            :aria-describedby="describedby"
+            :aria-invalid="invalid || undefined"
+            :aria-required="required || undefined"
+            class="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+            @change="update(($event.target as HTMLSelectElement).value)"
+        >
+            <option value="" disabled>{{ field.placeholder }}</option>
+            <option value="small">Small</option>
+            <option value="large">Large</option>
+        </select>
+    </template>
+</Form>
+```
+
+A component of your own takes the same props, so `v-bind` hands it everything at once:
+
+```vue
+<template #input-caliber="input">
+    <CaliberSelect v-bind="input" :calibers="calibers" />
+</template>
+```
+
+| Prop | Holds |
+|---|---|
+| `id` | the id the label points at, with the form id and, in a repeater, the row: `order-lines-0-size` |
+| `name` | the field name |
+| `modelValue` | the current value |
+| `update` / `onUpdate:modelValue` | writes a new value to the form and fires its `onFieldChange`, like a built-in field |
+| `describedby` | the ids of the help text and the error that are shown, for `aria-describedby`, or `undefined` |
+| `invalid` | `true` while the field has an error, for `aria-invalid` |
+| `required` | `true` when the label shows the required asterisk, for `aria-required` |
+| `disabled`, `readonly` | the field's `->disabled()` and `->readonly()` as booleans |
+| `error` | the error message of the field, a string or a list |
+| `field` | the field schema, with its `field-overrides` applied |
+| `form` | the form object; inside a repeater the row |
+
+The help text renders with the id `{id}-help` and the error with `{id}-error`, on built-in fields as well.
+
+Type the props with `InputSlotProps` from `@form-builder/types/form-builder`.
+
+An input slot works wherever the field is: inside a section, in a wizard step and in every repeater row, where `id`,
+`modelValue`, `error` and `update` belong to that row; in a [repeater table](fields/repeater.md#table) `describedby` also
+points at the column's help text. It applies to fields with a value, not to a section, step, `Repeater`, `Hidden`,
+`Display`, reCAPTCHA or a button.
+
+An `#input-{type}` slot, such as `#input-text`, does the same for every field of that type, also in repeater rows, with
+the same exceptions. The order is: a slot for the whole field (`#size`), then `#input-size`, then `#input-text`, then a
+slot for the whole type (`#text`).

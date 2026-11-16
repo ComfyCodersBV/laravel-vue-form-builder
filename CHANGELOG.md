@@ -3,6 +3,14 @@
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
 ## 1.26.0 - 2026-11-16
+* An `#input-{name}` slot on `<Form>` replaces only the control of a field. The label with its `for`, the required
+  asterisk, the help text, the error, the theme and the column span stay the package's. The slot gets `id`, `name`,
+  `modelValue`, `update` (and `onUpdate:modelValue`), `describedby`, `invalid`, `required`, `disabled`, `readonly`,
+  `error`, `field` and `form`, typed as `InputSlotProps`. It works inside sections and wizard steps, and in a repeater
+  row with the id, value, error and form of that row. In a repeater table `describedby` includes the column's help
+  text. Sections, steps, repeaters, `Hidden`, `Display`, reCAPTCHA and buttons take no input slot.
+* An `#input-{type}` slot, such as `#input-text`, replaces the control of every field of that type. The order is the
+  slot for the whole field (`#size`), `#input-size`, `#input-text`, then the slot for the whole type (`#text`).
 * The help text of a field renders with the id `{id}-help` and its error with `{id}-error`, and the built-in fields
   point `aria-describedby` at the ones that are shown. A repeater table column's help text and the currency of a
   `Money` field stay in the list. A checkbox or radio group carries it on the group.
