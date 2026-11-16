@@ -9,6 +9,7 @@ import { cn } from '../../lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { Info } from '@lucide/vue'
 import { useFormMessages } from '../../lib/messages'
+import { applyInputFilter, hasInputFilter } from '../../lib/input-filter'
 
 interface TextFieldProps extends Field {
     append?: string
@@ -18,6 +19,8 @@ interface TextFieldProps extends Field {
     prepend?: string
     tooltip?: string
     removeRequested?: boolean | string | number
+    charset?: string
+    uppercase?: boolean
 }
 
 const props = withDefaults(defineProps<TextFieldProps>(), {
@@ -39,6 +42,8 @@ const props = withDefaults(defineProps<TextFieldProps>(), {
     stored: false,
     tooltip: undefined,
     type: 'text',
+    charset: undefined,
+    uppercase: false,
 })
 
 const emit = defineEmits<{
@@ -69,6 +74,22 @@ const model = computed<string | number>({
   set: (v) => emit('update:modelValue', v as any),
 })
 
+const inputFilter = computed(() => ({ charset: props.charset, uppercase: props.uppercase }))
+
+const filtersInput = computed(() => hasInputFilter(inputFilter.value))
+
+function filterTypedValue(event: Event) {
+  if (!filtersInput.value || (event as InputEvent).isComposing) {
+    return
+  }
+
+  const element = event.target as HTMLInputElement
+
+  if (applyInputFilter(element, inputFilter.value)) {
+    element.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+}
+
 const hasPrepend = computed(() => !!props.prepend)
 const hasAppend = computed(() => !!props.append)
 const hasTooltip = computed(() => !!props.tooltip)
@@ -86,6 +107,7 @@ defineOptions({ inheritAttrs: false })
 const { listeners, wrapperAttrs } = useFieldListeners()
 
 const inputId = useFieldId(() => props.name)
+
 </script>
 
 <template>
@@ -110,6 +132,8 @@ const inputId = useFieldId(() => props.name)
         :autocomplete="autocomplete ?? (showsStored ? 'new-password' : undefined)"
         :type="type"
         v-model="model"
+        @input="filterTypedValue"
+        @compositionend="filterTypedValue"
         :class="cn('flex-1 dark:text-neutral-100', leftRoundClass(), rightRoundClass(), inputClassName)"
       />
 

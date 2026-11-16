@@ -22,6 +22,33 @@ Text::make('name')
 | `->type(string)` | Sets the HTML `type` attribute (e.g. `'url'`, `'tel'`) |
 | `->email()` | Shorthand for `->type('email')` |
 | `->password()` | Shorthand for `->type('password')` |
+| `->charset(string)` | Only accept these characters, see [Restricting the characters](#restricting-the-characters) |
+| `->uppercase()` | Turn the text into capitals while typing |
+
+### Restricting the characters
+
+`->charset()` takes the inside of a regular expression character class, such as `'0-9'`, `'A-Z0-9'` or `'0-9/'`.
+The field drops every other character while typing and on paste, and keeps the caret where it was. `->uppercase()`
+turns the text into capitals as it is typed; together they upper-case first, so `->uppercase()->charset('A-Z0-9')`
+accepts typed lower case letters.
+
+```php
+Text::make('container')
+    ->label('Container')
+    ->uppercase()
+    ->charset('A-Z0-9')
+    ->maxLength(11)
+```
+
+- `->charset()` adds a `Charset` rule (`TranquilTools\FormBuilder\Rules\Charset`) that checks the same class on the
+  server (`/^[class]*$/u`) and fails with the `validation.regex` message. An empty value passes; add `required` for
+  that. A class that is no valid regular expression throws an `InvalidArgumentException`.
+- `FormConfig::validate()` upper-cases the value of an `->uppercase()` field before it validates, also inside a
+  repeater, so the charset rule sees capitals. A `FormRequest` that only uses the form's `rules()` gets no such step:
+  upper-case the input yourself in its `prepareForValidation()`.
+- The class is used by PHP and by the browser (with the `u` flag). Stick to what both read the same: ranges, single
+  characters and escapes such as `\-` or `\s`.
+- A `->mask()` (fixed patterns such as `99-AA-99`) is not supported.
 
 ## Email
 

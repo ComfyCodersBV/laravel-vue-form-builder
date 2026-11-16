@@ -11,6 +11,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   after the option label. `selectAll` adds "Select all" and "Select none" buttons that leave disabled options alone.
   The new messages are `selectAll`, `selectNone` and `selectOption`, in English and Dutch. A map of checkbox options
   takes an object as its value. See `docs/fields/selection-fields.md#table`.
+* A text field with `charset` drops every character outside that class while typing and on paste, and keeps the caret
+  in place. `uppercase` turns the text into capitals as it is typed, before the charset is applied.
 * Checkboxes read the value and label of an option row from `optionValue` and `optionLabel`, as documented, and fall
   back to `value` / `id` and `label` / `name`. Before, they only read `value` and `label`.
 * The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id

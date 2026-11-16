@@ -111,6 +111,8 @@ export interface Field {
     tiles?: boolean
     optionColumns?: Array<{ key: string; label: string }>
     selectAll?: boolean
+    charset?: string
+    uppercase?: boolean
 }
 
 export interface CurrentFile {
