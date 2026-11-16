@@ -36,9 +36,16 @@ same field on one page keep their labels apart. Field names that Inertia's `useF
 
 `->if('action', 'rebook')` shows a field only while `action` is `rebook`, adds `exclude_unless:action,rebook` to its
 rules and leaves it out of the payload while it is hidden, in sections, steps and repeater rows too. A submit button
-takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` `Rebook (${ids.length})` ``. See
+takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` `Rebook (${ids.length})` ``, and
+`$processing` tells an expression that the form is submitting. See
 [Conditional visibility](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#conditional-visibility) and
 [Buttons](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/buttons#a-label-and-disabled-state-that-follow-the-form).
+
+## Two forms with the same fields
+
+`$form->errorBag('newsletter')` keeps the validation errors of a form in their own bag, on the server and in
+`$page.props.errors`, so the errors of two forms with the same field names on one page stay apart. See
+[Two forms with the same fields](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage#two-forms-with-the-same-fields).
 
 ## Your own input, the package's label
 

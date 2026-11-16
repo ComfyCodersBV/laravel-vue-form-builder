@@ -76,8 +76,22 @@ const shownLabel = computed(() => {
     return computedLabel || props.label
 })
 
+const deleting = ref(false)
+
+const waitsForRequest = computed(() => {
+    if (props.deleteUrl) {
+        return deleting.value || props.form?.processing === true
+    }
+
+    return props.type === 'submit' && props.form?.processing === true
+})
+
 const isDisabled = computed(() => {
     if (props.disabled === true || (typeof props.disabled === 'string' && props.disabled !== '')) {
+        return true
+    }
+
+    if (waitsForRequest.value) {
         return true
     }
 
@@ -102,8 +116,14 @@ const hiddenSubmit = ref<HTMLButtonElement | null>(null)
 function handleConfirmAction() {
     if (props.deleteUrl) {
         router.delete(props.deleteUrl, {
+            onStart: () => {
+                deleting.value = true;
+            },
             onSuccess: () => {
                 showDialog.value = false;
+            },
+            onFinish: () => {
+                deleting.value = false;
             },
         });
 
@@ -129,7 +149,7 @@ const { listeners } = useFieldListeners()
 
 <template>
     <template v-if="hasConfirm">
-        <button v-if="type === 'submit'" ref="hiddenSubmit" type="submit" class="hidden" />
+        <button v-if="type === 'submit'" ref="hiddenSubmit" type="submit" class="hidden" :disabled="waitsForRequest" />
         <Dialog v-model:open="showDialog">
             <DialogTrigger as-child>
                 <Button
@@ -161,6 +181,7 @@ const { listeners } = useFieldListeners()
                     <Button
                         :variant="variant"
                         type="button"
+                        :disabled="waitsForRequest"
                         :data-testid="testId ? `${testId}-confirm` : undefined"
                         @click="handleConfirmAction"
                     >

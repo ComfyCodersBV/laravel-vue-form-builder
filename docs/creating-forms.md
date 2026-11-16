@@ -65,6 +65,7 @@ public function configure(FormConfig $form): void
 | `resetOnSuccess(bool)` | Clear the inputs after a successful submit, for "add another" forms. See [Vue Usage](vue-usage.md#resetting-after-a-successful-submit) |
 | `submitOnChange(bool)` | Submit shortly after every change, for filter bars |
 | `fillFromQuery(bool)` | Take defaults from the query string. On by default for `GET` forms |
+| `errorBag(string)` | Keep the validation errors of this form in their own bag. See [Two forms with the same fields](vue-usage.md#two-forms-with-the-same-fields) |
 
 > **Note:** `action` and `method` are usually set in the controller so you can pass different values for create vs. edit without subclassing the form.
 

@@ -38,6 +38,42 @@ fields.
 > finds the field. Use `#{formId}-{name}` (for example `#login-email`), `[name="email"]` or the label. The `name`
 > attribute does not change.
 
+## Two forms with the same fields
+
+Inertia puts the validation errors of a visit in `$page.props.errors`. Without a bag, page code that reads them, such
+as a component next to the form, cannot tell whether `errors.email` belongs to the contact form or to the newsletter
+form in the footer. Give each form its own error bag in PHP:
+
+```php
+public function configure(FormConfig $form): void
+{
+    $form->errorBag('newsletter');
+}
+```
+
+The schema carries `errorBag`, and `<Form>` sends it as the `errorBag` option of the visit. Inertia scopes the errors
+of that visit to the bag: the page gets `errors.newsletter.email`, and the form reads its field errors and
+[errors that belong to no field](#errors-that-belong-to-no-field) from `errors.newsletter`. `validate()` and a
+`FormRequest` with `UsesForm` put the errors in the same bag on the server, see
+[Validation](validation.md#an-error-bag-per-form).
+
+An `errorBag` in `:options` wins over the one in the schema. It must match the bag the server validates into, or the
+form finds no errors. A form whose controller validates into the default bag can take any name, because Inertia then
+moves the default bag under that name:
+
+```vue
+<template>
+    <Form :schema="contact" :options="{ errorBag: 'contact' }" />
+    <Form :schema="newsletter" />
+</template>
+```
+
+Here the contact form has no bag in PHP and its controller calls a plain `validate()`, so the page gets its errors as
+`errors.contact`.
+
+Choose a bag that no field uses as its name: the bag is a key in the errors of the page. The `http` transport reads
+the errors from its own response and ignores the bag.
+
 ## Reserved field names
 
 `<Form>` keeps every value directly on Inertia's `useForm()` object, next to its own properties and methods. A field
@@ -392,7 +428,8 @@ The built-in submitter:
   (the Inertia transport does the same: a `PUT` with a file goes out as a `POST` with `_method`)
 - spreads nested arrays and objects into `filters[status][0]=open` style parameters on a `GET`
 
-Validation errors land on the matching field. Any other failure lands under the key `form`, which no field renders — read it yourself if you want to show it:
+Validation errors land on the matching field; an [error bag](#two-forms-with-the-same-fields) plays no part here,
+since the errors come from the response of this request only. Any other failure lands under the key `form`, which no field renders — read it yourself if you want to show it:
 
 ```vue
 <template>

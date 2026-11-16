@@ -31,6 +31,13 @@ The markup is rendered as-is, so only pass HTML you control. A plain string labe
 keeps the text of the HTML in `label` (or the default label when there is none), which is also what the confirm
 dialog shows.
 
+### Disabled while submitting
+
+The submit button is disabled while the form is on its way to the server (`form.processing`), with the Inertia
+transport and with `transport="http"` alike, so a second click does not submit the form twice. A `DeleteButton` and a
+`Button` with `->deleteUrl()` follow the same rule, and also stay disabled, with the confirm button in their dialog,
+while their own `DELETE` request is on its way. Other buttons stay enabled.
+
 ### Confirm before submit
 
 ```php
@@ -52,10 +59,13 @@ Submit::make()
 ```
 
 - They update while the form changes, also on the submit button of the last [step](../steps.md).
+- `$processing` is `true` while the form is submitting, for a label such as `$processing ? 'Saving…' : 'Save'` or a
+  button that waits for the form: `->disabledIf('$processing || !ids.length')`.
 - An expression that throws, or a label expression that gives an empty value, falls back to `->label()`. A
   `->disabledIf()` that throws disables the button, as a failing condition hides its field. During development the
   console shows a warning with the error.
-- `->disabled()` keeps the button disabled whatever `->disabledIf()` says.
+- `->disabled()` keeps the button disabled whatever `->disabledIf()` says, and so does a submit that is
+  [on its way](#disabled-while-submitting).
 - A label given as an `HtmlString` is shown as it is: `->labelExpression()` does not replace markup.
 - Both work on a `Button` and a `DeleteButton` as well.
 

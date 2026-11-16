@@ -208,5 +208,6 @@ export interface FormSchema {
     submitOnChange?: boolean
     validateSteps?: boolean
     stepParam?: string
+    errorBag?: string
     columns?: FormColumns
 }

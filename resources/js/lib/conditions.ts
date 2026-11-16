@@ -16,7 +16,9 @@ function isOn(value: any, onValue: any): boolean {
 }
 
 export function formValues(form: any): Record<string, any> {
-    return typeof form?.data === 'function' ? form.data() : { ...form }
+    const values = typeof form?.data === 'function' ? form.data() : { ...form }
+
+    return { ...values, $processing: form?.processing === true }
 }
 
 const submittedValues = new WeakMap<Record<string, any>, Record<string, any>>()
