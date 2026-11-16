@@ -10,6 +10,7 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * `$processing` in an expression of `->if()`, `labelExpression`, `disabledIf` or a `Display` field is `true` while the
   form is processing, such as `disabledIf('$processing || !ids.length')`. It is read-only and never submitted, and its
   `$` keeps it apart from field names.
+* `SUPPORTED_SCHEMA_VERSION` is now `1.19`. Requires laravel-form-builder 1.22.
 
 ## 1.26.0 - 2026-11-16
 * An `#input-{name}` slot on `<Form>` replaces only the control of a field. The label with its `for`, the required
