@@ -6,6 +6,19 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 * Every repeater row has a key of its own, so its inputs stay with the row when another row is removed or the rows are
   reordered. Before, the rows were keyed by position and the state of an input could end up on the next row. The key
   is not part of the value and is not submitted. Field ids stay based on the row position.
+* A repeater with `->table()` (laravel-form-builder 1.18) shows its rows as a table: the labels, required asterisks and
+  help once in a header row, one row per item with its remove button, and errors under their cell. Each input keeps a
+  visually hidden label, so a screen reader still names it. On a narrow screen the table scrolls sideways inside its
+  box. See `docs/fields/repeater.md#table`.
+* In a repeater table each input points at the help in its column header with `aria-describedby`, the actions column
+  has a visually hidden "Actions" header, and a sub-field whose `->if()` does not hold leaves its cell empty under a
+  header that stays. In every repeater view a remove button is named after its row, such as "Remove row 3". The new
+  messages are `actions` and `removeRow` (`Remove row :number`), in English and Dutch.
+* An `aria-describedby` given to a field, for example through `field-overrides`, now lands on its input instead of
+  the wrapper around it.
+* A repeater collects the errors of its rows once per change instead of once per cell, which keeps long tables quick.
+* `columnWidth` on a sub-field sets the width of its column in a repeater table. Columns without it share the rest
+  and get at least `8rem`.
 
 ## 1.22.0 - 2026-11-16
 * Every field id carries the id of its form: `{form id}-{field name}`, and inside a repeater

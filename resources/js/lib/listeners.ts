@@ -2,8 +2,10 @@ import { useAttrs } from 'vue'
 
 type Attrs = Record<string, unknown>
 
+const CONTROL_ATTRIBUTES = ['aria-describedby']
+
 function isListener(key: string): boolean {
-    return /^on[A-Z]/.test(key) && !key.startsWith('onUpdate:')
+    return CONTROL_ATTRIBUTES.includes(key) || (/^on[A-Z]/.test(key) && !key.startsWith('onUpdate:'))
 }
 
 export function splitListeners(attrs: Attrs): { listeners: Attrs; rest: Attrs } {

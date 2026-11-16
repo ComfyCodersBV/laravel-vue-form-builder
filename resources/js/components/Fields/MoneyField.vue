@@ -110,6 +110,10 @@ defineOptions({ inheritAttrs: false })
 
 const { listeners, wrapperAttrs } = useFieldListeners()
 
+const describedBy = computed(() => [listeners()['aria-describedby'], inputId.value ? `${inputId.value}-currency` : undefined]
+    .filter(Boolean)
+    .join(' ') || undefined)
+
 const inputId = useFieldId(() => props.name)
 </script>
 
@@ -136,7 +140,7 @@ const inputId = useFieldId(() => props.name)
                 :disabled="disabled"
                 :readonly="readonly"
                 :aria-invalid="invalid || Boolean(error) ? 'true' : undefined"
-                :aria-describedby="inputId ? `${inputId}-currency` : undefined"
+                :aria-describedby="describedBy"
                 :class="cn('flex-1 text-right tabular-nums', format.symbolFirst ? 'rounded-l-none' : 'rounded-r-none', inputClassName)"
                 @update:model-value="onInput"
                 @beforeinput="onBeforeInput"
