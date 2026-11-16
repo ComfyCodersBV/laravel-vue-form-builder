@@ -12,9 +12,10 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   `$` keeps it apart from field names.
 * `SUPPORTED_SCHEMA_VERSION` is now `1.19`. Requires laravel-form-builder 1.22.
 * `<Form>` sends the `errorBag` of the schema (`FormConfig::errorBag()` of laravel-form-builder 1.22) as the
-  `errorBag` option of an Inertia submit, so field errors and the errors above the form only show the errors of that
-  bag. Two forms with the same field names on one page keep their errors apart. An `errorBag` in `options` wins. The
-  `http` transport ignores it. `FormSchema` has `errorBag`.
+  `errorBag` option of an Inertia submit, so Inertia scopes the errors in `$page.props.errors` to that bag and the form
+  reads its field errors and the errors above the form from it. The errors of two forms with the same field names on
+  one page stay apart. An `errorBag` in `options` wins, and must match the bag the server validates into. The `http`
+  transport ignores it. `FormSchema` has `errorBag`.
 
 ## 1.26.0 - 2026-11-16
 * An `#input-{name}` slot on `<Form>` replaces only the control of a field. The label with its `for`, the required

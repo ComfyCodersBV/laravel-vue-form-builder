@@ -43,8 +43,8 @@ takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` 
 
 ## Two forms with the same fields
 
-`$form->errorBag('newsletter')` keeps the validation errors of a form in their own bag, on the server and in the
-renderer, so two forms with the same field names on one page each show only their own errors. See
+`$form->errorBag('newsletter')` keeps the validation errors of a form in their own bag, on the server and in
+`$page.props.errors`, so the errors of two forms with the same field names on one page stay apart. See
 [Two forms with the same fields](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/vue-usage#two-forms-with-the-same-fields).
 
 ## Your own input, the package's label

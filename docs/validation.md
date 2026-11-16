@@ -146,6 +146,10 @@ own that overrides `failedValidation()` sets `$this->errorBag` itself. The rende
 see [Two forms with the same fields](vue-usage.md#two-forms-with-the-same-fields). Without a bag the errors stay in
 the default bag.
 
+A bag on the server needs a client that sends the same bag. `<Form>` does that from the schema. A hand-written
+`router.post()` or `useForm()` without `errorBag: 'newsletter'` gets `errors.newsletter` instead of `errors.email` and
+shows nothing on the field.
+
 ## Labels in validation messages
 
 Laravel names a field by its key in a message: "The arrival on field is required." Name fields by their label instead
