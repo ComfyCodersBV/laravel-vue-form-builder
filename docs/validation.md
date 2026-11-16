@@ -175,8 +175,9 @@ Requires `tranquil-tools/laravel-form-builder` 1.6 or newer.
 
 ## Errors outside the fields
 
-Errors on keys that match no field are shown at the top of the form. An error on an element of an array field
-(`ids.0`) shows under that field. See [Vue Usage](vue-usage.md#errors-that-belong-to-no-field).
+Errors on keys that match no field are shown at the top of the form, and so are errors of fields that are hidden by
+their `->if()` condition, after the field label. An error on an element of an array field (`ids.0`) shows under that
+field. See [Vue Usage](vue-usage.md#errors-that-belong-to-no-field).
 
 ## Inline validation
 

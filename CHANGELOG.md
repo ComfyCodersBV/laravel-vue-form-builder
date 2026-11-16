@@ -7,6 +7,10 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   string, also in a new repeater row, so a rule `array` no longer fails with a 422 when nothing is ticked. Laravel
   turned the empty string into `null`. A multiple `Select` in a new repeater row starts as an empty list too, instead
   of `null`.
+* An error of a field that is hidden by its `->if()` condition, or by the condition of its section or step, is shown
+  at the top of the form, after the field label (`Rooms: Pick a room.`), instead of under the invisible field. The form
+  no longer fails without visible feedback. Errors of visible fields, and of fields on another wizard step, stay where
+  they were. `formErrors` and the `form-errors` slot carry them too.
 
 ## 1.27.0 - 2026-11-16
 * A submit button is disabled while the form is processing, with the Inertia transport and with `transport="http"`, so

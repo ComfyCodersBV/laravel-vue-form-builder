@@ -6,7 +6,7 @@ import FormWizard from './FormWizard.vue'
 import { provideFieldIdPrefix } from '../lib/field-id'
 import { fieldSlotsKey } from '../lib/field-slots'
 import { buttonEventKey, type ButtonEventPayload } from '../lib/button-events'
-import { withoutHiddenValues } from '../lib/conditions'
+import { conditionData, formValues, visibleValueFields, withoutHiddenValues } from '../lib/conditions'
 import { carriesValue, flattenFields, formFieldsKey, holdsList } from '../lib/fields'
 import { messagesKey, resolveLocale, resolveMessages, type FormMessages } from '../lib/messages'
 import { assertSupportedSchemaVersion } from '../lib/schema-version'
@@ -371,10 +371,26 @@ function handleFieldChange(field: string, value: any): void {
     }
 }
 
-const fieldNames = computed(() => fields.flatMap((field: any) => [field?.name, field?.removeFlag].filter(Boolean) as string[]))
+function namesOf(field: Field): string[] {
+    return [field?.name, field?.removeFlag].filter((name): name is string => typeof name === 'string' && name !== '')
+}
 
-function belongsToField(key: string): boolean {
-    return fieldNames.value.some((name) => key === name || key.startsWith(`${name}.`) || key.startsWith(`${name}[`))
+function owns(name: string, key: string): boolean {
+    return key === name || key.startsWith(`${name}.`) || key.startsWith(`${name}[`)
+}
+
+function ownerOf(key: string): Field | undefined {
+    return fields.find((field: Field) => namesOf(field).some((name) => owns(name, key)))
+}
+
+const visibleFields = computed(() => new Set(visibleValueFields(props.schema.fields, conditionData(formValues(form), fields))))
+
+function firstMessage(message: any): string {
+    return Array.isArray(message) ? String(message[0]) : String(message)
+}
+
+function labelled(field: Field, message: string): string {
+    return typeof field.label === 'string' && field.label !== '' ? `${field.label}: ${message}` : message
 }
 
 const formErrors = computed<Record<string, string>>(() => {
@@ -382,8 +398,16 @@ const formErrors = computed<Record<string, string>>(() => {
 
     return Object.fromEntries(
         Object.entries(errors)
-            .filter(([key, message]) => !belongsToField(key) && !isBlank(message))
-            .map(([key, message]) => [key, Array.isArray(message) ? String(message[0]) : String(message)]),
+            .filter(([, message]) => !isBlank(message))
+            .flatMap(([key, message]) => {
+                const owner = ownerOf(key)
+
+                if (!owner) {
+                    return [[key, firstMessage(message)]]
+                }
+
+                return visibleFields.value.has(owner) ? [] : [[key, labelled(owner, firstMessage(message))]]
+            }),
     )
 })
 

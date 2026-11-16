@@ -356,6 +356,11 @@ throw ValidationException::withMessages([
 ]);
 ```
 
+An error of a field that is hidden by its `->if()` condition, or by the condition of its section or step, is shown at
+the top of the form too, after the field label: `Rooms: Pick a room.`, or the message alone when the field has no
+label. Once the field is shown, the error moves under it. A field on another step of a wizard is not hidden: the
+wizard jumps to its step instead. A sub-field hidden inside a repeater row keeps its error at the repeater.
+
 Keys of a field's nested values (`lines.0.amount` for a repeater `lines`, `title.nl` for a translatable `title`) and of
 remove flags count as that field's own. An error on an element of an array field, such as `ids.0` for checkboxes
 `ids` or `period.start` for a date period, shows under that field; an error on `ids` itself takes precedence. Replace

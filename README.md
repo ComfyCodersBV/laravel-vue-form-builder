@@ -37,7 +37,8 @@ same field on one page keep their labels apart. Field names that Inertia's `useF
 `->if('action', 'rebook')` shows a field only while `action` is `rebook`, adds `exclude_unless:action,rebook` to its
 rules and leaves it out of the payload while it is hidden, in sections, steps and repeater rows too. A submit button
 takes `->labelExpression()` and `->disabledIf()` to follow the form, such as `` `Rebook (${ids.length})` ``, and
-`$processing` tells an expression that the form is submitting. See
+`$processing` tells an expression that the form is submitting. A validation error of a hidden field is shown at the
+top of the form after the field label. See
 [Conditional visibility](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/common-options#conditional-visibility) and
 [Buttons](https://docs.comfycoders.nl/laravel-vue-form-builder/v1/fields/buttons#a-label-and-disabled-state-that-follow-the-form).
 

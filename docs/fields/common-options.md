@@ -260,6 +260,8 @@ Text::make('extra_number')
   `exclude_unless:barrels.*.kind,full`, so each row is checked against its own `kind`.
 - `<Form>` leaves the field out of the submitted data while it is hidden, inside sections, steps and repeater rows too. The
   payload then matches what the server validates.
+- A validation error of a hidden field is shown at the top of the form after the field label, since the field itself
+  is not on screen. See [Errors that belong to no field](../vue-usage.md#errors-that-belong-to-no-field).
 - The schema carries the condition as `when: { field, values }`. For a renderer older than schema version 1.18 it also
   carries an equivalent expression in `condition`, so such a renderer still hides the field.
 - A field has one condition: a later `->if()` replaces an earlier one, in either form.
