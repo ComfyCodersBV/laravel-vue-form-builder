@@ -4,16 +4,37 @@ export type FormLayout = 'stacked' | 'horizontal';
 
 export const layoutKey: InjectionKey<Ref<FormLayout>> = Symbol('form-builder-layout');
 
-export type FormColumns = 1 | 2 | 3 | 4;
+export type FormColumns = 1 | 2 | 3 | 4 | 5 | 6 | 12;
+
+export type MediumColumns = 1 | 2 | 3 | 4 | 6;
 
 export const columnsKey: InjectionKey<Ref<FormColumns>> = Symbol('form-builder-columns');
 
 const FULL_WIDTH_TYPES = ['wysiwyg', 'textarea', 'repeater', 'keyvalue', 'submit', 'button', 'delete', 'hidden', 'section', 'step'];
 
+const MAX_COLUMNS = 12;
+
+const MAX_COLUMNS_BEFORE_FULL_GRID = 6;
+
+const MEDIUM_COLUMNS: Record<FormColumns, MediumColumns> = {
+    1: 1,
+    2: 2,
+    3: 3,
+    4: 4,
+    5: 3,
+    6: 3,
+    12: 6,
+};
+
 interface SpannableField {
     type?: string;
     fullWidth?: boolean;
     columnSpan?: number | 'full';
+}
+
+export interface ResponsiveSpan {
+    medium: number;
+    large: number;
 }
 
 export function normalizeColumns(columns: unknown): FormColumns {
@@ -23,7 +44,15 @@ export function normalizeColumns(columns: unknown): FormColumns {
         return 1;
     }
 
-    return Math.min(count, 4) as FormColumns;
+    if (count >= MAX_COLUMNS) {
+        return MAX_COLUMNS;
+    }
+
+    return Math.min(count, MAX_COLUMNS_BEFORE_FULL_GRID) as FormColumns;
+}
+
+export function mediumColumnsOf(columns: FormColumns): MediumColumns {
+    return MEDIUM_COLUMNS[columns];
 }
 
 export function spanOf(field: SpannableField, columns: FormColumns): number {
@@ -36,4 +65,13 @@ export function spanOf(field: SpannableField, columns: FormColumns): number {
     }
 
     return FULL_WIDTH_TYPES.includes(field.type ?? '') ? columns : 1;
+}
+
+export function responsiveSpanOf(span: number, columns: FormColumns): ResponsiveSpan {
+    const medium = mediumColumnsOf(columns);
+
+    return {
+        medium: Math.max(1, Math.min(medium, Math.ceil((span * medium) / columns))),
+        large: span,
+    };
 }

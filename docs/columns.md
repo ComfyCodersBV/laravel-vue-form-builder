@@ -5,7 +5,7 @@ column below the `md` breakpoint.
 
 ## On the whole form
 
-Set the columns of the whole form in PHP with `FormConfig::columns(n)`, `1` to `4`; the schema carries them as
+Set the columns of the whole form in PHP with `FormConfig::columns(n)`, `1` to `6` or `12`; the schema carries them as
 `columns`:
 
 ```php
@@ -55,7 +55,7 @@ stacks its fields again. See [Sections](fields/sections.md#columns).
 
 | Method | Effect |
 |---|---|
-| `->columnSpan(n)` | the field takes `n` columns; more than there are means the whole row |
+| `->columnSpan(n)` | the field takes `n` columns (up to `12`); more than there are means the whole row |
 | `->columnSpanFull()` | the field takes the whole row |
 
 Textareas, WYSIWYG editors, repeaters, key-value fields, buttons, hidden fields and sections take the whole row unless
@@ -65,8 +65,25 @@ they set a `->columnSpan()`. From the Vue side, `fullWidth` and `columnSpan` in 
 <Form :schema="form" :columns="2" :field-overrides="{ notes: { fullWidth: true } }" />
 ```
 
-The grid uses `md:grid-cols-2` to `md:grid-cols-4` and `md:col-span-2` to `md:col-span-4`. They live in the package's
-Vue components, so the `@source` line from [Installation](installation.md) picks them up.
+## Breakpoints
+
+Every grid is a single column below `md`. From `md` up to `lg` a wide grid shows fewer columns, so its fields keep room:
+
+| `columns` | from `md` | from `lg` |
+|---|---|---|
+| `1` to `4` | `1` to `4` | same as `md` |
+| `5` | 3 | 5 |
+| `6` | 3 | 6 |
+| `12` | 6 | 12 |
+
+Other counts are rounded down to one of these: `7` to `11` become `6`, more than `12` becomes `12`, in PHP and in the
+renderer alike. In the narrower `md` grid a span shrinks in proportion and rounds up: in a 12-column grid
+`->columnSpan(3)` takes 2 of the 6 columns from `md` and 3 from `lg`, `->columnSpan(8)` takes 4 and 8.
+
+The grid uses `md:grid-cols-2` to `md:grid-cols-6`, `lg:grid-cols-5`, `lg:grid-cols-6` and `lg:grid-cols-12`, and
+`md:col-span-2` to `md:col-span-6` and `lg:col-span-2` to `lg:col-span-12`. They live in the package's Vue components,
+so the `@source` line from [Installation](installation.md) picks them up.
 
 Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer for sections and
-spans; form-level columns 3 and 4 only need the renderer.
+spans; form-level columns 3 and 4 only need the renderer. Columns `5`, `6` and `12` and spans above `4` need
+laravel-form-builder 1.18 and laravel-vue-form-builder 1.23; an older core cuts them back to `4`.

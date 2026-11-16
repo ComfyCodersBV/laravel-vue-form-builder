@@ -34,6 +34,15 @@ Text::make('street')->columnSpan(2)
 Textarea::make('notes')->columnSpanFull()
 ```
 
+## Column width
+
+`->columnWidth('8rem')` sets the width of the field's column in a [repeater table](repeater.md#table). It takes a
+number with `px`, `rem`, `em`, `ch` or `%`, such as `0.5rem` (not `.5rem` or `0`); anything else throws an `InvalidArgumentException`. Other layouts ignore it.
+
+```php
+Number::make('hanks')->label('Hanks')->columnWidth('6rem')
+```
+
 ## Default value
 
 Sets the initial value when the form loads (before any `fill()` data):

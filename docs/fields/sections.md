@@ -41,8 +41,9 @@ public function fields(): array
 
 ## Columns
 
-`->columns(n)` puts the fields of a section side by side, in up to four columns. Below the `md` breakpoint they stack
-in a single column again. A field takes more than one column with `->columnSpan(n)`, or the whole row with
+`->columns(n)` puts the fields of a section side by side, in `1` to `6` or `12` columns. Below the `md` breakpoint they
+stack in a single column again, and `5`, `6` and `12` columns show fewer columns up to the `lg` breakpoint, see
+[Columns](../columns.md#breakpoints). A field takes more than one column with `->columnSpan(n)`, or the whole row with
 `->columnSpanFull()`:
 
 ```php
@@ -66,7 +67,8 @@ Section::make()
 
 See [Columns](../columns.md) for columns on the whole form.
 
-Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer.
+Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer; `5`, `6` and `12` columns
+need laravel-form-builder 1.18 and laravel-vue-form-builder 1.23.
 
 ## Steps
 

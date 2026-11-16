@@ -34,7 +34,8 @@ public function fields(): array
 }
 ```
 
-- A `Step` is a `Section`: it takes `title()`, `description()` and `columns()`, and its fields' rules are part of the
+- A `Step` is a `Section`: it takes `title()`, `description()` and `columns()` (see
+  [Columns](columns.md#breakpoints)), and its fields' rules are part of the
   form's `rules()` as usual. The name (`when`) identifies the step for the slots below; without one the steps are
   called `step-1`, `step-2` and so on.
 - Fields outside the steps are shown on the last step, below its own fields. A `Submit` field outside the steps is not

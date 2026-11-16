@@ -24,6 +24,8 @@ The component uses Inertia's `useForm()` internally and handles submission, erro
 Every field gets the id `{form id}-{field name}`, and its label, option and help ids follow. A field `email` in a form
 with `->id('login')` gets `id="login-email"`, so two forms with the same field on one page keep their labels apart.
 Inside a repeater the row comes in between: `{form id}-{repeater}-{row}-{field}`, for example `order-lines-0-amount`.
+The row is its position, so after removing or moving a row the ids of the rows below it shift along. The row elements
+themselves stay with their row, see [Repeater](fields/repeater.md#row-keys).
 
 The form id is the one from `->id()`. A form class without it uses its class name in snake case (`ContactForm` becomes
 `contact_form`). A bare `FormConfig::make()` without an id gets an id Vue generates (`useId()`), which differs per form
@@ -174,11 +176,11 @@ defineProps<{ form: FormSchema }>();
 - `fields` — the array of field schemas from the form config
 - `form` (optional) — the current form state object (for conditional field visibility)
 - `onFieldChange` (optional) — same callback as on `Form.vue`
-- `columns` (optional) — `1` (default) to `4`, see below
+- `columns` (optional) — `1` (default) to `6`, or `12`, see below
 
 ## Two columns
 
-Pass `columns="2"` to lay the fields out in a responsive two-column grid (`3` and `4` work too, see [Columns](columns.md)). Below the `md` breakpoint the form stays a single column.
+Pass `columns="2"` to lay the fields out in a responsive two-column grid (`3` to `6` and `12` work too, see [Columns](columns.md)). Below the `md` breakpoint the form stays a single column.
 
 ```vue
 <template>

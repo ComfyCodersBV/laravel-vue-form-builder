@@ -29,6 +29,8 @@ export interface FormMessages {
     addItem: string;
     moveUp: string;
     moveDown: string;
+    removeRow: string;
+    actions: string;
     unsavedChanges: string;
     expand: string;
     collapse: string;
@@ -86,6 +88,8 @@ export const en: FormMessages = {
     addItem: 'Add item',
     moveUp: 'Move up',
     moveDown: 'Move down',
+    removeRow: 'Remove row :number',
+    actions: 'Actions',
     unsavedChanges: 'Unsaved changes',
     expand: 'Expand',
     collapse: 'Collapse',
@@ -143,6 +147,8 @@ export const nl: FormMessages = {
     addItem: 'Item toevoegen',
     moveUp: 'Omhoog',
     moveDown: 'Omlaag',
+    removeRow: 'Rij :number verwijderen',
+    actions: 'Acties',
     unsavedChanges: 'Niet-opgeslagen wijzigingen',
     expand: 'Uitklappen',
     collapse: 'Inklappen',

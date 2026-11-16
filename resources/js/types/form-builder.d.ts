@@ -92,6 +92,7 @@ export interface Field {
     disabledDates?: DisabledDate[]
     columns?: FormColumns
     columnSpan?: number | 'full'
+    columnWidth?: string
     linkTarget?: string
     currentFiles?: CurrentFile[]
     emails?: boolean
