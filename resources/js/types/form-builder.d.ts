@@ -109,6 +109,8 @@ export interface Field {
     hourFrom?: number
     hourTo?: number
     tiles?: boolean
+    optionColumns?: Array<{ key: string; label: string }>
+    selectAll?: boolean
 }
 
 export interface CurrentFile {

@@ -57,6 +57,9 @@ export interface FormMessages {
     checkingStep: string;
     stepCheckFailed: string;
     required: string;
+    selectAll: string;
+    selectNone: string;
+    selectOption: string;
 }
 
 export const en: FormMessages = {
@@ -116,6 +119,9 @@ export const en: FormMessages = {
     checkingStep: 'Checking...',
     stepCheckFailed: 'Checking this step failed, try again',
     required: 'required',
+    selectAll: 'Select all',
+    selectNone: 'Select none',
+    selectOption: 'Select',
 };
 
 export const nl: FormMessages = {
@@ -175,6 +181,9 @@ export const nl: FormMessages = {
     checkingStep: 'Controleren...',
     stepCheckFailed: 'Controleren van deze stap is mislukt, probeer het opnieuw',
     required: 'verplicht',
+    selectAll: 'Alles kiezen',
+    selectNone: 'Niets kiezen',
+    selectOption: 'Kiezen',
 };
 
 export const DEFAULT_LOCALE = 'en';

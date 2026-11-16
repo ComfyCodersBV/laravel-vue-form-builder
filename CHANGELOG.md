@@ -7,6 +7,14 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   and the multi-select. A row with `separator: true` (`Select::separator()`) shows a divider line, which is hidden
   while searching. Option rows without the field's `optionValue` and `optionLabel` keys fall back to `value` and
   `label`, and a map takes an object as its value. See `docs/fields/selection-fields.md#disabled-options-and-separators`.
+* Checkboxes with `optionColumns` show their options as rows of a table with a column per key and a checkbox named
+  after the option label. `selectAll` adds "Select all" and "Select none" buttons that leave disabled options alone.
+  The new messages are `selectAll`, `selectNone` and `selectOption`, in English and Dutch. A map of checkbox options
+  takes an object as its value. See `docs/fields/selection-fields.md#table`.
+* Checkboxes read the value and label of an option row from `optionValue` and `optionLabel`, as documented, and fall
+  back to `value` / `id` and `label` / `name`. Before, they only read `value` and `label`.
+* The label of a checkbox group names the group (`role="group"` with `aria-labelledby`) instead of pointing at an id
+  that did not exist.
 * The label of a multi-select points at its trigger button instead of an id that did not exist.
 
 ## 1.23.0 - 2026-11-16
