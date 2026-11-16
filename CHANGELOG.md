@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.27.0 - 2026-11-16
+* A submit button is disabled while the form is processing, with the Inertia transport and with `transport="http"`, so
+  a double click no longer submits twice. A `DeleteButton` and a `Button` with a `deleteUrl` are disabled while the
+  form is processing too, and while their own `DELETE` request is on its way, the confirm button in their dialog
+  included. Other buttons stay enabled.
+
 ## 1.26.0 - 2026-11-16
 * An `#input-{name}` slot on `<Form>` replaces only the control of a field. The label with its `for`, the required
   asterisk, the help text, the error, the theme and the column span stay the package's. The slot gets `id`, `name`,
