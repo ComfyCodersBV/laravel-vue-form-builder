@@ -213,6 +213,19 @@ Event listeners and Vue bindings cannot come from PHP. A key starting with `@`, 
 <Form :schema="form" :field-overrides="{ website: { onBlur: checkWebsite } }" />
 ```
 
+## Conditional setters
+
+Every field has `->when()` and `->unless()` (Laravel's `Conditionable`, since `laravel-form-builder` 1.23), so a
+setter can depend on a server-side condition without breaking the chain. Setters such as `->help()` do not take
+`null`:
+
+```php
+Password::make('password')
+    ->when($hasPassword, fn (Password $field) => $field->help('The stored password is kept.'))
+```
+
+The condition runs once, while the form is built. To show or hide a field on what the user fills in, use `->if()`.
+
 ## Conditional visibility
 
 A field can depend on another field in two ways:

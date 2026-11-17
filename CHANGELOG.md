@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.27.2 - 2026-11-17
+* Documents `->when()` and `->unless()` on fields, so a setter such as `->help()` can depend on a server-side
+  condition without passing `null`. Requires laravel-form-builder 1.23.
+
 ## 1.27.1 - 2026-11-16
 * `Checkboxes` without a value or a default, or with a stored `null`, start as an empty list instead of an empty
   string, also in a new repeater row, so a rule `array` no longer fails with a 422 when nothing is ticked. Laravel
