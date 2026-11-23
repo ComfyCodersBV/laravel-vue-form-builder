@@ -169,8 +169,8 @@ DateTime::make('starts_at')
     ->hours(7, 23)    // hour buttons 07 to 23 (default 0 to 23)
 ```
 
-- `minDate`, `maxDate`, `disabledWeekdays`, `disabledDates`, `weekStartsOn`, `locale` and `timezone` work as on the
-  regular picker. The value that is submitted is the same as well.
+- `minDate`, `maxDate`, `disabledWeekdays`, `disabledDates`, `weekStartsOn`, `weekNumbers`, `locale` and `timezone`
+  work as on the regular picker. The value that is submitted is the same as well.
 - Picking a day while no time is chosen yet fills in the first hour button (`00:00`, or the start of `hours()`) and
   opens the time sheet right after, so the value always matches what the buttons show.
 - A field without a `required` rule gets a **Wissen** ("Clear") button in both sheets that empties it. Set it
@@ -222,6 +222,31 @@ Set the first day of the week in the calendar. `0` = Sunday (default), `1` = Mon
 Date::make('starts_on')
     ->weekStartsOn(1) // Monday
 ```
+
+### Week numbers
+
+Show the ISO 8601 week number in front of every row of the calendar, in the regular and the touch picker:
+
+```php
+Date::make('starts_on')
+    ->weekStartsOn(1)
+    ->weekNumbers()
+```
+
+The number follows ISO 8601 also around New Year: 29 December 2025 is in week 1, 1 January 2027 in week 53. With a
+Sunday start a row shows the week of its Monday to Saturday. The column heading is the `week` message (`Wk`).
+
+Turn on a Monday start and week numbers for every date field of the app in `config/form-builder.php`;
+`->weekStartsOn()` and `->weekNumbers(false)` on a field win:
+
+```php
+'dates' => [
+    'week_starts_on' => 1,
+    'week_numbers' => true,
+],
+```
+
+Requires `tranquil-tools/laravel-form-builder` 1.24 and `laravel-vue-form-builder` 1.28 or newer.
 
 ### Date format
 

@@ -14,6 +14,7 @@ interface DateFieldProps extends Field {
   minDate?: string
   maxDate?: string
   weekStartsOn?: number
+  weekNumbers?: boolean
   timezone?: string
   serverTimezone?: string
   disabledWeekdays?: number[]
@@ -31,6 +32,7 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   minDate: undefined,
   maxDate: undefined,
   weekStartsOn: 0,
+  weekNumbers: false,
   disabled: false,
   readonly: false,
   timezone: undefined,
@@ -84,6 +86,7 @@ const inputId = useFieldId(() => props.name)
       :min-date="props.minDate"
       :max-date="props.maxDate"
       :week-starts-on="props.weekStartsOn"
+      :week-numbers="props.weekNumbers"
       :format="props.format || 'locale'"
       :locale="props.locale"
       :disabled="!!props.disabled"
@@ -111,6 +114,7 @@ const inputId = useFieldId(() => props.name)
       :min-date="props.minDate"
       :max-date="props.maxDate"
       :week-starts-on="props.weekStartsOn"
+      :week-numbers="props.weekNumbers"
       :format="props.format || 'locale'"
       :locale="props.locale"
       :disabled="!!props.disabled"

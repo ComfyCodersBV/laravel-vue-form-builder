@@ -8,7 +8,7 @@ import { resolveTimezone } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
 import { formatDate, formatHasTime } from '../../../lib/date-format'
 import { cn } from '../../../lib/utils'
-import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels as labelsOfWeek, type DateValueContext } from '../../../lib/date-value'
+import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekNumberOfRow, weekdayLabels as labelsOfWeek, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
   id?: string
@@ -20,6 +20,7 @@ interface Props {
   minDate?: string
   maxDate?: string
   weekStartsOn?: number // 0=Sun, 1=Mon
+  weekNumbers?: boolean
   locale?: string
   disabled?: boolean
   readonly?: boolean
@@ -38,6 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
   minDate: undefined,
   maxDate: undefined,
   weekStartsOn: 0,
+  weekNumbers: false,
   locale: undefined,
   disabled: false,
   readonly: false,
@@ -256,11 +258,13 @@ defineOptions({ inheritAttrs: false })
         <Button v-if="props.range" variant="outline" size="sm" @click="() => { const e=new Date(); const s=new Date(); s.setDate(e.getDate()-6); selectedStart=s; selectedEnd=e; emit('update:modelValue', { start: formatISO(s, props.enableTime), end: formatISO(e, props.enableTime) }) }">{{ messages.lastSevenDays }}</Button>
         <Button v-if="props.range" variant="outline" size="sm" @click="() => { const a=new Date(viewYear, viewMonth, 1); const b=new Date(viewYear, viewMonth+1, 0); selectedStart=a; selectedEnd=b; emit('update:modelValue', { start: formatISO(a, props.enableTime), end: formatISO(b, props.enableTime) }) }">{{ messages.thisMonth }}</Button>
       </div>
-      <div class="grid grid-cols-7 gap-1 text-xs text-muted-foreground mb-1">
+      <div class="grid gap-1 text-xs text-muted-foreground mb-1" :class="props.weekNumbers ? 'grid-cols-8' : 'grid-cols-7'">
+        <span v-if="props.weekNumbers" class="text-center" data-week-number-heading>{{ messages.week }}</span>
         <span v-for="label in weekdayLabels" :key="label" class="text-center">{{ label }}</span>
       </div>
-      <div class="grid grid-cols-7 gap-1">
+      <div class="grid gap-1" :class="props.weekNumbers ? 'grid-cols-8' : 'grid-cols-7'">
         <template v-for="(row, i) in weeks" :key="'r-'+i">
+          <span v-if="props.weekNumbers" class="h-8 w-8 flex items-center justify-center text-xs tabular-nums text-muted-foreground" data-week-number>{{ weekNumberOfRow(row) }}</span>
           <template v-for="cell in row" :key="cell.date.toISOString()">
             <button
               type="button"

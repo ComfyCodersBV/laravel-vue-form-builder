@@ -140,3 +140,20 @@ export function weekdayLabels(locale: string | undefined, weekStartsOn: number):
 
     return weekStartsOn === 1 ? [...labels.slice(1), labels[0]] : labels
 }
+
+const MILLISECONDS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
+
+function thursdayOfWeek(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 3 - ((date.getDay() + 6) % 7))
+}
+
+export function isoWeekNumber(date: Date): number {
+    const thursday = thursdayOfWeek(date)
+    const firstThursday = thursdayOfWeek(new Date(thursday.getFullYear(), 0, 4))
+
+    return 1 + Math.round((thursday.getTime() - firstThursday.getTime()) / MILLISECONDS_PER_WEEK)
+}
+
+export function weekNumberOfRow(row: Array<{ date: Date }>): number {
+    return isoWeekNumber(row[3].date)
+}

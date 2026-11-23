@@ -8,7 +8,7 @@ import { useFormMessages } from '../../../lib/messages'
 import { padTime as pad, useAnchoredPicker } from '../../../lib/touch-picker'
 import { resolveTimezone, toDisplayWallClock, toZonedIso, wallClockAt, wallClockOfDate, type WallClock } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
-import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
+import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekNumberOfRow, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
   id?: string
@@ -19,6 +19,7 @@ interface Props {
   minDate?: string
   maxDate?: string
   weekStartsOn?: number
+  weekNumbers?: boolean
   locale?: string
   disabled?: boolean
   readonly?: boolean
@@ -42,6 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
   minDate: undefined,
   maxDate: undefined,
   weekStartsOn: 0,
+  weekNumbers: false,
   locale: undefined,
   disabled: false,
   readonly: false,
@@ -263,6 +265,7 @@ function pickMinute(value: number): void {
   publish()
 }
 
+const gridClass = computed(() => props.weekNumbers ? 'grid-cols-8' : 'grid-cols-7')
 const dayClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-lg')
 const actionClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-base')
 const navClass = computed(() => anchored.value ? 'size-9' : 'size-12')
@@ -304,12 +307,19 @@ defineOptions({ inheritAttrs: false })
         </Button>
       </div>
 
-      <div class="grid grid-cols-7 gap-1 text-center font-medium text-muted-foreground" :class="anchored ? 'text-xs' : 'text-sm'">
+      <div class="grid gap-1 text-center font-medium text-muted-foreground" :class="[anchored ? 'text-xs' : 'text-sm', gridClass]">
+        <span v-if="props.weekNumbers" data-week-number-heading>{{ messages.week }}</span>
         <span v-for="weekday in weekdays" :key="weekday">{{ weekday }}</span>
       </div>
 
-      <div class="grid grid-cols-7 gap-1">
+      <div class="grid gap-1" :class="gridClass">
         <template v-for="(row, i) in weeks" :key="`row-${i}`">
+          <span
+            v-if="props.weekNumbers"
+            class="flex items-center justify-center tabular-nums text-muted-foreground"
+            :class="anchored ? 'h-9 text-xs' : 'h-12 text-sm'"
+            data-week-number
+          >{{ weekNumberOfRow(row) }}</span>
           <button
             v-for="cell in row"
             :key="cell.date.toISOString()"

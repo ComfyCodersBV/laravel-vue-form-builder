@@ -5,6 +5,10 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
 ## 1.28.0 - 2026-11-23
 * The regular date picker rings today in the primary colour, like the touch picker, with `aria-current="date"`. A
   selected day, and in a range the days between, show their selection instead of the ring, also in the touch picker.
+* `weekNumbers: true` (`Date::make()->weekNumbers()`, laravel-form-builder 1.24) shows the ISO 8601 week number in
+  front of every calendar row, in the regular and the touch picker. `DatePicker` and `TouchDatePicker` take it as the
+  `week-numbers` prop. The column heading is the new `week` message (`Wk`). `isoWeekNumber()` is exported from
+  `@form-builder/types/dates`.
 
 ## 1.27.2 - 2026-11-17
 * Documents `->when()` and `->unless()` on fields, so a setter such as `->help()` can depend on a server-side
