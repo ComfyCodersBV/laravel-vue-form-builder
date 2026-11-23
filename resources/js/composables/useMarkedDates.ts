@@ -12,6 +12,8 @@ export function useMarkedDates(source: () => MarkedDateSource): {
         const url = source().markedDatesUrl
 
         if (!url) {
+            fetched.value = []
+
             return
         }
 

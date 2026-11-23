@@ -73,7 +73,9 @@ export function markedDayClass(marked: MarkedDate | null, classes: Record<string
         return ''
     }
 
-    return classes[marked.variant ?? 'default'] ?? classes.default ?? ''
+    const variant = marked.variant ?? 'default'
+
+    return Object.hasOwn(classes, variant) ? classes[variant] : classes.default ?? ''
 }
 
 async function requestMarkedDates(url: string): Promise<MarkedDate[]> {
@@ -102,7 +104,11 @@ export function fetchMarkedDates(url: string): Promise<MarkedDate[]> {
     const request = requestMarkedDates(url)
 
     requests.set(url, request)
-    request.catch(() => requests.delete(url))
+    request.catch(() => {
+        if (requests.get(url) === request) {
+            requests.delete(url)
+        }
+    })
 
     return request
 }
