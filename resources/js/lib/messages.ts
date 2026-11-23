@@ -6,6 +6,7 @@ export interface FormMessages {
     previousMonth: string;
     nextMonth: string;
     today: string;
+    week: string;
     lastSevenDays: string;
     thisMonth: string;
     hours: string;
@@ -68,6 +69,7 @@ export const en: FormMessages = {
     previousMonth: 'Previous month',
     nextMonth: 'Next month',
     today: 'Today',
+    week: 'Wk',
     lastSevenDays: 'Last 7 days',
     thisMonth: 'This month',
     hours: 'Hours',
@@ -130,6 +132,7 @@ export const nl: FormMessages = {
     previousMonth: 'Vorige maand',
     nextMonth: 'Volgende maand',
     today: 'Vandaag',
+    week: 'Wk',
     lastSevenDays: 'Laatste 7 dagen',
     thisMonth: 'Deze maand',
     hours: 'Uren',

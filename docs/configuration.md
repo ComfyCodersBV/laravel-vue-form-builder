@@ -41,6 +41,8 @@ that off app-wide; a field with `->markRequired()` is still marked. See
     'display_format' => null,
     'timezone' => null,
     'validate_bounds' => false,
+    'week_starts_on' => null,
+    'week_numbers' => false,
 ],
 ```
 
@@ -54,6 +56,10 @@ See [Timezone](fields/date-time.md#timezone).
 
 `validate_bounds` makes every date field validate its `minDate` and `maxDate` on the server too, see
 [Min and max date](fields/date-time.md#min-and-max-date).
+
+`week_starts_on` (`0` Sunday or `1` Monday) and `week_numbers` set the week start and the ISO week numbers of every date
+field without its own `->weekStartsOn()` or `->weekNumbers()`. `null` keeps the Sunday start, see
+[Week numbers](fields/date-time.md#week-numbers).
 
 ---
 

@@ -5,10 +5,13 @@ import { Button } from '../button/index'
 import TouchPickerSurface from './TouchPickerSurface.vue'
 import TouchTimeChoices from './TouchTimeChoices.vue'
 import { useFormMessages } from '../../../lib/messages'
+import { cn } from '../../../lib/utils'
 import { padTime as pad, useAnchoredPicker } from '../../../lib/touch-picker'
 import { resolveTimezone, toDisplayWallClock, toZonedIso, wallClockAt, wallClockOfDate, type WallClock } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
-import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
+import { markedDayClass, markedVariantOf, type MarkedDate } from '../../../lib/marked-dates'
+import { useMarkedDates } from '../../../composables/useMarkedDates'
+import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekNumberOfRow, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
   id?: string
@@ -19,6 +22,7 @@ interface Props {
   minDate?: string
   maxDate?: string
   weekStartsOn?: number
+  weekNumbers?: boolean
   locale?: string
   disabled?: boolean
   readonly?: boolean
@@ -26,6 +30,8 @@ interface Props {
   serverTimezone?: string
   disabledWeekdays?: number[]
   disabledDates?: DisabledDate[]
+  markedDates?: MarkedDate[]
+  markedDatesUrl?: string
   minuteStep?: number
   hourFrom?: number
   hourTo?: number
@@ -42,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
   minDate: undefined,
   maxDate: undefined,
   weekStartsOn: 0,
+  weekNumbers: false,
   locale: undefined,
   disabled: false,
   readonly: false,
@@ -49,6 +56,8 @@ const props = withDefaults(defineProps<Props>(), {
   serverTimezone: undefined,
   disabledWeekdays: () => [],
   disabledDates: () => [],
+  markedDates: () => [],
+  markedDatesUrl: undefined,
   minuteStep: 15,
   hourFrom: 0,
   hourTo: 23,
@@ -95,6 +104,17 @@ const viewMonth = ref(initial.getMonth())
 
 const dateOpen = ref(false)
 const timeOpen = ref(false)
+const marks = useMarkedDates(() => props)
+const markedClasses: Record<string, string> = {
+  default: 'bg-primary/15 font-medium',
+  muted: 'border border-dashed border-primary/60 text-muted-foreground',
+}
+
+watch(dateOpen, (isOpen) => {
+  if (isOpen) {
+    marks.load()
+  }
+})
 
 function showMonthOf(date: Date): void {
   viewYear.value = date.getFullYear()
@@ -248,7 +268,18 @@ function clear(): void {
 }
 
 function longDate(date: Date): string {
-  return date.toLocaleDateString(calendarLocale.value, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const label = date.toLocaleDateString(calendarLocale.value, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const marked = marks.markOf(date)?.label
+
+  return marked ? `${label}, ${marked}` : label
+}
+
+function highlightClass(date: Date): string {
+  if (isSameDay(day.value, date)) {
+    return 'bg-primary text-primary-foreground'
+  }
+
+  return cn(markedDayClass(marks.markOf(date), markedClasses), isSameDay(today(), date) ? 'font-bold ring-2 ring-primary ring-inset' : '')
 }
 
 function pickHour(value: number): void {
@@ -263,6 +294,7 @@ function pickMinute(value: number): void {
   publish()
 }
 
+const gridClass = computed(() => props.weekNumbers ? 'grid-cols-8' : 'grid-cols-7')
 const dayClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-lg')
 const actionClass = computed(() => anchored.value ? 'h-9 text-sm' : 'h-12 text-base')
 const navClass = computed(() => anchored.value ? 'size-9' : 'size-12')
@@ -304,12 +336,19 @@ defineOptions({ inheritAttrs: false })
         </Button>
       </div>
 
-      <div class="grid grid-cols-7 gap-1 text-center font-medium text-muted-foreground" :class="anchored ? 'text-xs' : 'text-sm'">
+      <div class="grid gap-1 text-center font-medium text-muted-foreground" :class="[anchored ? 'text-xs' : 'text-sm', gridClass]">
+        <span v-if="props.weekNumbers" data-week-number-heading>{{ messages.week }}</span>
         <span v-for="weekday in weekdays" :key="weekday">{{ weekday }}</span>
       </div>
 
-      <div class="grid grid-cols-7 gap-1">
+      <div class="grid gap-1" :class="gridClass">
         <template v-for="(row, i) in weeks" :key="`row-${i}`">
+          <span
+            v-if="props.weekNumbers"
+            class="flex items-center justify-center tabular-nums text-muted-foreground"
+            :class="anchored ? 'h-9 text-xs' : 'h-12 text-sm'"
+            data-week-number
+          >{{ weekNumberOfRow(row) }}</span>
           <button
             v-for="cell in row"
             :key="cell.date.toISOString()"
@@ -320,13 +359,14 @@ defineOptions({ inheritAttrs: false })
             :aria-current="isSameDay(today(), cell.date) ? 'date' : undefined"
             :aria-label="longDate(cell.date)"
             :aria-pressed="isSameDay(day, cell.date)"
-            :class="[
+            :data-marked="markedVariantOf(marks.markOf(cell.date))"
+            :title="marks.markOf(cell.date)?.label"
+            :class="cn(
               dayClass,
               cell.inMonth ? 'text-foreground' : 'text-muted-foreground/60',
-              isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : '',
-              isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : '',
               isDisabled(cell.date) ? 'cursor-not-allowed line-through opacity-40' : 'cursor-pointer hover:bg-accent',
-            ]"
+              highlightClass(cell.date),
+            )"
             @click="pickDay(cell.date)"
           >
             {{ cell.date.getDate() }}

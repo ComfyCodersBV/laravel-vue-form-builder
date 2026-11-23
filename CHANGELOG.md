@@ -2,6 +2,23 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.28.0 - 2026-11-23
+* The regular date picker rings today in the primary colour, like the touch picker, with `aria-current="date"`. A
+  selected day, and in a range the days between, show their selection instead of the ring, also in the touch picker.
+* `weekNumbers: true` (`Date::make()->weekNumbers()`, laravel-form-builder 1.24) shows the ISO 8601 week number in
+  front of every calendar row, in the regular and the touch picker. `DatePicker` and `TouchDatePicker` take it as the
+  `week-numbers` prop. The column heading is the new `week` message (`Wk`). `isoWeekNumber()` is exported from
+  `@form-builder/types/dates`.
+* `markedDatesUrl` (`Date::make()->markedDatesUrl()`, laravel-form-builder 1.24) marks days in the calendar. The picker
+  fetches the URL the first time it opens and expects a JSON list of `{from, to?, variant?, label?}`. The response is
+  kept per URL for the page visit and shared by every picker; a failed request is tried again on the next open.
+  `forgetMarkedDates()` clears it. `markedDates` takes a fixed list in the same shape. Marked days stay selectable, show
+  the `label` as tooltip (and in the screen reader label of the touch picker) and carry `data-marked="<variant>"`: the
+  default variant fills the day with a light primary tint, `muted` gives it a dashed outline. Both pickers support it.
+  `MarkedDate`, `markedDateOn()` and `normalizeMarkedDates()` are exported from `@form-builder/types/dates`.
+* Requires `tranquil-tools/laravel-form-builder` `^1.24`, the version that sends `weekNumbers`, `markedDates` and
+  `markedDatesUrl`.
+
 ## 1.27.2 - 2026-11-17
 * Documents `->when()` and `->unless()` on fields, so a setter such as `->help()` can depend on a server-side
   condition without passing `null`. Requires laravel-form-builder 1.23.

@@ -7,6 +7,7 @@ import { DatePicker, TouchDatePicker } from '../ui/date-picker'
 import { ref, watch, computed } from 'vue'
 import { useFieldId } from '../../lib/field-id'
 import type { DisabledDate } from '../../lib/dates'
+import type { MarkedDate } from '../../lib/marked-dates'
 
 interface DateFieldProps extends Field {
   enableTime?: boolean
@@ -14,10 +15,13 @@ interface DateFieldProps extends Field {
   minDate?: string
   maxDate?: string
   weekStartsOn?: number
+  weekNumbers?: boolean
   timezone?: string
   serverTimezone?: string
   disabledWeekdays?: number[]
   disabledDates?: DisabledDate[]
+  markedDates?: MarkedDate[]
+  markedDatesUrl?: string
   touch?: boolean
   minuteStep?: number
   hourFrom?: number
@@ -31,12 +35,15 @@ const props = withDefaults(defineProps<DateFieldProps>(), {
   minDate: undefined,
   maxDate: undefined,
   weekStartsOn: 0,
+  weekNumbers: false,
   disabled: false,
   readonly: false,
   timezone: undefined,
   serverTimezone: undefined,
   disabledWeekdays: () => [],
   disabledDates: () => [],
+  markedDates: () => [],
+  markedDatesUrl: undefined,
   touch: false,
   minuteStep: 15,
   hourFrom: 0,
@@ -84,6 +91,7 @@ const inputId = useFieldId(() => props.name)
       :min-date="props.minDate"
       :max-date="props.maxDate"
       :week-starts-on="props.weekStartsOn"
+      :week-numbers="props.weekNumbers"
       :format="props.format || 'locale'"
       :locale="props.locale"
       :disabled="!!props.disabled"
@@ -92,6 +100,8 @@ const inputId = useFieldId(() => props.name)
       :server-timezone="props.serverTimezone"
       :disabled-weekdays="props.disabledWeekdays"
       :disabled-dates="props.disabledDates"
+      :marked-dates="props.markedDates"
+      :marked-dates-url="props.markedDatesUrl"
       :minute-step="props.minuteStep"
       :hour-from="props.hourFrom"
       :hour-to="props.hourTo"
@@ -111,6 +121,7 @@ const inputId = useFieldId(() => props.name)
       :min-date="props.minDate"
       :max-date="props.maxDate"
       :week-starts-on="props.weekStartsOn"
+      :week-numbers="props.weekNumbers"
       :format="props.format || 'locale'"
       :locale="props.locale"
       :disabled="!!props.disabled"
@@ -119,6 +130,8 @@ const inputId = useFieldId(() => props.name)
       :server-timezone="props.serverTimezone"
       :disabled-weekdays="props.disabledWeekdays"
       :disabled-dates="props.disabledDates"
+      :marked-dates="props.markedDates"
+      :marked-dates-url="props.markedDatesUrl"
     />
 
     <template v-if="props.name && !props.range">
