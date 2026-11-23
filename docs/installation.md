@@ -86,7 +86,7 @@ is enough for the public types and the date helpers:
 | Import | Holds |
 |---|---|
 | `@form-builder/types/form-builder` | `FormSchema`, `Field`, `FieldValue`, `DisabledDate`, `FormColumns`, `FormLayout`, `FormTheme`, `FieldSlotProps`, `InputSlotProps`, `WysiwygEditorOptions`, `FormMessages`, `FormMessagesConfig` and the `HttpForm*` types |
-| `@form-builder/types/dates` | `isUnavailableDate()`, `calendarDateOf()`, `isoWeekNumber()`, `formatDate()`, `formatHasTime()`, `parseFormattedDate()` and `DisabledDate` |
+| `@form-builder/types/dates` | `isUnavailableDate()`, `calendarDateOf()`, `isoWeekNumber()`, `markedDateOn()`, `normalizeMarkedDates()`, `formatDate()`, `formatHasTime()`, `parseFormattedDate()`, `DisabledDate` and `MarkedDate` |
 
 ```ts
 import type { DisabledDate, FormSchema } from '@form-builder/types/form-builder';

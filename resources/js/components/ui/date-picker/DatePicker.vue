@@ -8,6 +8,8 @@ import { resolveTimezone } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
 import { formatDate, formatHasTime } from '../../../lib/date-format'
 import { cn } from '../../../lib/utils'
+import { markedDayClass, markedVariantOf, type MarkedDate } from '../../../lib/marked-dates'
+import { useMarkedDates } from '../../../composables/useMarkedDates'
 import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekNumberOfRow, weekdayLabels as labelsOfWeek, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
@@ -28,6 +30,8 @@ interface Props {
   serverTimezone?: string
   disabledWeekdays?: number[]
   disabledDates?: DisabledDate[]
+  markedDates?: MarkedDate[]
+  markedDatesUrl?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,6 +51,8 @@ const props = withDefaults(defineProps<Props>(), {
   serverTimezone: undefined,
   disabledWeekdays: () => [],
   disabledDates: () => [],
+  markedDates: () => [],
+  markedDatesUrl: undefined,
 })
 
 const messageContext = useFormMessages()
@@ -88,6 +94,17 @@ function parseDate(s: string | null, withTime: boolean): Date | null {
 }
 
 const open = ref(false)
+const marks = useMarkedDates(() => props)
+const markedClasses: Record<string, string> = {
+  default: 'bg-primary/15 font-medium',
+  muted: 'border border-dashed border-primary/60 text-muted-foreground',
+}
+
+watch(open, (isOpen) => {
+  if (isOpen) {
+    marks.load()
+  }
+})
 // single
 const selected = ref<Date | null>(props.range ? null : parseDate(props.modelValue as string | null, props.enableTime))
 // range
@@ -204,7 +221,7 @@ function dayClass(cell: { date: Date; inMonth: boolean }): string {
     'h-8 w-8 rounded text-sm flex items-center justify-center transition-colors',
     cell.inMonth ? 'text-foreground' : 'text-muted-foreground/50',
     isDisabled(cell.date) ? 'opacity-50 cursor-not-allowed line-through' : 'hover:bg-accent',
-    selectionClass(cell.date) ?? (isToday(cell.date) ? 'font-bold ring-2 ring-inset ring-primary' : ''),
+    selectionClass(cell.date) ?? cn(markedDayClass(marks.markOf(cell.date), markedClasses), isToday(cell.date) ? 'font-bold ring-2 ring-inset ring-primary' : ''),
   )
 }
 
@@ -271,6 +288,8 @@ defineOptions({ inheritAttrs: false })
               :disabled="isDisabled(cell.date)"
               :data-date="formatISO(cell.date, false)"
               :aria-current="isToday(cell.date) ? 'date' : undefined"
+              :data-marked="markedVariantOf(marks.markOf(cell.date))"
+              :title="marks.markOf(cell.date)?.label"
               :class="dayClass(cell)"
               @click="setSelected(new Date(cell.date))"
             >

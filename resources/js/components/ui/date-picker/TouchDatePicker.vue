@@ -5,9 +5,12 @@ import { Button } from '../button/index'
 import TouchPickerSurface from './TouchPickerSurface.vue'
 import TouchTimeChoices from './TouchTimeChoices.vue'
 import { useFormMessages } from '../../../lib/messages'
+import { cn } from '../../../lib/utils'
 import { padTime as pad, useAnchoredPicker } from '../../../lib/touch-picker'
 import { resolveTimezone, toDisplayWallClock, toZonedIso, wallClockAt, wallClockOfDate, type WallClock } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
+import { markedDayClass, markedVariantOf, type MarkedDate } from '../../../lib/marked-dates'
+import { useMarkedDates } from '../../../composables/useMarkedDates'
 import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekNumberOfRow, weekdayLabels, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
@@ -27,6 +30,8 @@ interface Props {
   serverTimezone?: string
   disabledWeekdays?: number[]
   disabledDates?: DisabledDate[]
+  markedDates?: MarkedDate[]
+  markedDatesUrl?: string
   minuteStep?: number
   hourFrom?: number
   hourTo?: number
@@ -51,6 +56,8 @@ const props = withDefaults(defineProps<Props>(), {
   serverTimezone: undefined,
   disabledWeekdays: () => [],
   disabledDates: () => [],
+  markedDates: () => [],
+  markedDatesUrl: undefined,
   minuteStep: 15,
   hourFrom: 0,
   hourTo: 23,
@@ -97,6 +104,17 @@ const viewMonth = ref(initial.getMonth())
 
 const dateOpen = ref(false)
 const timeOpen = ref(false)
+const marks = useMarkedDates(() => props)
+const markedClasses: Record<string, string> = {
+  default: 'bg-primary/15 font-medium',
+  muted: 'border border-dashed border-primary/60 text-muted-foreground',
+}
+
+watch(dateOpen, (isOpen) => {
+  if (isOpen) {
+    marks.load()
+  }
+})
 
 function showMonthOf(date: Date): void {
   viewYear.value = date.getFullYear()
@@ -250,7 +268,18 @@ function clear(): void {
 }
 
 function longDate(date: Date): string {
-  return date.toLocaleDateString(calendarLocale.value, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const label = date.toLocaleDateString(calendarLocale.value, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const marked = marks.markOf(date)?.label
+
+  return marked ? `${label}, ${marked}` : label
+}
+
+function highlightClass(date: Date): string {
+  if (isSameDay(day.value, date)) {
+    return 'bg-primary text-primary-foreground'
+  }
+
+  return cn(markedDayClass(marks.markOf(date), markedClasses), isSameDay(today(), date) ? 'font-bold ring-2 ring-primary ring-inset' : '')
 }
 
 function pickHour(value: number): void {
@@ -330,12 +359,14 @@ defineOptions({ inheritAttrs: false })
             :aria-current="isSameDay(today(), cell.date) ? 'date' : undefined"
             :aria-label="longDate(cell.date)"
             :aria-pressed="isSameDay(day, cell.date)"
-            :class="[
+            :data-marked="markedVariantOf(marks.markOf(cell.date))"
+            :title="marks.markOf(cell.date)?.label"
+            :class="cn(
               dayClass,
               cell.inMonth ? 'text-foreground' : 'text-muted-foreground/60',
-              isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : (isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : ''),
               isDisabled(cell.date) ? 'cursor-not-allowed line-through opacity-40' : 'cursor-pointer hover:bg-accent',
-            ]"
+              highlightClass(cell.date),
+            )"
             @click="pickDay(cell.date)"
           >
             {{ cell.date.getDate() }}

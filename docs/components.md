@@ -149,6 +149,7 @@ const closed: DisabledDate[] = ['2026-12-25', { from: '2026-07-20', to: '2026-08
 | `minDate`, `maxDate` | first and last selectable day |
 | `disabledWeekdays` | weekdays that cannot be picked, `0` = Sunday to `6` = Saturday |
 | `disabledDates` | days that cannot be picked: `'Y-m-d'` strings and `{ from?, to? }` ranges |
+| `markedDates`, `markedDatesUrl` | days to mark, as `{ from, to?, variant?, label? }`, or a URL to fetch them from on first open, see [Marked dates](fields/date-time.md#marked-dates) |
 | `weekStartsOn` | `0` Sunday (default) or `1` Monday |
 | `weekNumbers` | show the ISO 8601 week number in front of every row |
 | `format`, `locale`, `placeholder` | display of the chosen value, `format` in [Day.js tokens](fields/date-time.md#date-format) |

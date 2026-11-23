@@ -151,6 +151,52 @@ The standalone `DatePicker` takes the same as `disabled-weekdays` and `disabled-
 
 Requires `tranquil-tools/laravel-form-builder` 1.5 and `laravel-vue-form-builder` 1.8 or newer.
 
+### Marked dates
+
+Mark days in the calendar without blocking them, for example the days someone already has off or a request that is
+still pending. Point the field at a URL that returns the marked days as JSON:
+
+```php
+Date::make('starts_on')
+    ->markedDatesUrl(route('leave.marked-dates'))
+```
+
+```json
+[
+    { "from": "2026-12-24", "to": "2026-12-31", "label": "Approved leave" },
+    { "from": "2027-01-08", "to": null, "variant": "muted", "label": "Requested leave" }
+]
+```
+
+- `from` is the first day, `to` the last one; leave `to` out or `null` for a single day. Values that start with a
+  `Y-m-d` date, such as `2026-12-24 00:00`, are read as that date. Entries without a `from` are skipped.
+- `variant` picks the style: `default` (or none) fills the day with a light tint of the primary colour, `muted` gives
+  it a dashed outline in muted text, for something tentative. The day button carries `data-marked="<variant>"`, so an
+  app can style its own variants; an unknown variant looks like `default`.
+- `label` is the tooltip of the day and is added to its screen reader label in the touch picker.
+- The picker fetches the URL the first time it opens, not when the page loads. The response is kept per URL for the
+  rest of the page visit and shared by every picker with that URL. A failed request is tried again the next time a
+  picker opens. Call `forgetMarkedDates()` (or `forgetMarkedDates(url)`) from
+  `@form-builder/components/ui/date-picker` after a change, so the next open fetches again.
+- The request is a `GET` with `Accept: application/json` and the session cookie, so a normal web route behind `auth`
+  works.
+
+A short fixed list goes in the schema directly with `->markedDates()`, in the same shape. A `Y-m-d` string or a date
+object marks one day; calling it again adds to the list:
+
+```php
+Date::make('starts_on')
+    ->markedDates([
+        '2026-12-25',
+        ['from' => '2026-07-20', 'to' => '2026-08-02', 'variant' => 'muted', 'label' => 'Company closed?'],
+    ])
+```
+
+Marked days stay selectable and are not validated; use [disabled dates](#disabled-weekdays-and-dates) to block a day.
+Today's ring stays visible on a marked day, and a selected day shows only its selection.
+
+Requires `tranquil-tools/laravel-form-builder` 1.24 and `laravel-vue-form-builder` 1.28 or newer.
+
 ### Touch picker
 
 `->touchPicker()` swaps the small popover for a picker made for phones and for people who find small controls hard.
@@ -169,8 +215,8 @@ DateTime::make('starts_at')
     ->hours(7, 23)    // hour buttons 07 to 23 (default 0 to 23)
 ```
 
-- `minDate`, `maxDate`, `disabledWeekdays`, `disabledDates`, `weekStartsOn`, `weekNumbers`, `locale` and `timezone`
-  work as on the regular picker. The value that is submitted is the same as well.
+- `minDate`, `maxDate`, `disabledWeekdays`, `disabledDates`, `markedDates`, `markedDatesUrl`, `weekStartsOn`,
+  `weekNumbers`, `locale` and `timezone` work as on the regular picker. The value that is submitted is the same as well.
 - Picking a day while no time is chosen yet fills in the first hour button (`00:00`, or the start of `hours()`) and
   opens the time sheet right after, so the value always matches what the buttons show.
 - A field without a `required` rule gets a **Wissen** ("Clear") button in both sheets that empties it. Set it
