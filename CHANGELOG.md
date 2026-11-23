@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.28.0 - 2026-11-23
+* The regular date picker rings today in the primary colour, like the touch picker, with `aria-current="date"`. A
+  selected day, and in a range the days between, show their selection instead of the ring, also in the touch picker.
+
 ## 1.27.2 - 2026-11-17
 * Documents `->when()` and `->unless()` on fields, so a setter such as `->help()` can depend on a server-side
   condition without passing `null`. Requires laravel-form-builder 1.23.

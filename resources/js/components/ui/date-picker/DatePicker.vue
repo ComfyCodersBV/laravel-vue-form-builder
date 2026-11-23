@@ -7,6 +7,7 @@ import { useFormMessages } from '../../../lib/messages'
 import { resolveTimezone } from '../../../lib/timezone'
 import type { DisabledDate } from '../../../lib/dates'
 import { formatDate, formatHasTime } from '../../../lib/date-format'
+import { cn } from '../../../lib/utils'
 import { formatDateValue, isDisabledDay, isSameDay, monthGrid, parseDateValue, weekdayLabels as labelsOfWeek, type DateValueContext } from '../../../lib/date-value'
 
 interface Props {
@@ -172,6 +173,39 @@ function isDisabled(d: Date) {
   return isDisabledDay(d, props, props.enableTime, valueContext.value)
 }
 
+function isSelectedDay(d: Date): boolean {
+  if (!props.range) {
+    return isSameDay(selected.value, d)
+  }
+
+  return isSameDay(selectedStart.value, d) || isSameDay(selectedEnd.value, d)
+}
+
+function isToday(d: Date): boolean {
+  return isSameDay(new Date(), d)
+}
+
+function selectionClass(d: Date): string | null {
+  if (isSelectedDay(d)) {
+    return 'bg-primary text-primary-foreground'
+  }
+
+  if (props.range && isBetween(d, selectedStart.value, selectedEnd.value)) {
+    return 'bg-accent text-foreground'
+  }
+
+  return null
+}
+
+function dayClass(cell: { date: Date; inMonth: boolean }): string {
+  return cn(
+    'h-8 w-8 rounded text-sm flex items-center justify-center transition-colors',
+    cell.inMonth ? 'text-foreground' : 'text-muted-foreground/50',
+    isDisabled(cell.date) ? 'opacity-50 cursor-not-allowed line-through' : 'hover:bg-accent',
+    selectionClass(cell.date) ?? (isToday(cell.date) ? 'font-bold ring-2 ring-inset ring-primary' : ''),
+  )
+}
+
 const hours = computed({
   get: () => selected.value ? selected.value.getHours() : 0,
   set: (h: number) => {
@@ -230,17 +264,10 @@ defineOptions({ inheritAttrs: false })
           <template v-for="cell in row" :key="cell.date.toISOString()">
             <button
               type="button"
-              class="h-8 w-8 rounded text-sm flex items-center justify-center transition-colors"
               :disabled="isDisabled(cell.date)"
               :data-date="formatISO(cell.date, false)"
-              :class="[
-                cell.inMonth ? 'text-foreground' : 'text-muted-foreground/50',
-                (!props.range && isSameDay(selected, cell.date)) ? 'bg-primary text-primary-foreground' : '',
-                (props.range && isBetween(cell.date, selectedStart, selectedEnd)) ? 'bg-accent text-foreground' : '',
-                (props.range && isSameDay(selectedStart, cell.date)) ? 'bg-primary text-primary-foreground' : '',
-                (props.range && isSameDay(selectedEnd, cell.date)) ? 'bg-primary text-primary-foreground' : '',
-                (!isDisabled(cell.date)) ? 'hover:bg-accent' : 'opacity-50 cursor-not-allowed line-through'
-              ]"
+              :aria-current="isToday(cell.date) ? 'date' : undefined"
+              :class="dayClass(cell)"
               @click="setSelected(new Date(cell.date))"
             >
               {{ cell.date.getDate() }}

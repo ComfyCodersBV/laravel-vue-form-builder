@@ -323,8 +323,7 @@ defineOptions({ inheritAttrs: false })
             :class="[
               dayClass,
               cell.inMonth ? 'text-foreground' : 'text-muted-foreground/60',
-              isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : '',
-              isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : '',
+              isSameDay(day, cell.date) ? 'bg-primary text-primary-foreground' : (isSameDay(today(), cell.date) ? 'font-bold ring-2 ring-primary ring-inset' : ''),
               isDisabled(cell.date) ? 'cursor-not-allowed line-through opacity-40' : 'cursor-pointer hover:bg-accent',
             ]"
             @click="pickDay(cell.date)"

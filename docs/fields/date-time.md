@@ -12,6 +12,9 @@ Date::make('birthday')
     ->rules('required', 'date')
 ```
 
+The calendar rings today in the primary colour and marks it as the current date for screen readers. A selected day
+shows filled instead, without the ring.
+
 ## DateTime
 
 A date picker with time selection enabled. Equivalent to `Date::make()->enableTime()`.
