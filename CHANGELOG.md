@@ -16,6 +16,8 @@ All notable changes to `laravel-vue-form-builder` will be documented in this fil
   the `label` as tooltip (and in the screen reader label of the touch picker) and carry `data-marked="<variant>"`: the
   default variant fills the day with a light primary tint, `muted` gives it a dashed outline. Both pickers support it.
   `MarkedDate`, `markedDateOn()` and `normalizeMarkedDates()` are exported from `@form-builder/types/dates`.
+* Requires `tranquil-tools/laravel-form-builder` `^1.24`, the version that sends `weekNumbers`, `markedDates` and
+  `markedDatesUrl`.
 
 ## 1.27.2 - 2026-11-17
 * Documents `->when()` and `->unless()` on fields, so a setter such as `->help()` can depend on a server-side
