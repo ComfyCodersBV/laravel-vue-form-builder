@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.28.1 - 2026-11-24
+* Update the npm lockfile for security advisories in transitive development dependencies.
+
 ## 1.28.0 - 2026-11-23
 * The regular date picker rings today in the primary colour, like the touch picker, with `aria-current="date"`. A
   selected day, and in a range the days between, show their selection instead of the ring, also in the touch picker.
