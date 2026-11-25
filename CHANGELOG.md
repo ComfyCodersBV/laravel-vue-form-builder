@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.28.2 - 2026-11-25
+* A field slot (`#title`) and an input slot (`#input-title`) no longer rebuild their elements when the component around
+  `<Form>` renders again and the field then updates, for example after typing. A focused input in a slot lost its focus
+  and could drop typed characters, typically when that component forwards its slots with
+  `<template v-for="(_, name) in $slots" #[name]="props">` and shows a saving status during an autosave. Slots now render
+  through a stable `SlotOutlet` instead of being used as a component type.
+
 ## 1.28.1 - 2026-11-24
 * Update the npm lockfile for security advisories in transitive development dependencies.
 

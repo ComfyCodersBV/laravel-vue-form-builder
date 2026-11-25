@@ -81,6 +81,11 @@ exactly as a built-in field does.
 Slots reach fields nested inside a `Repeater` as well, so a `#title` slot applies to a `title`
 sub-field in every row.
 
+The elements a slot renders stay in place when the component around `<Form>` renders again, for example to show a
+saving status. A focused input in a slot keeps its focus and every typed character, also when that component forwards
+its own slots with `<template v-for="(_, name) in $slots" #[name]="props">`, which hands `<Form>` new slot functions
+on every render.
+
 ## Replacing only the input
 
 An `#input-{name}` slot replaces the control of one field and keeps everything around it: the label with its `for`, the
@@ -145,3 +150,5 @@ points at the column's help text. It applies to fields with a value, not to a se
 An `#input-{type}` slot, such as `#input-text`, does the same for every field of that type, also in repeater rows, with
 the same exceptions. The order is: a slot for the whole field (`#size`), then `#input-size`, then `#input-text`, then a
 slot for the whole type (`#text`).
+
+Like a field slot, an input slot keeps its elements, and so the focus, when the component around `<Form>` renders again.

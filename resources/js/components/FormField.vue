@@ -3,6 +3,7 @@ import { computed, inject, provide } from 'vue'
 import { useFormMessages } from '../lib/messages'
 import { fieldSlotsKey, inputSlotName } from '../lib/field-slots'
 import { hideLabelKey } from '../lib/label'
+import { SlotOutlet } from '../lib/slot-outlet'
 import { fieldMetaKey } from '../lib/field-meta'
 import { dependentOptionsFor } from '../lib/options'
 import type { Field } from '../types/form-builder'
@@ -209,10 +210,10 @@ function updateValue(value: any): void {
 </script>
 
 <template>
-    <component
+    <SlotOutlet
         v-if="slotFor()"
-        :is="slotFor()"
-        v-bind="slotPropsFor()"
+        :render="slotFor()!"
+        :scope="slotPropsFor()"
     />
     <SectionField
         v-else-if="field.type === 'section'"
@@ -230,7 +231,7 @@ function updateValue(value: any): void {
         @update:modelValue="updateValue"
     >
         <template #default="scope">
-            <component :is="inputSlotFor()" v-bind="scope" />
+            <SlotOutlet :render="inputSlotFor()!" :scope="scope" />
         </template>
     </InputSlotField>
     <component
