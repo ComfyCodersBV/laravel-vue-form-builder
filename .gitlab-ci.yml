@@ -5,6 +5,15 @@ stages:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_COMMIT_BRANCH == "main"
 
+.npm-cache: &npm-cache
+  key:
+    files:
+      - package-lock.json
+    prefix: npm
+  paths:
+    - .npm/
+  policy: pull
+
 # The editor registry guard runs on node:test and the component tests on Vitest.
 # Both read or mount sources rather than building them, which is why the fixture
 # builds below still earn their place.
@@ -12,14 +21,16 @@ test:node:
   stage: test
   image: node:22
   script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
     - npm test
   cache:
-    key:
-      files:
-        - package-lock.json
-    paths:
-      - node_modules/
+    - <<: *npm-cache
+      policy: pull-push
+    - key:
+        files:
+          - package-lock.json
+      paths:
+        - node_modules/
   rules: *default_rules
 
 # Consumers type-check their pages together with these sources, so an error here
@@ -28,14 +39,15 @@ typecheck:
   stage: test
   image: node:22
   script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
     - npm run typecheck
   cache:
-    key:
-      files:
-        - package-lock.json
-    paths:
-      - node_modules/
+    - *npm-cache
+    - key:
+        files:
+          - package-lock.json
+      paths:
+        - node_modules/
   rules: *default_rules
 
 # Every fixture installs the package's own dependencies first. Bare specifiers
@@ -50,16 +62,17 @@ build:bare-app:
   stage: test
   image: node:22
   script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
     - cd tests/fixtures/bare-app
-    - npm ci
+    - npm ci --cache "$CI_PROJECT_DIR/.npm" --prefer-offline
     - npm run verify
   cache:
-    key:
-      files:
-        - tests/fixtures/bare-app/package-lock.json
-    paths:
-      - tests/fixtures/bare-app/node_modules/
+    - *npm-cache
+    - key:
+        files:
+          - tests/fixtures/bare-app/package-lock.json
+      paths:
+        - tests/fixtures/bare-app/node_modules/
   rules: *default_rules
 
 # Consumers inherit their reka-ui copy from the Laravel Vue starter kit, so they
@@ -72,10 +85,12 @@ build:reka-ui-range:
   parallel:
     matrix:
       - REKA_UI_VERSION: ['2.9.4', '2']
+  cache:
+    - *npm-cache
   script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
     - cd tests/fixtures/bare-app
-    - npm ci
+    - npm ci --cache "$CI_PROJECT_DIR/.npm" --prefer-offline
     - npm install --no-save "reka-ui@$REKA_UI_VERSION"
     - npm run verify
   rules: *default_rules
@@ -87,16 +102,17 @@ build:engines-app:
   stage: test
   image: node:22
   script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
     - cd tests/fixtures/engines-app
-    - npm ci
+    - npm ci --cache "$CI_PROJECT_DIR/.npm" --prefer-offline
     - npm run verify
   cache:
-    key:
-      files:
-        - tests/fixtures/engines-app/package-lock.json
-    paths:
-      - tests/fixtures/engines-app/node_modules/
+    - *npm-cache
+    - key:
+        files:
+          - tests/fixtures/engines-app/package-lock.json
+      paths:
+        - tests/fixtures/engines-app/node_modules/
   rules: *default_rules
 
 # The opposite case: engine installed, adapter registered, engine expected in
@@ -105,16 +121,17 @@ build:quill-app:
   stage: test
   image: node:22
   script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
     - cd tests/fixtures/quill-app
-    - npm ci
+    - npm ci --cache "$CI_PROJECT_DIR/.npm" --prefer-offline
     - npm run verify
   cache:
-    key:
-      files:
-        - tests/fixtures/quill-app/package-lock.json
-    paths:
-      - tests/fixtures/quill-app/node_modules/
+    - *npm-cache
+    - key:
+        files:
+          - tests/fixtures/quill-app/package-lock.json
+      paths:
+        - tests/fixtures/quill-app/node_modules/
   rules: *default_rules
 
 pest:
