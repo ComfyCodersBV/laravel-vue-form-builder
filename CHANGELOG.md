@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.28.3 - 2026-11-27
+* Cache npm downloads in CI
+
 ## 1.28.2 - 2026-11-25
 * A field slot (`#title`) and an input slot (`#input-title`) no longer rebuild their elements when the component around
   `<Form>` renders again and the field then updates, for example after typing. A focused input in a slot lost its focus
