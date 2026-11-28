@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-vue-form-builder` will be documented in this file.
 
+## 1.28.4 - 2026-11-27
+* `->autocomplete()` on a number field now reaches the `<input>`. The number field dropped the attribute, so browsers still offered autofill suggestions.
+
 ## 1.28.3 - 2026-11-27
 * Cache npm downloads in CI
 

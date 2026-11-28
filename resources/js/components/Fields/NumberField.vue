@@ -15,6 +15,7 @@ import { useFormMessages } from '../../lib/messages'
 const messageContext = useFormMessages()
 
 interface NumberFieldProps extends Field {
+    autocomplete?: string
     min?: number
     max?: number
     prepend?: string
@@ -27,6 +28,7 @@ interface NumberFieldProps extends Field {
 }
 
 const props = withDefaults(defineProps<NumberFieldProps>(), {
+    autocomplete: undefined,
     className: undefined,
     disabled: false,
     error: undefined,
@@ -169,6 +171,7 @@ const inputId = useFieldId(() => props.name);
                     @beforeinput="onBeforeInput"
                     :id="inputId"
                     :name="name"
+                    :autocomplete="autocomplete"
                     :placeholder="placeholder"
                     :disabled="disabled"
                     :readonly="readonly"

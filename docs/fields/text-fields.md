@@ -269,6 +269,9 @@ Text::make('email')
 
 Text::make('new_password')
     ->autocomplete('new-password')  // Sets exact autocomplete value
+
+Number::make('amount')
+    ->autocomplete(false)      // Number fields pass it to the input as well
 ```
 
 ## Translations
